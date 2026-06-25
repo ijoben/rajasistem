@@ -1,0 +1,20 @@
+{
+  "name": "rajasistem",
+  "version": "1.0.0",
+  "description": "RajaSistem - Website solutions for Crypto, MLM, and E-commerce",
+  "scripts": {
+    "build": "echo 'No build process required for static HTML'",
+    "dev": "npx serve ."
+  },
+  "keywords": [
+    "rajasistem",
+    "crypto",
+    "mlm",
+    "website"
+  ],
+  "author": "RajaSistem",
+  "license": "ISC",
+  "dependencies": {
+    "@vercel/analytics": "^2.0.1"
+  }
+}
