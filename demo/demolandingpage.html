@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MasterClass Instagram Ads - Kursus Digital Marketing UMKM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  * {
+    font-family: 'Poppins', sans-serif;
+    scroll-behavior: smooth;
+  }
+  
+  .gradient-text {
+    background: linear-gradient(135deg, #dc2626 0%, #f97316 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .btn-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7); }
+    50% { box-shadow: 0 0 0 10px rgba(220, 38, 38, 0); }
+  }
+  
+  .fade-up {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  
+  .fade-up.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  .accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+  }
+  
+  .accordion-content.active {
+    max-height: 500px;
+  }
+  
+  .testimonial-slider {
+    scroll-snap-type: x mandatory;
+  }
+  
+  .testimonial-card {
+    scroll-snap-align: start;
+  }
+  
+  .sticky-cta-mobile {
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+  }
+  
+  .sticky-cta-mobile.show {
+    transform: translateY(0);
+  }
+  
+  .toast {
+    transform: translateX(400px);
+    transition: transform 0.4s ease;
+  }
+  
+  .toast.show {
+    transform: translateX(0);
+  }
+</style>
+</head>
+<body class="bg-white text-gray-900 overflow-x-hidden">
+
+<!-- 1. TOP BAR: URGENCY COUNTDOWN -->
+<div class="bg-gradient-to-r from-[#dc2626] to-[#ea580c] text-white py-2 px-4 sticky top-0 z-50 shadow-lg">
+  <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-center gap-2 md:gap-6 text-center text-sm md:text-base">
+    <span class="font-semibold">🔥 Promo Berakhir Dalam:</span>
+    <div class="flex gap-1 font-bold text-lg" id="topCountdown">
+      <span id="hours">02</span>:<span id="minutes">30</span>:<span id="seconds">00</span>
+    </div>
+    <button onclick="scrollToForm()" class="bg-white text-[#dc2626] px-4 py-1 rounded-full font-bold text-sm hover:bg-gray-100 transition">
+      Klaim Diskon 50%
+    </button>
+  </div>
+</div>
+
+<!-- 2. HERO SECTION -->
+<section class="bg-gradient-to-br from-blue-50 via-white to-red-50 py-8 md:py-16 px-4">
+  <div class="max-w-7xl mx-auto">
+    <div class="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+      <!-- Left: Copy + Form -->
+      <div class="fade-up">
+        <div class="inline-block bg-blue-100 text-[#1d4ed8] px-4 py-1 rounded-full text-sm font-semibold mb-4">
+          ⚡ Khusus UMKM Indonesia
+        </div>
+        <h1 class="text-3xl md:text-5xl font-extrabold leading-tight mb-4">
+          <span class="gradient-text">Omzet Naik 300%</span> dari Instagram dalam 30 Hari - Dijamin!
+        </h1>
+        <p class="text-lg md:text-xl text-gray-600 mb-6">
+          Belajar strategi iklan yang dipake brand 20M+/bulan. Tanpa ribet, tanpa bakar duit, langsung praktek bareng mentor eks-Meta.
+        </p>
+        
+        <!-- Trust Badges -->
+        <div class="flex flex-wrap gap-4 mb-6">
+          <div class="flex items-center gap-2 bg-white px-4 py-2 rounded-lg shadow-md">
+            <svg class="w-5 h-5 text-[#1d4ed8]" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+            <span class="font-semibold text-sm">2.847 Alumni</span>
+          </div>
+          <div class="flex items-center gap-2 bg-white px-4 py-2 rounded-lg shadow-md">
+            <svg class="w-5 h-5 text-yellow-500" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+            <span class="font-semibold text-sm">Rating 4.9/5</span>
+          </div>
+        </div>
+        
+        <!-- Form -->
+        <div class="bg-white p-6 rounded-2xl shadow-2xl border-2 border-red-100" id="formSection">
+          <h3 class="font-bold text-xl mb-4 text-center">Amankan Slot Harga Rp99rb 👇</h3>
+          <form id="heroForm" class="space-y-3">
+            <input type="text" placeholder="Nama Lengkap" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-[#dc2626] focus:outline-none transition">
+            <input type="tel" placeholder="No WhatsApp Aktif" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-[#dc2626] focus:outline-none transition">
+            <button type="submit" class="w-full bg-gradient-to-r from-[#dc2626] to-[#ea580c] text-white font-bold py-4 rounded-lg text-lg btn-pulse hover:scale-105 transition">
+              Daftar Kelas Rp99rb Sekarang
+            </button>
+          </form>
+          <p class="text-xs text-center text-gray-500 mt-3">✅ Garansi 100% Uang Kembali 30 Hari</p>
+        </div>
+      </div>
+      
+      <!-- Right: Video -->
+      <div class="fade-up">
+        <div class="relative rounded-2xl overflow-hidden shadow-2xl aspect-video bg-gray-900">
+          <iframe class="w-full h-full" src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Video Kelas" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+        <p class="text-center text-sm text-gray-600 mt-3">Tonton: 3 Rahasia Iklan ROAS 10x untuk UMKM</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3. PROBLEM SECTION -->
+<section class="py-12 md:py-20 px-4 bg-gray-50">
+  <div class="max-w-7xl mx-auto">
+    <h2 class="text-3xl md:text-4xl font-extrabold text-center mb-4 fade-up">Jujur... Kamu Ngalamin Ini Juga Kan?</h2>
+    <p class="text-center text-gray-600 mb-12 fade-up">Kalau iya, kamu gak sendiri. 90% UMKM stuck di masalah yang sama.</p>
+    
+    <div class="grid md:grid-cols-3 gap-6 md:gap-8">
+      <!-- Problem 1 -->
+      <div class="bg-white p-8 rounded-2xl shadow-lg text-center fade-up hover:shadow-xl transition">
+        <div class="text-6xl mb-4">😫</div>
+        <h3 class="font-bold text-xl mb-3 text-[#dc2626]">Capek Ngiklan Boncos?</h3>
+        <p class="text-gray-600">Udah bakar 500rb-2jt per bulan tapi order masuk cuma 3-5. Biaya iklan lebih gede dari profit yang didapat.</p>
+        <p class="text-gray-600 mt-2">Bingung harus evaluasi apanya dulu.</p>
+      </div>
+      
+      <!-- Problem 2 -->
+      <div class="bg-white p-8 rounded-2xl shadow-lg text-center fade-up hover:shadow-xl transition">
+        <div class="text-6xl mb-4">😴</div>
+        <h3 class="font-bold text-xl mb-3 text-[#dc2626]">Konten Sepi Engagement?</h3>
+        <p class="text-gray-600">Udah posting tiap hari, bikin reels, tapi yang like cuma temen sendiri. Viewers gak nyampe 100.</p>
+        <p class="text-gray-600 mt-2">Gak tau cara bikin konten yang bikin orang auto beli.</p>
+      </div>
+      
+      <!-- Problem 3 -->
+      <div class="bg-white p-8 rounded-2xl shadow-lg text-center fade-up hover:shadow-xl transition">
+        <div class="text-6xl mb-4">🤯</div>
+        <h3 class="font-bold text-xl mb-3 text-[#dc2626]">Gak Ngerti Algoritma?</h3>
+        <p class="text-gray-600">Tombol di Ads Manager banyak banget. Salah pilih objective, salah target, akhirnya duit kebuang.</p>
+        <p class="text-gray-600 mt-2">Nanya di grup jawabannya beda-beda semua.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 4. SOLUTION SECTION -->
+<section class="py-12 md:py-20 px-4">
+  <div class="max-w-7xl mx-auto">
+    <div class="text-center mb-12 fade-up">
+      <h2 class="text-3xl md:text-4xl font-extrabold mb-4">Kenalin <span class="gradient-text">MasterClass Instagram Ads</span></h2>
+      <p class="text-lg text-gray-600 max-w-3xl mx-auto">Sistem step-by-step yang udah terbukti naikin omzet 2.847 UMKM. Gak ada teori kosong, langsung praktek dari hari pertama.</p>
+    </div>
+    
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Benefit Cards -->
+      <div class="bg-gradient-to-br from-blue-50 to-white p-6 rounded-xl border-2 border-blue-100 fade-up hover:border-[#1d4ed8] transition">
+        <div class="w-12 h-12 bg-[#1d4ed8] rounded-lg flex items-center justify-center mb-4">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+        </div>
+        <h3 class="font-bold text-lg mb-2">Riset Produk Winning</h3>
+        <p class="text-gray-600 text-sm">Tools + framework biar gak jualan produk zonk. Validasi pasar dalam 1 hari.</p>
+      </div>
+      
+      <div class="bg-gradient-to-br from-blue-50 to-white p-6 rounded-xl border-2 border-blue-100 fade-up hover:border-[#1d4ed8] transition">
+        <div class="w-12 h-12 bg-[#1d4ed8] rounded-lg flex items-center justify-center mb-4">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+        </div>
+        <h3 class="font-bold text-lg mb-2">Bikin Iklan 1x Klik</h3>
+        <p class="text-gray-600 text-sm">Template Campaign Structure + Targeting udah jadi. Tinggal copy-paste, jalan.</p>
+      </div>
+      
+      <div class="bg-gradient-to-br from-blue-50 to-white p-6 rounded-xl border-2 border-blue-100 fade-up hover:border-[#1d4ed8] transition">
+        <div class="w-12 h-12 bg-[#1d4ed8] rounded-lg flex items-center justify-center mb-4">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/></svg>
+        </div>
+        <h3 class="font-bold text-lg mb-2">Template Caption</h3>
+        <p class="text-gray-600 text-sm">50+ script copywriting high-convert. Formula AIDA, PAS, Storytelling semua ada.</p>
+      </div>
+      
+      <div class="bg-gradient-to-br from-blue-50 to-white p-6 rounded-xl border-2 border-blue-100 fade-up hover:border-[#1d4ed8] transition">
+        <div class="w-12 h-12 bg-[#1d4ed8] rounded-lg flex items-center justify-center mb-4">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+        </div>
+        <h3 class="font-bold text-lg mb-2">Grup Bimbingan</h3>
+        <p class="text-gray-600 text-sm">Akses VIP Telegram. Tanya-jawab langsung sama mentor + alumni setiap hari.</p>
+      </div>
+      
+      <div class="bg-gradient-to-br from-blue-50 to-white p-6 rounded-xl border-2 border-blue-100 fade-up hover:border-[#1d4ed8] transition">
+        <div class="w-12 h-12 bg-[#1d4ed8] rounded-lg flex items-center justify-center mb-4">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 0 013.138 3.138 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 0 010-4.438 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
+        </div>
+        <h3 class="font-bold text-lg mb-2">Sertifikat Resmi</h3>
+        <p class="text-gray-600 text-sm">Sertifikat bisa dipakai buat naikin trust di LinkedIn & portofolio bisnis.</p>
+      </div>
+      
+      <div class="bg-gradient-to-br from-red-50 to-white p-6 rounded-xl border-2 border-red-200 fade-up hover:border-[#dc2626] transition">
+        <div class="w-12 h-12 bg-[#dc2626] rounded-lg flex items-center justify-center mb-4">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/></svg>
+        </div>
+        <h3 class="font-bold text-lg mb-2">Garansi Uang Kembali</h3>
+        <p class="text-gray-600 text-sm">30 hari gak ada hasil? Refund 100%. Tanpa banyak tanya, tanpa ribet.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 5. MODUL TIMELINE -->
+<section class="py-12 md:py-20 px-4 bg-gray-50">
+  <div class="max-w-5xl mx-auto">
+    <h2 class="text-3xl md:text-4xl font-extrabold text-center mb-4 fade-up">Kurikulum 4 Minggu: Dari Nol ke Jago</h2>
+    <p class="text-center text-gray-600 mb-12 fade-up">Tiap minggu ada praktek + tugas yang langsung naikin omzet</p>
+    
+    <div class="space-y-8">
+      <!-- Minggu 1 -->
+      <div class="bg-white p-6 md:p-8 rounded-2xl shadow-lg fade-up border-l-4 border-[#1d4ed8]">
+        <div class="flex items-start gap-4">
+          <div class="bg-[#1d4ed8] text-white w-12 h-12 rounded-full flex items-center justify-center font-bold flex-shrink-0">1</div>
+          <div>
+            <h3 class="font-bold text-xl md:text-2xl mb-3">Minggu 1: Fundamen Anti Boncos</h3>
+            <ul class="space-y-2 text-gray-700">
+              <li class="flex gap-2"><span class="text-green-500">✓</span> Setup Pixel, Domain Verification, iOS 14.5+</li>
+              <li class="flex gap-2"><span class="text-green-500">✓</span> Riset Audience pake Audience Insights</li>
+              <li class="flex gap-2"><span class="text-green-500">✓</span> Bikin Campaign Structure yang Scalable</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Minggu 2 -->
+      <div class="bg-white p-6 md:p-8 rounded-2xl shadow-lg fade-up border-l-4 border-[#1d4ed8]">
+        <div class="flex items-start gap-4">
+          <div class="bg-[#1d4ed8] text-white w-12 h-12 rounded-full flex items-center justify-center font-bold flex-shrink-0">2</div>
+          <div>
+            <h3 class="font-bold text-xl md:text-2xl mb-3">Minggu 2: Konten yang Auto Closing</h3>
+            <ul class="space-y-2 text-gray-700">
+              <li class="flex gap-2"><span class="text-green-500">✓</span> 3 Hook Video yang bikin stop-scroll</li>
+              <li class="flex gap-2"><span class="text-green-500">✓</span> Script UGC & Testimoni Pelanggan</li>
+              <li class="flex gap-2"><span class="text-green-500">✓</span> Edit pake CapCut biar estetik tanpa mahal</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Minggu 3 -->
+      <div class="bg-white p-6 md:p-8 rounded-2xl shadow-lg fade-up border-l-4 border-[#1d4ed8]">
+        <div class="flex items-start gap-4">
+          <div class="bg-[#1d4ed8] text-white w-12 h-12 rounded-full flex items-center justify-center font-bold flex-shrink-0">3</div>
+          <div>
+            <h3 class="font-bold text-xl md:text-2xl mb-3">Minggu 3: Ads Launching & Optimasi</h3>
+            <ul class="space-y-2 text-gray-700">
+              <li class="flex gap-2"><span class="text-green-500">✓</span> Testing: ABO vs CBO, strategi bid</li>
+              <li class="flex gap-2"><span class="text-green-500">✓</span> Baca Dashboard: CTR, CPC, CPM, ROAS</li>
+              <li class="flex gap-2"><span class="text-green-500">✓</span> Kill & Scale: Kapan matiin iklan, kapan naikin budget</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Minggu 4 -->
+      <div class="bg-white p-6 md:p-8 rounded-2xl shadow-lg fade-up border-l-4 border-[#dc2626]">
+        <div class="flex items-start gap-4">
+          <div class="bg-[#dc2626] text-white w-12 h-12 rounded-full flex items-center justify-center font-bold flex-shrink-0">4</div>
+          <div>
+            <h3 class="font-bold text-xl md:text-2xl mb-3">Minggu 4: Scaling ke 100jt+/Bulan</h3>
+            <ul class="space-y-2 text-gray-700">
+              <li class="flex gap-2"><span class="text-green-500">✓</span> Retargeting: Funnel TOF, MOF, BOF</li>
+              <li class="flex gap-2"><span class="text-green-500">✓</span> Lookalike Audience 1-5% paling akurat</li>
+              <li class="flex gap-2"><span class="text-green-500">✓</span> Hack hindarin banned & restrict akun BM</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 6. MENTOR SECTION -->
+<section class="py-12 md:py-20 px-4">
+  <div class="max-w-6xl mx-auto">
+    <div class="bg-gradient-to-br from-[#1d4ed8] to-blue-700 rounded-3xl p-8 md:p-12 text-white">
+      <div class="grid md:grid-cols-2 gap-8 items-center">
+        <div class="fade-up">
+          <h2 class="text-3xl md:text-4xl font-extrabold mb-4">Mentor Kamu Bukan Kaleng-Kaleng</h2>
+          <div class="flex items-center gap-4 mb-6">
+            <img src="https://i.pravatar.cc/150?img=12" alt="Coach Budi" class="w-20 h-20 rounded-full border-4 border-white">
+            <div>
+              <h3 class="font-bold text-2xl">Coach Budi Pratama</h3>
+              <p class="text-blue-100">Eks Meta Ads Specialist 8 Tahun</p>
+            </div>
+          </div>
+          <p class="text-lg mb-6 text-blue-50">Pernah kelola budget iklan <span class="font-bold text-white">20M/bulan</span> untuk brand besar. Sekarang fokus bantu UMKM naik kelas pake strategi yang sama.</p>
+          
+          <p class="font-semibold mb-3">Pernah handle campaign:</p>
+          <div class="flex flex-wrap gap-4">
+            <div class="bg-white/20 backdrop-blur px-4 py-2 rounded-lg font-semibold">Tokopedia</div>
+            <div class="bg-white/20 backdrop-blur px-4 py-2 rounded-lg font-semibold">Erigo</div>
+            <div class="bg-white/20 backdrop-blur px-4 py-2 rounded-lg font-semibold">MS Glow</div>
+          </div>
+        </div>
+        
+        <div class="fade-up">
+          <img src="https://images.unsplash.com/photo-1556157382-97eda2d62296?w=600&auto=format&fit=crop" alt="Mentor Teaching" class="rounded-2xl shadow-2xl w-full">
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 7. TESTIMONI SECTION -->
+<section class="py-12 md:py-20 px-4 bg-gray-50">
+  <div class="max-w-7xl mx-auto">
+    <h2 class="text-3xl md:text-4xl font-extrabold text-center mb-12 fade-up">Yang Udah Ikutan, Omzetnya Auto Meledak 💥</h2>
+    
+    <!-- Slider Testimoni -->
+    <div class="overflow-x-auto testimonial-slider flex gap-6 pb-4 snap-mandatory mb-8 fade-up">
+      <!-- Testi 1 -->
+      <div class="testimonial-card min-w-[300px] md:min-w-[380px] bg-white p-8 rounded-2xl shadow-lg">
+        <div class="flex items-center gap-4 mb-4">
+          <img src="https://i.pravatar.cc/100?img=5" alt="Sari" class="w-14 h-14 rounded-full">
+          <div>
+            <h4 class="font-bold">Sari Dewi</h4>
+            <p class="text-sm text-gray-500">Fashion Muslimah</p>
+          </div>
+        <div class="flex gap-1 mb-3 text-yellow-500">★★★★★</div>
+        <p class="font-bold text-xl mb-2 text-[#dc2626]">"Omzet dari 5jt ke 40jt!"</p>
+        <p class="text-gray-600">Dulu ngiklan 1jt/bulan cuma dapet 3jt. Setelah ikut kelas, bulan ke-2 tembus 40jt. ROAS 8x gila sih!</p>
+      </div>
+      
+      <!-- Testi 2 -->
+      <div class="testimonial-card min-w-[300px] md:min-w-[380px] bg-white p-8 rounded-2xl shadow-lg">
+        <div class="flex items-center gap-4 mb-4">
+          <img src="https://i.pravatar.cc/100?img=13" alt="Andi" class="w-14 h-14 rounded-full">
+          <div>
+            <h4 class="font-bold">Andi Kurniawan</h4>
+            <p class="text-sm text-gray-500">Sambal Kemasan</p>
+          </div>
+        </div>
+        <div class="flex gap-1 mb-3 text-yellow-500">★★★★★</div>
+        <p class="font-bold text-xl mb-2 text-[#dc2626]">"ROAS 12x broo!"</p>
+        <p class="text-gray-600">Belajar targeting yang bener dari Coach Budi. Iklan 200rb sehari bisa closing 2.4jt. Akhirnya bisa gaji 2 karyawan.</p>
+      </div>
+      
+      <!-- Testi 3 -->
+      <div class="testimonial-card min-w-[300px] md:min-w-[380px] bg-white p-8 rounded-2xl shadow-lg">
+        <div class="flex items-center gap-4 mb-4">
+          <img src="https://i.pravatar.cc/100?img=8" alt="Maya" class="w-14 h-14 rounded-full">
+          <div>
+            <h4 class="font-bold">Maya Putri</h4>
+            <p class="text-sm text-gray-500">Skincare</p>
+          </div>
+        </div>
+        <div class="flex gap-1 mb-3 text-yellow-500">★★★★★</div>
+        <p class="font-bold text-xl mb-2 text-[#dc2626]">"Akhirnya bisa gaji karyawan"</p>
+        <p class="text-gray-600">3 bulan lalu masih kerja sendiri. Sekarang omzet 80jt/bulan, udah hire CS 2 orang. Makasih Coach!</p>
+      </div>
+    </div>
+    
+    <!-- Video Testimoni -->
+    <div class="max-w-3xl mx-auto fade-up">
+      <div class="aspect-video rounded-2xl overflow-hidden shadow-2xl">
+        <iframe class="w-full h-full" src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Video Testimoni" frameborder="0" allowfullscreen></iframe>
+      </div>
+      <p class="text-center text-gray-600 mt-4">Lihat cerita lengkap Sari pas omzet naik 8x lipat</p>
+    </div>
+  </div>
+</section>
+
+<!-- 8. HARGA SECTION -->
+<section class="py-12 md:py-20 px-4" id="pricing">
+  <div class="max-w-5xl mx-auto">
+    <div class="bg-gradient-to-br from-red-600 to-orange-500 rounded-3xl p-1 shadow-2xl fade-up">
+      <div class="bg-white rounded-3xl p-6 md:p-12">
+        <div class="text-center mb-8">
+          <h2 class="text-3xl md:text-4xl font-extrabold mb-4">Amankan Harga Early Bird Sekarang</h2>
+          <p class="text-lg text-gray-600">Slot terbatas! Setelah kuota habis, harga balik normal</p>
+        </div>
+        
+        <div class="grid md:grid-cols-2 gap-8 items-center">
+          <!-- Left: Harga -->
+          <div class="text-center md:text-left">
+            <p class="text-gray-500 mb-2">Harga Normal</p>
+            <p class="text-4xl font-bold text-gray-400 line-through mb-4">Rp1.999.000</p>
+            <p class="text-sm font-semibold text-[#dc2626] mb-2">🔥 Diskon 95% Hari Ini</p>
+            <p class="text-6xl font-extrabold gradient-text mb-4">Rp99.000</p>
+            <div class="bg-red-100 text-[#dc2626] px-4 py-2 rounded-lg inline-block font-semibold mb-4">
+              ⚠️ Hanya untuk 20 pendaftar hari ini
+            </div>
+            <div class="text-sm text-gray-600">
+              <p>⏰ Sisa waktu promo:</p>
+              <div class="flex justify-center md:justify-start gap-2 font-bold text-2xl text-[#dc2626] mt-1" id="priceCountdown">
+                <span id="priceHours">02</span>:<span id="priceMinutes">30</span>:<span id="priceSeconds">00</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Right: Yang Didapat -->
+          <div class="bg-gray-50 p-6 rounded-2xl">
+            <h3 class="font-bold text-xl mb-4">Yang Kamu Dapetin Senilai 5 Juta:</h3>
+            <ul class="space-y-3 text-sm md:text-base">
+              <li class="flex gap-2"><span class="text-green-500 font-bold">✓</span> 24 Video Materi Seumur Hidup</li>
+              <li class="flex gap-2"><span class="text-green-500 font-bold">✓</span> Template Campaign ROAS 10x</li>
+              <li class="flex gap-2"><span class="text-green-500 font-bold">✓</span> 50+ Script Hook & Caption</li>
+              <li class="flex gap-2"><span class="text-green-500 font-bold">✓</span> Swipe File Iklan Winning</li>
+              <li class="flex gap-2"><span class="text-green-500 font-bold">✓</span> Grup VIP Bimbingan 90 Hari</li>
+              <li class="flex gap-2"><span class="text-green-500 font-bold">✓</span> 2x Zoom Coaching Bareng Mentor</li>
+              <li class="flex gap-2"><span class="text-green-500 font-bold">✓</span> Sertifikat Resmi</li>
+              <li class="flex gap-2"><span class="text-green-500 font-bold">✓</span> Tools Riset Audience Premium</li>
+              <li class="flex gap-2"><span class="text-green-500 font-bold">✓</span> Checklist Audit Iklan</li>
+              <li class="flex gap-2"><span class="text-green-500 font-bold">✓</span> <span class="font-bold">BONUS: Ebook 100 Produk Winning 2024</span></li>
+            </ul>
+          </div>
+        </div>
+        
+        <button onclick="scrollToForm()" class="w-full bg-gradient-to-r from-[#dc2626] to-[#ea580c] text-white font-bold py-5 rounded-xl text-xl mt-8 btn-pulse hover:scale-105 transition">
+          Amankan Slot Rp99rb Sekarang 🚀
+        </button>
+        <p class="text-center text-sm text-gray-500 mt-3">Bayar sekali, akses selamanya. Tanpa biaya bulanan.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 9. GARANSI SECTION -->
+<section class="py-12 md:py-20 px-4 bg-gray-50">
+  <div class="max-w-4xl mx-auto fade-up">
+    <div class="bg-white rounded-3xl p-8 md:p-12 shadow-xl border-4 border-green-500 text-center">
+      <div class="w-24 h-24 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
+        <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+      </div>
+      <h2 class="text-3xl md:text-4xl font-extrabold mb-4">GARANSI 30 HARI UANG KEMBALI</h2>
+      <p class="text-lg text-gray-700 mb-6">Kami yakin 100% materi ini bakal naikin omzet kamu. Kalau dalam 30 hari kamu udah praktek semua tapi gak ada hasil sama sekali, kami refund 100% tanpa banyak tanya.</p>
+      <div class="bg-gray-50 p-6 rounded-xl text-left max-w-2xl mx-auto">
+        <h4 class="font-bold mb-3">Syarat klaim garansi:</h4>
+        <ul class="space-y-2 text-gray-600 text-sm">
+          <li>✓ Ikut minimal 80% materi video</li>
+          <li>✓ Kirim screenshot iklan yang udah dijalankan</li>
+          <li>✓ Konsultasi 1x di grup VIP</li>
+        </ul>
+        <p class="text-xs text-gray-500 mt-4">*Garansi berlaku karena kami mau kamu bener-bener sukses, bukan cuma jualan kelas.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 10. FAQ SECTION -->
+<section class="py-12 md:py-20 px-4">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="text-3xl md:text-4xl font-extrabold text-center mb-12 fade-up">Pertanyaan yang Sering Ditanya</h2>
+    
+    <div class="space-y-4">
+      <!-- FAQ Item 1 -->
+      <div class="bg-white border-2 border-gray-200 rounded-xl overflow-hidden fade-up">
+        <button class="accordion-header w-full text-left p-6 flex justify-between items-center hover:bg-gray-50 transition">
+          <span class="font-bold text-lg">Cocok gak buat pemula yang nol banget?</span>
+          <svg class="w-6 h-6 text-[#1d4ed8] transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </button>
+        <div class="accordion-content px-6">
+          <p class="pb-6 text-gray-600">Cocok banget! 70% alumni kita mulai dari nol. Materi Minggu 1 khusus bahas basic: setup akun, pixel, domain. Dijelasin pelan-pelan pake bahasa UMKM, gak pake istilah teknis ribet.</p>
+        </div>
+      </div>
+      
+      <!-- FAQ Item 2 -->
+      <div class="bg-white border-2 border-gray-200 rounded-xl overflow-hidden fade-up">
+        <button class="accordion-header w-full text-left p-6 flex justify-between items-center hover:bg-gray-50 transition">
+          <span class="font-bold text-lg">Ada rekaman gak? Kalau ketinggalan Zoom?</span>
+          <svg class="w-6 h-6 text-[#1d4ed8] transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </button>
+        <div class="accordion-content px-6">
+          <p class="pb-6 text-gray-600">Semua materi video + rekaman Zoom coaching bisa diakses selamanya. Belajar jam 2 pagi juga bisa. Materi update 2025 juga auto masuk tanpa bayar lagi.</p>
+        </div>
+      </div>
+      
+      <!-- FAQ Item 3 -->
+      <div class="bg-white border-2 border-gray-200 rounded-xl overflow-hidden fade-up">
+        <button class="accordion-header w-full text-left p-6 flex justify-between items-center hover:bg-gray-50 transition">
+          <span class="font-bold text-lg">Kalau gak paham terus nanya ke siapa?</span>
+          <svg class="w-6 h-6 text-[#1d4ed8] transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </button>
+        <div class="accordion-content px-6">
+          <p class="pb-6 text-gray-600">Langsung tanya di Grup VIP Telegram. Ada mentor + 3 asisten yang standby jawab setiap hari jam 09.00-21.00. Rata-rata dijawab dalam 1 jam. Gak bakal ditinggal sendiri.</p>
+        </div>
+      </div>
+      
+      <!-- FAQ Item 4 -->
+      <div class="bg-white border-2 border-gray-200 rounded-xl overflow-hidden fade-up">
+        <button class="accordion-header w-full text-left p-6 flex justify-between items-center hover:bg-gray-50 transition">
+          <span class="font-bold text-lg">Butuh budget iklan berapa minimal?</span>
+          <svg class="w-6 h-6 text-[#1d4ed8] transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </button>
+        <div class="accordion-content px-6">
+          <p class="pb-6 text-gray-600">Minimal 50rb-100rb/hari udah bisa jalan. Kita ajarin cara testing budget kecil dulu. Kalau udah profit baru scale up. Banyak alumni mulai dari 1.5jt/bulan udah tembus omzet 20jt.</p>
+        </div>
+      </div>
+      
+      <!-- FAQ Item 5 -->
+      <div class="bg-white border-2 border-gray-200 rounded-xl overflow-hidden fade-up">
+        <button class="accordion-header w-full text-left p-6 flex justify-between items-center hover:bg-gray-50 transition">
+          <span class="font-bold text-lg">Berapa lama baru keliatan hasilnya?</span>
+          <svg class="w-6 h-6 text-[#1d4ed8] transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </button>
+        <div class="accordion-content px-6">
+          <p class="pb-6 text-gray-600">Kalau langsung praktek, minggu ke-2 udah mulai ada closing. 73% alumni dapet ROAS 3x+ di bulan pertama. Tapi tetep butuh konsistensi ya, ini bukan skema cepat kaya.</p>
+        </div>
+      </div>
+      
+      <!-- FAQ Item 6 -->
+      <div class="bg-white border-2 border-gray-200 rounded-xl overflow-hidden fade-up">
+        <button class="accordion-header w-full text-left p-6 flex justify-between items-center hover:bg-gray-50 transition">
+          <span class="font-bold text-lg">Bisa buat jasa/produk digital gak?</span>
+          <svg class="w-6 h-6 text-[#1d4ed8] transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </button>
+        <div class="accordion-content px-6">
+          <p class="pb-6 text-gray-600">Bisa! Ada modul khusus lead generation buat jasa, webinar, dan produk digital. Strateginya beda sama jualan fisik, dan semua kita bahas detail di Minggu 3.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 11. FINAL CTA -->
+<section class="py-12 md:py-20 px-4 bg-gradient-to-br from-[#dc2626] via-red-600 to-orange-500 text-white">
+  <div class="max-w-4xl mx-auto text-center fade-up">
+    <h2 class="text-3xl md:text-5xl font-extrabold mb-6">Jangan Tunda Kesuksesan Bisnis Anda</h2>
+    <p class="text-xl md:text-2xl mb-8 text-red-100">Setiap hari kamu tunda, kompetitor kamu makin jago iklan. Slot Rp99rb sisa dikit lagi!</p>
+    
+    <!-- Mini Countdown -->
+    <div class="bg-white/20 backdrop-blur rounded-2xl p-6 mb-8 inline-block">
+      <p class="text-sm mb-2">Promo berakhir dalam:</p>
+      <div class="flex gap-3 font-bold text-4xl" id="finalCountdown">
+        <div><span id="finalHours">02</span><p class="text-xs font-normal">Jam</p></div>
+        <span>:</span>
+        <div><span id="finalMinutes">30</span><p class="text-xs font-normal">Menit</p></div>
+        <span>:</span>
+        <div><span id="finalSeconds">00</span><p class="text-xs font-normal">Detik</p></div>
+      </div>
+    </div>
+    
+    <!-- Form Ulang -->
+    <div class="max-w-md mx-auto bg-white rounded-2xl p-6 md:p-8 text-gray-900">
+      <h3 class="font-bold text-xl mb-4">Daftar Sekarang, Mulai Besok</h3>
+      <form id="finalForm" class="space-y-3">
+        <input type="text" placeholder="Nama Lengkap" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-[#dc2626] focus:outline-none">
+        <input type="tel" placeholder="No WhatsApp Aktif" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-[#dc2626] focus:outline-none">
+        <button type="submit" class="w-full bg-gradient-to-r from-[#dc2626] to-[#ea580c] text-white font-bold py-4 rounded-lg text-lg hover:scale-105 transition">
+          Ya, Saya Mau Omzet Naik 300% 🚀
+        </button>
+      </form>
+      <p class="text-xs text-gray-500 mt-3">✅ Garansi 30 Hari | ✅ Akses Selamanya</p>
+    </div>
+  </div>
+</section>
+
+<!-- 12. FOOTER -->
+<footer class="bg-gray-900 text-gray-300 py-12 px-4">
+  <div class="max-w-7xl mx-auto">
+    <div class="grid md:grid-cols-4 gap-8 mb-8">
+      <div>
+        <h4 class="font-bold text-white text-lg mb-4">MasterClass Instagram Ads</h4>
+        <p class="text-sm">PT Digital UMKM Sukses<br>Jakarta Selatan, Indonesia</p>
+      </div>
+      <div>
+        <h4 class="font-bold text-white text-lg mb-4">Bantuan</h4>
+        <ul class="space-y-2 text-sm">
+          <li><a href="#" class="hover:text-white">Hubungi CS</a></li>
+          <li><a href="#" class="hover:text-white">Syarat & Ketentuan</a></li>
+          <li><a href="#" class="hover:text-white">Kebijakan Refund</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-bold text-white text-lg mb-4">Sosial Media</h4>
+        <div class="flex gap-4">
+          <a href="#" class="hover:text-white">Instagram</a>
+          <a href="#" class="hover:text-white">YouTube</a>
+          <a href="#" class="hover:text-white">Tiktok</a>
+        </div>
+      </div>
+      <div>
+        <h4 class="font-bold text-white text-lg mb-4">Metode Pembayaran</h4>
+        <p class="text-sm">Transfer Bank, E-Wallet, QRIS</p>
+      </div>
+    </div>
+    
+    <div class="border-t border-gray-700 pt-8 text-center text-xs text-gray-500">
+      <p class="mb-2">© 2024 MasterClass Instagram Ads. All rights reserved.</p>
+      <p class="font-semibold text-yellow-500">⚠️ DISCLAIMER: Demo Portfolio - Data Fiktif. Hasil tiap individu beda-beda tergantung effort & niche bisnis.</p>
+    </div>
+  </div>
+</footer>
+
+<!-- STICKY CTA MOBILE -->
+<div class="sticky-cta-mobile fixed bottom-0 left-0 right-0 bg-white shadow-2xl p-4 z-40 md:hidden border-t-4 border-[#dc2626]">
+  <button onclick="scrollToForm()" class="w-full bg-gradient-to-r from-[#dc2626] to-[#ea580c] text-white font-bold py-4 rounded-xl text-lg">
+    Daftar Rp99rb Sekarang 🔥
+  </button>
+</div>
+
+<!-- TOAST NOTIFICATION -->
+<div id="toast" class="toast fixed top-24 right-4 bg-green-500 text-white px-6 py-4 rounded-lg shadow-2xl z-50 max-w-sm">
+  <div class="flex items-center gap-3">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+    <div>
+      <p class="font-bold">Data terkirim!</p>
+      <p class="text-sm">Admin akan WA Anda dalam 5 menit</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ==================== COUNTDOWN TIMER ====================
+  function initCountdown() {
+    // Cek localStorage, kalau belum ada set 2 jam 30 menit dari sekarang
+    let endTime = localStorage.getItem('promoEndTime');
+    
+    if (!endTime) {
+      endTime = Date.now() + (2.5 * 60 * 60 * 1000); // 2.5 jam
+      localStorage.setItem('promoEndTime', endTime);
+    }
+    
+    function updateCountdown() {
+      const now = Date.now();
+      const distance = endTime - now;
+      
+      if (distance < 0) {
+        // Reset kalau udah abis
+        localStorage.removeItem('promoEndTime');
+        initCountdown();
+        return;
+      }
+      
+      const hours = Math.floor(distance / (1000 * 60 * 60));
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+      
+      // Update semua countdown
+      document.querySelectorAll('[id$="Hours"]').forEach(el => el.textContent = String(hours).padStart(2, '0'));
+      document.querySelectorAll('[id$="Minutes"]').forEach(el => el.textContent = String(minutes).padStart(2, '0'));
+      document.querySelectorAll('[id$="Seconds"]').forEach(el => el.textContent = String(seconds).padStart(2, '0'));
+    }
+    
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+  }
+  
+  // ==================== FORM SUBMIT ====================
+  function handleFormSubmit(formId) {
+    document.getElementById(formId).addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      // Show toast
+      const toast = document.getElementById('toast');
+      toast.classList.add('show');
+      
+      // Reset form
+      this.reset();
+      
+      // Hide toast after 4s
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 4000);
+      
+      // Track conversion - demo only
+      console.log('Form submitted:', formId);
+    });
+  }
+  
+  // ==================== ACCORDION FAQ ====================
+  function initAccordion() {
+    document.querySelectorAll('.accordion-header').forEach(header => {
+      header.addEventListener('click', function() {
+        const content = this.nextElementSibling;
+        const icon = this.querySelector('svg');
+        
+        // Close others
+        document.querySelectorAll('.accordion-content').forEach(item => {
+          if (item !== content) {
+            item.classList.remove('active');
+            item.previousElementSibling.querySelector('svg').style.transform = 'rotate(0deg)';
+          }
+        });
+        
+        // Toggle current
+        content.classList.toggle('active');
+        icon.style.transform = content.classList.contains('active') ? 'rotate(180deg)' : 'rotate(0deg)';
+      });
+    });
+  }
+  
+  // ==================== SCROLL TO FORM ====================
+  function scrollToForm() {
+    document.getElementById('formSection').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+  
+  // ==================== STICKY CTA MOBILE ====================
+  function initStickyCTA() {
+    const stickyCTA = document.querySelector('.sticky-cta-mobile');
+    const heroForm = document.getElementById('formSection');
+    
+    window.addEventListener('scroll', () => {
+      const heroFormBottom = heroForm.offsetTop + heroForm.offsetHeight;
+      
+      if (window.scrollY > heroFormBottom && window.innerWidth < 768) {
+        stickyCTA.classList.add('show');
+      } else {
+        stickyCTA.classList.remove('show');
+      }
+    });
+  }
+  
+  // ==================== AOS FADE-UP ANIMATION ====================
+  function initFadeUpAnimation() {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1 });
+    
+    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+  }
+  
+  // ==================== INIT ALL ====================
+  document.addEventListener('DOMContentLoaded', function() {
+    initCountdown();
+    handleFormSubmit('heroForm');
+    handleFormSubmit('finalForm');
+    initAccordion();
+    initStickyCTA();
+    initFadeUpAnimation();
+  });
+</script>
+
+<script>(function(){document.addEventListener("click",function(e){var a=e.target.closest("[data-product-id]");if(!a)return;e.preventDefault();var pid=a.getAttribute("data-product-id");if(pid)parent.postMessage({type:"ecto-artifact-link-click",productId:pid},"*")})})();</script>
+</body>
+</html>

@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CryptoNusa - Jual Beli Crypto Terpercaya di Indonesia</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+    * {
+        -webkit-tap-highlight-color: transparent;
+    }
+    .gradient-bg {
+        background: linear-gradient(135deg, #0d47a1 0%, #1976d2 100%);
+    }
+    .card-hover {
+        transition: all 0.3s ease;
+    }
+    .card-hover:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+    .toast {
+        animation: slideIn 0.3s ease, slideOut 0.3s ease 2.7s;
+    }
+    @keyframes slideIn {
+        from { transform: translateX(400px); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes slideOut {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(400px); opacity: 0; }
+    }
+    .order-row:hover {
+        background-color: rgba(13, 71, 161, 0.05);
+        cursor: pointer;
+    }
+    .modal-backdrop {
+        backdrop-filter: blur(4px);
+    }
+    @media (max-width: 768px) {
+        .mobile-btn {
+            min-height: 48px;
+        }
+        table {
+            font-size: 13px;
+        }
+    }
+</style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+<!-- LANDING PAGE -->
+<div id="landing">
+    <!-- Header -->
+    <header class="gradient-bg text-white sticky top-0 z-40 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center gap-8">
+                    <div class="flex items-center gap-2">
+                        <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"/>
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clip-rule="evenodd"/>
+                        </svg>
+                        <span class="text-2xl font-bold">CryptoNusa</span>
+                    </div>
+                    <nav class="hidden md:flex gap-6">
+                        <a href="#home" class="hover:text-blue-200 transition">Home</a>
+                        <a href="#market" class="hover:text-blue-200 transition">Market</a>
+                        <a href="#" id="navTrading" class="hover:text-blue-200 transition">Trading</a>
+                    </nav>
+                </div>
+                <div class="flex gap-2">
+                    <button id="btnMasuk" class="px-4 py-2 rounded-lg hover:bg-white/10 transition mobile-btn">Masuk</button>
+                    <button id="btnDaftar" class="px-4 py-2 bg-white text-[#0d47a1] rounded-lg hover:bg-blue-50 font-semibold transition mobile-btn">Daftar</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="gradient-bg text-white py-20 md:py-32">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h1 class="text-4xl md:text-6xl font-bold mb-6 leading-tight">Jual Beli Crypto Terpercaya di Indonesia</h1>
+                    <p class="text-lg md:text-xl mb-8 text-blue-100">Platform trading cryptocurrency dengan likuiditas tinggi, fee rendah, dan keamanan tingkat bank. Terdaftar BAPPEBTI.</p>
+                    <div class="flex flex-wrap gap-4 mb-12">
+                        <button id="btnMasukTrading" class="px-8 py-4 bg-white text-[#0d47a1] rounded-lg font-bold text-lg hover:bg-blue-50 transition shadow-xl mobile-btn">Masuk Trading</button>
+                        <button class="px-8 py-4 bg-white/10 border-2 border-white rounded-lg font-bold text-lg hover:bg-white/20 transition mobile-btn">Lihat Demo</button>
+                    </div>
+                    <div class="grid grid-cols-3 gap-6">
+                        <div>
+                            <div class="text-3xl font-bold">Rp50T+</div>
+                            <div class="text-blue-200 text-sm">Volume Harian</div>
+                        </div>
+                        <div>
+                            <div class="text-3xl font-bold">2M+</div>
+                            <div class="text-blue-200 text-sm">User Aktif</div>
+                        </div>
+                        <div>
+                            <div class="text-3xl font-bold">100+</div>
+                            <div class="text-blue-200 text-sm">Crypto List</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="hidden md:block">
+                    <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20">
+                        <img src="https://images.unsplash.com/photo-1621761191319-c6fb62004040?w=600&auto=format" alt="Trading" class="rounded-xl w-full">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Market Section -->
+    <section id="market" class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">Market Hari Ini</h2>
+                <p class="text-gray-600">Harga crypto terupdate real-time</p>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full bg-white rounded-xl shadow-lg overflow-hidden">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th class="px-6 py-4 text-left font-semibold">Aset</th>
+                            <th class="px-6 py-4 text-right font-semibold">Harga</th>
+                            <th class="px-6 py-4 text-right font-semibold">24h%</th>
+                            <th class="px-6 py-4 text-right font-semibold">Volume</th>
+                            <th class="px-6 py-4 text-center font-semibold">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="marketTable">
+                        <tr class="border-t hover:bg-gray-50 cursor-pointer" data-asset="BTC">
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold">₿</div>
+                                    <div>
+                                        <div class="font-semibold">Bitcoin</div>
+                                        <div class="text-sm text-gray-500">BTC</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 text-right font-semibold" id="btcPrice">Rp 980.000.000</td>
+                            <td class="px-6 py-4 text-right text-[#16a34a] font-semibold">+2.34%</td>
+                            <td class="px-6 py-4 text-right text-gray-600">Rp 12.5T</td>
+                            <td class="px-6 py-4 text-center">
+                                <button class="px-4 py-2 bg-[#0d47a1] text-white rounded-lg hover:bg-blue-800 transition text-sm">Trade</button>
+                            </td>
+                        </tr>
+                        <tr class="border-t hover:bg-gray-50 cursor-pointer" data-asset="ETH">
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center text-white font-bold">Ξ</div>
+                                    <div>
+                                        <div class="font-semibold">Ethereum</div>
+                                        <div class="text-sm text-gray-500">ETH</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 text-right font-semibold">Rp 52.450.000</td>
+                            <td class="px-6 py-4 text-right text-[#dc2626] font-semibold">-1.12%</td>
+                            <td class="px-6 py-4 text-right text-gray-600">Rp 8.2T</td>
+                            <td class="px-6 py-4 text-center">
+                                <button class="px-4 py-2 bg-[#0d47a1] text-white rounded-lg hover:bg-blue-800 transition text-sm">Trade</button>
+                            </td>
+                        </tr>
+                        <tr class="border-t hover:bg-gray-50 cursor-pointer" data-asset="USDT">
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center text-white font-bold">₮</div>
+                                    <div>
+                                        <div class="font-semibold">Tether</div>
+                                        <div class="text-sm text-gray-500">USDT</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 text-right font-semibold">Rp 15.420</td>
+                            <td class="px-6 py-4 text-right text-gray-600 font-semibold">0.01%</td>
+                            <td class="px-6 py-4 text-right text-gray-600">Rp 25.1T</td>
+                            <td class="px-6 py-4 text-center">
+                                <button class="px-4 py-2 bg-[#0d47a1] text-white rounded-lg hover:bg-blue-800 transition text-sm">Trade</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Keunggulan Section -->
+    <section class="py-16 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">Kenapa CryptoNusa?</h2>
+                <p class="text-gray-600">Keunggulan platform trading crypto nomor 1 di Indonesia</p>
+            </div>
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="bg-white p-6 rounded-xl shadow-md card-hover">
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-[#0d47a1]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Terdaftar BAPPEBTI</h3>
+                    <p class="text-gray-600">Legal dan diawasi langsung oleh pemerintah Indonesia</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md card-hover">
+                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-[#16a34a]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Fee 0.1%</h3>
+                    <p class="text-gray-600">Biaya trading terendah di market Indonesia</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md card-hover">
+                    <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Instant Withdraw</h3>
+                    <p class="text-gray-600">Penarikan dana dalam hitungan menit 24/7</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md card-hover">
+                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Keamanan Tinggi</h3>
+                    <p class="text-gray-600">Cold wallet storage & 2FA protection</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-300 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"/>
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clip-rule="evenodd"/>
+                        </svg>
+                        <span class="text-xl font-bold text-white">CryptoNusa</span>
+                    </div>
+                    <p class="text-sm">Platform trading crypto terpercaya di Indonesia sejak 2020</p>
+                </div>
+                <div>
+                    <h4 class="font-bold text-white mb-4">Perusahaan</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-white">Tentang Kami</a></li>
+                        <li><a href="#" class="hover:text-white">Karir</a></li>
+                        <li><a href="#" class="hover:text-white">Blog</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-white mb-4">Produk</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-white">Spot Trading</a></li>
+                        <li><a href="#" class="hover:text-white">Futures</a></li>
+                        <li><a href="#" class="hover:text-white">Earn</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-white mb-4">Bantuan</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-white">Pusat Bantuan</a></li>
+                        <li><a href="#" class="hover:text-white">Kontak</a></li>
+                        <li><a href="#" class="hover:text-white">API Docs</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 pt-8 text-center text-sm">
+                <p>&copy; 2024 CryptoNusa. All rights reserved. Terdaftar BAPPEBTI.</p>
+            </div>
+        </div>
+    </footer>
+</div>
+
+<!-- TRADING DASHBOARD -->
+<div id="dashboard" style="display:none" class="min-h-screen bg-gray-100">
+    <!-- Disclaimer Banner -->
+    <div class="bg-[#dc2626] text-white text-center py-2 px-4 text-sm font-semibold">
+        ⚠️ DEMO PORTFOLIO ONLY - This is a simulation for portfolio purposes, not real trading
+    </div>
+
+    <!-- Dashboard Header -->
+    <header class="gradient-bg text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center gap-6">
+                    <button id="btnBackHome" class="flex items-center gap-2 hover:bg-white/10 px-3 py-2 rounded-lg transition">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                        <span class="hidden sm:inline">Kembali</span>
+                    </button>
+                    <div class="flex items-center gap-2">
+                        <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"/>
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clip-rule="evenodd"/>
+                        </svg>
+                        <span class="text-xl font-bold">Trading Dashboard</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="text-right hidden sm:block">
+                        <div class="text-xs text-blue-200">Total Aset</div>
+                        <div class="font-bold" id="totalAsset">Rp 59.000.000</div>
+                    </div>
+                    <button class="w-9 h-9 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Balance Cards -->
+    <div class="bg-white border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex flex-wrap gap-4 items-center justify-between">
+                <div class="flex gap-6">
+                    <div>
+                        <div class="text-sm text-gray-600">Saldo IDR</div>
+                        <div class="text-2xl font-bold text-gray-900" id="saldoIDR">Rp 10.000.000</div>
+                    </div>
+                    <div>
+                        <div class="text-sm text-gray-600">Saldo BTC</div>
+                        <div class="text-2xl font-bold text-gray-900" id="saldoBTC">0.05000000 BTC</div>
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <button id="btnDeposit" class="px-6 py-3 bg-[#16a34a] text-white rounded-lg font-semibold hover:bg-green-700 transition mobile-btn">Deposit</button>
+                    <button id="btnWithdraw" class="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition mobile-btn">Withdraw</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Trading Grid -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div class="grid lg:grid-cols-3 gap-6">
+            <!-- Order Book -->
+            <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                <div class="bg-gray-50 px-4 py-3 border-b">
+                    <h3 class="font-bold text-gray-900">Order Book</h3>
+                    <div class="text-xs text-gray-500 mt-1">BTC/IDR</div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead class="bg-gray-50 text-xs text-gray-600">
+                            <tr>
+                                <th class="px-4 py-2 text-left">Harga (IDR)</th>
+                                <th class="px-4 py-2 text-right">Jumlah (BTC)</th>
+                                <th class="px-4 py-2 text-right">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orderBookBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Chart -->
+            <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                <div class="bg-gray-50 px-4 py-3 border-b flex justify-between items-center">
+                    <div>
+                        <h3 class="font-bold text-gray-900">BTC/IDR</h3>
+                        <div class="text-xs text-gray-500" id="currentPrice">Rp 980.000.000</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-xs text-gray-500">24h Change</div>
+                        <div class="text-sm font-semibold text-[#16a34a]" id="priceChange">+2.34%</div>
+                    </div>
+                </div>
+                <div class="p-4">
+                    <canvas id="chart"></canvas>
+                </div>
+            </div>
+
+            <!-- Order Form -->
+            <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                <div class="bg-gray-50 px-4 py-3 border-b">
+                    <h3 class="font-bold text-gray-900">Order Form</h3>
+                </div>
+                <div class="p-4">
+                    <!-- Tabs -->
+                    <div class="flex gap-2 mb-4">
+                        <button id="tabMarket" class="flex-1 py-2 rounded-lg font-semibold bg-[#0d47a1] text-white">Market</button>
+                        <button id="tabLimit" class="flex-1 py-2 rounded-lg font-semibold bg-gray-200 text-gray-700">Limit</button>
+                    </div>
+
+                    <!-- Form -->
+                    <div class="space-y-4">
+                        <div>
+                            <label class="text-sm text-gray-600 mb-1 block">Harga (IDR)</label>
+                            <input type="number" id="orderPrice" value="980000000" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0d47a1] focus:border-transparent" disabled>
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-600 mb-1 block">Jumlah (BTC)</label>
+                            <input type="number" id="orderAmount" step="0.00000001" placeholder="0.00000000" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0d47a1] focus:border-transparent">
+                        </div>
+                        <div>
+                            <input type="range" id="amountSlider" min="0" max="100" value="0" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#0d47a1]">
+                            <div class="flex justify-between text-xs text-gray-500 mt-1">
+                                <span>0%</span>
+                                <span>25%</span>
+                                <span>50%</span>
+                                <span>75%</span>
+                                <span>100%</span>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded-lg">
+                            <div class="flex justify-between text-sm mb-1">
+                                <span class="text-gray-600">Total</span>
+                                <span class="font-semibold" id="orderTotal">Rp 0</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Fee (0.1%)</span>
+                                <span class="font-semibold" id="orderFee">Rp 0</span>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <button id="btnBeli" class="py-4 bg-[#16a34a] text-white rounded-lg font-bold hover:bg-green-700 transition mobile-btn">BELI</button>
+                            <button id="btnJual" class="py-4 bg-[#dc2626] text-white rounded-lg font-bold hover:bg-red-700 transition mobile-btn">JUAL</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Riwayat Order -->
+        <div class="mt-6 bg-white rounded-xl shadow-md overflow-hidden">
+            <div class="bg-gray-50 px-4 py-3 border-b">
+                <div class="flex gap-4">
+                    <button class="font-semibold text-[#0d47a1] border-b-2 border-[#0d47a1] pb-1">Riwayat Order</button>
+                </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead class="bg-gray-50 text-xs text-gray-600">
+                        <tr>
+                            <th class="px-4 py-3 text-left">Waktu</th>
+                            <th class="px-4 py-3 text-left">Pair</th>
+                            <th class="px-4 py-3 text-left">Tipe</th>
+                            <th class="px-4 py-3 text-right">Harga</th>
+                            <th class="px-4 py-3 text-right">Jumlah</th>
+                            <th class="px-4 py-3 text-right">Total</th>
+                            <th class="px-4 py-3 text-center">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="riwayatBody">
+                        <tr>
+                            <td colspan="7" class="px-4 py-8 text-center text-gray-400">Belum ada riwayat order</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Deposit Modal -->
+<div id="depositModal" class="hidden fixed inset-0 bg-black/50 modal-backdrop z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="text-2xl font-bold">Deposit IDR</h3>
+            <button id="closeDepositModal" class="text-gray-400 hover:text-gray-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+        <div class="space-y-4">
+            <div>
+                <label class="text-sm text-gray-600 mb-1 block">Jumlah Deposit</label>
+                <input type="number" id="depositAmount" placeholder="Masukkan jumlah" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#16a34a] focus:border-transparent">
+            </div>
+            <div class="bg-blue-50 p-4 rounded-lg text-sm text-blue-800">
+                <p class="font-semibold mb-1">Info:</p>
+                <p>Minimum deposit Rp 10.000. Saldo akan masuk dalam 1-5 menit.</p>
+            </div>
+            <button id="confirmDeposit" class="w-full py-4 bg-[#16a34a] text-white rounded-lg font-bold hover:bg-green-700 transition mobile-btn">Konfirmasi Deposit</button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Container -->
+<div id="toastContainer" class="fixed top-20 right-4 z-50 space-y-2"></div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded');
+    
+    // State Management
+    let state = {
+        idr: 10000000,
+        btc: 0.05,
+        price: 980000000,
+        orderType: 'market',
+        chart: null
+    };
+
+    // DOM Elements
+    const landing = document.getElementById('landing');
+    const dashboard = document.getElementById('dashboard');
+    const depositModal = document.getElementById('depositModal');
+
+    // Router
+    function showDashboard() {
+        console.log('Masuk Trading clicked');
+        landing.style.display = 'none';
+        dashboard.style.display = 'block';
+        initChart();
+        window.scrollTo(0, 0);
+    }
+
+    function showLanding() {
+        console.log('Back to Home clicked');
+        dashboard.style.display = 'none';
+        landing.style.display = 'block';
+        window.scrollTo(0, 0);
+    }
+
+    document.getElementById('btnMasukTrading').onclick = showDashboard;
+    document.getElementById('navTrading').onclick = (e) => { e.preventDefault(); showDashboard(); };
+    document.getElementById('btnBackHome').onclick = showLanding;
+    document.getElementById('btnMasuk').onclick = showDashboard;
+    document.getElementById('btnDaftar').onclick = showDashboard;
+
+    // Market table click
+    document.querySelectorAll('#marketTable tr').forEach(row => {
+        row.onclick = () => {
+            console.log('Market row clicked:', row.dataset.asset);
+            showDashboard();
+        };
+    });
+
+    // Format Functions
+    function formatIDR(num) {
+        return 'Rp ' + Math.floor(num).toLocaleString('id-ID');
+    }
+
+    function formatBTC(num) {
+        return num.toFixed(8) + ' BTC';
+    }
+
+    function format(num) {
+        return formatIDR(num);
+    }
+
+    // Update UI
+    function updateUI() {
+        document.getElementById('saldoIDR').textContent = formatIDR(state.idr);
+        document.getElementById('saldoBTC').textContent = formatBTC(state.btc);
+        document.getElementById('currentPrice').textContent = formatIDR(state.price);
+        document.getElementById('btcPrice').textContent = formatIDR(state.price);
+        
+        const totalAssetValue = state.idr + (state.btc * state.price);
+        document.getElementById('totalAsset').textContent = formatIDR(totalAssetValue);
+        
+        updateOrderTotal();
+    }
+
+    // Toast
+    function toast(message, type = 'success') {
+        console.log('Toast:', message);
+        const toast = document.createElement('div');
+        const bgColor = type === 'success' ? 'bg-[#16a34a]' : type === 'error' ? 'bg-[#dc2626]' : 'bg-[#0d47a1]';
+        toast.className = `toast ${bgColor} text-white px-6 py-4 rounded-lg shadow-xl flex items-center gap-3 min-w-[300px]`;
+        toast.innerHTML = `
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            <span>${message}</span>
+        `;
+        document.getElementById('toastContainer').appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+
+    // Deposit Modal
+    document.getElementById('btnDeposit').onclick = () => {
+        console.log('Deposit button clicked');
+        depositModal.classList.remove('hidden');
+    };
+
+    document.getElementById('closeDepositModal').onclick = () => {
+        depositModal.classList.add('hidden');
+    };
+
+    document.getElementById('confirmDeposit').onclick = () => {
+        console.log('Confirm deposit clicked');
+        const amount = parseFloat(document.getElementById('depositAmount').value);
+        if (isNaN(amount) || amount < 10000) {
+            toast('Minimum deposit Rp 10.000', 'error');
+            return;
+        }
+        state.idr += amount;
+        updateUI();
+        depositModal.classList.add('hidden');
+        document.getElementById('depositAmount').value = '';
+        toast(`Deposit ${formatIDR(amount)} berhasil!`);
+    };
+
+    document.getElementById('btnWithdraw').onclick = () => {
+        console.log('Withdraw button clicked');
+        toast('Fitur withdraw segera hadir', 'info');
+    };
+
+    // Order Book
+    function rand(min, max) {
+        return Math.random() * (max - min) + min;
+    }
+
+    function generateRows() {
+        const tbody = document.getElementById('orderBookBody');
+        tbody.innerHTML = '';
+        const basePrice = state.price;
+        
+        // Generate 8 sell orders (red)
+        for (let i = 0; i < 8; i++) {
+            const price = basePrice * (1 + (i + 1) * 0.0001);
+            const amount = rand(0.001, 0.5);
+            const total = price * amount;
+            const row = document.createElement('tr');
+            row.className = 'order-row border-t border-gray-100 text-[#dc2626]';
+            row.innerHTML = `
+                <td class="px-4 py-2">${formatIDR(price)}</td>
+                <td class="px-4 py-2 text-right">${amount.toFixed(8)}</td>
+                <td class="px-4 py-2 text-right">${formatIDR(total)}</td>
+            `;
+            row.onclick = () => {
+                document.getElementById('orderPrice').value = Math.floor(price);
+                updateOrderTotal();
+            };
+            tbody.appendChild(row);
+        }
+        
+        // Separator
+        const sep = document.createElement('tr');
+        sep.innerHTML = `<td colspan="3" class="px-4 py-2 bg-gray-100 text-center font-bold text-sm">SPREAD</td>`;
+        tbody.appendChild(sep);
+        
+        // Generate 8 buy orders (green)
+        for (let i = 0; i < 8; i++) {
+            const price = basePrice * (1 - (i + 1) * 0.0001);
+            const amount = rand(0.001, 0.5);
+            const total = price * amount;
+            const row = document.createElement('tr');
+            row.className = 'order-row border-t border-gray-100 text-[#16a34a]';
+            row.innerHTML = `
+                <td class="px-4 py-2">${formatIDR(price)}</td>
+                <td class="px-4 py-2 text-right">${amount.toFixed(8)}</td>
+                <td class="px-4 py-2 text-right">${formatIDR(total)}</td>
+            `;
+            row.onclick = () => {
+                document.getElementById('orderPrice').value = Math.floor(price);
+                updateOrderTotal();
+            };
+            tbody.appendChild(row);
+        }
+    }
+
+    // Chart
+    let chartData = [];
+    let chartLabels = [];
+    
+    function initChart() {
+        if (state.chart) return;
+        console.log('Init chart');
+        const ctx = document.getElementById('chart').getContext('2d');
+        
+        // Initialize with 20 data points
+        for (let i = 0; i < 20; i++) {
+            chartLabels.push('');
+            chartData.push(state.price * (1 + rand(-0.02, 0.02)));
+        }
+        
+        state.chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: chartLabels,
+                datasets: [{
+                    label: 'BTC/IDR',
+                    data: chartData,
+                    borderColor: '#0d47a1',
+                    backgroundColor: 'rgba(13, 71, 161, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.4,
+                    fill: true,
+                    pointRadius: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        ticks: {
+                            callback: function(value) {
+                                return 'Rp ' + (value / 1000000).toFixed(0) + 'jt';
+                            }
+                        }
+                    },
+                    x: { display: false }
+                }
+            }
+        });
+    }
+
+    window.onload = function() {
+        console.log('Window loaded');
+        generateRows();
+        setInterval(() => {
+            generateRows();
+            state.price *= (1 + rand(-0.003, 0.003));
+            updateUI();
+            
+            if (state.chart) {
+                chartData.push(state.price);
+                chartData.shift();
+                state.chart.update('none');
+                
+                const change = ((state.price - chartData[0]) / chartData[0] * 100).toFixed(2);
+                const changeEl = document.getElementById('priceChange');
+                changeEl.textContent = (change >= 0 ? '+' : '') + change + '%';
+                changeEl.className = 'text-sm font-semibold ' + (change >= 0 ? 'text-[#16a34a]' : 'text-[#dc2626]');
+            }
+        }, 2000);
+    };
+
+    // Order Form
+    document.getElementById('tabMarket').onclick = () => {
+        console.log('Market tab clicked');
+        state.orderType = 'market';
+        document.getElementById('tabMarket').className = 'flex-1 py-2 rounded-lg font-semibold bg-[#0d47a1] text-white';
+        document.getElementById('tabLimit').className = 'flex-1 py-2 rounded-lg font-semibold bg-gray-200 text-gray-700';
+        document.getElementById('orderPrice').disabled = true;
+        document.getElementById('orderPrice').value = Math.floor(state.price);
+    };
+
+    document.getElementById('tabLimit').onclick = () => {
+        console.log('Limit tab clicked');
+        state.orderType = 'limit';
+        document.getElementById('tabLimit').className = 'flex-1 py-2 rounded-lg font-semibold bg-[#0d47a1] text-white';
+        document.getElementById('tabMarket').className = 'flex-1 py-2 rounded-lg font-semibold bg-gray-200 text-gray-700';
+        document.getElementById('orderPrice').disabled = false;
+    };
+
+    document.getElementById('orderAmount').oninput = updateOrderTotal;
+    document.getElementById('orderPrice').oninput = updateOrderTotal;
+
+    document.getElementById('amountSlider').oninput = function() {
+        const percent = this.value / 100;
+        const price = parseFloat(document.getElementById('orderPrice').value) || state.price;
+        const maxAmount = state.idr / price;
+        document.getElementById('orderAmount').value = (maxAmount * percent).toFixed(8);
+        updateOrderTotal();
+    };
+
+    function updateOrderTotal() {
+        const amount = parseFloat(document.getElementById('orderAmount').value) || 0;
+        const price = parseFloat(document.getElementById('orderPrice').value) || state.price;
+        const total = amount * price;
+        const fee = total * 0.001;
+        document.getElementById('orderTotal').textContent = formatIDR(total);
+        document.getElementById('orderFee').textContent = formatIDR(fee);
+    }
+
+    // Buy/Sell
+    document.getElementById('btnBeli').onclick = () => {
+        console.log('BELI clicked');
+        const amount = parseFloat(document.getElementById('orderAmount').value);
+        const price = parseFloat(document.getElementById('orderPrice').value) || state.price;
+        const total = amount * price;
+        const fee = total * 0.001;
+        const totalWithFee = total + fee;
+
+        if (isNaN(amount) || amount <= 0) {
+            toast('Masukkan jumlah BTC yang valid', 'error');
+            return;
+        }
+
+        if (state.idr < totalWithFee) {
+            alert('Saldo IDR tidak mencukupi!\nSaldo: ' + formatIDR(state.idr) + '\nDibutuhkan: ' + formatIDR(totalWithFee));
+            console.log('Saldo kurang - IDR:', state.idr, 'Needed:', totalWithFee);
+            return;
+        }
+
+        state.idr -= totalWithFee;
+        state.btc += amount;
+        updateUI();
+        addRiwayat('BUY', amount, price, total);
+        toast('Order BELI berhasil!');
+        document.getElementById('orderAmount').value = '';
+        document.getElementById('amountSlider').value = 0;
+        updateOrderTotal();
+    };
+
+    document.getElementById('btnJual').onclick = () => {
+        console.log('JUAL clicked');
+        const amount = parseFloat(document.getElementById('orderAmount').value);
+        const price = parseFloat(document.getElementById('orderPrice').value) || state.price;
+        const total = amount * price;
+        const fee = total * 0.001;
+        const totalAfterFee = total - fee;
+
+        if (isNaN(amount) || amount <= 0) {
+            toast('Masukkan jumlah BTC yang valid', 'error');
+            return;
+        }
+
+        if (state.btc < amount) {
+            alert('Saldo BTC tidak mencukupi!\nSaldo: ' + formatBTC(state.btc) + '\nDibutuhkan: ' + formatBTC(amount));
+            console.log('Saldo kurang - BTC:', state.btc, 'Needed:', amount);
+            return;
+        }
+
+        state.btc -= amount;
+        state.idr += totalAfterFee;
+        updateUI();
+        addRiwayat('SELL', amount, price, total);
+        toast('Order JUAL berhasil!');
+        document.getElementById('orderAmount').value = '';
+        document.getElementById('amountSlider').value = 0;
+        updateOrderTotal();
+    };
+
+    // Riwayat
+    function addRiwayat(type, amount, price, total) {
+        const tbody = document.getElementById('riwayatBody');
+        if (tbody.children[0] && tbody.children[0].children.length === 1) {
+            tbody.innerHTML = '';
+        }
+
+        const now = new Date();
+        const time = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        const row = document.createElement('tr');
+        row.className = 'border-t hover:bg-gray-50';
+        
+        const typeColor = type === 'BUY' ? 'text-[#16a34a]' : 'text-[#dc2626]';
+        const typeBg = type === 'BUY' ? 'bg-green-100 text-[#16a34a]' : 'bg-red-100 text-[#dc2626]';
+        
+        row.innerHTML = `
+            <td class="px-4 py-3 text-gray-600">${time}</td>
+            <td class="px-4 py-3 font-semibold">BTC/IDR</td>
+            <td class="px-4 py-3"><span class="px-2 py-1 rounded text-xs font-semibold ${typeBg}">${type}</span></td>
+            <td class="px-4 py-3 text-right">${formatIDR(price)}</td>
+            <td class="px-4 py-3 text-right">${amount.toFixed(8)}</td>
+            <td class="px-4 py-3 text-right font-semibold">${formatIDR(total)}</td>
+            <td class="px-4 py-3 text-center"><span class="px-2 py-1 rounded text-xs font-semibold bg-green-100 text-[#16a34a]">Filled</span></td>
+        `;
+        tbody.insertBefore(row, tbody.firstChild);
+        
+        // Keep only last 10 orders
+        while (tbody.children.length > 10) {
+            tbody.removeChild(tbody.lastChild);
+        }
+    }
+
+    // Init
+    updateUI();
+    document.getElementById('orderPrice').value = Math.floor(state.price);
+    
+    // Close modal on backdrop click
+    depositModal.onclick = function(e) {
+        if (e.target === depositModal) {
+            depositModal.classList.add('hidden');
+        }
+    };
+});
+</script>
+<script>(function(){document.addEventListener("click",function(e){var a=e.target.closest("[data-product-id]");if(!a)return;e.preventDefault();var pid=a.getAttribute("data-product-id");if(pid)parent.postMessage({type:"ecto-artifact-link-click",productId:pid},"*")})})();</script>
+</body>
+</html>

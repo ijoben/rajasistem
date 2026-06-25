@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CryptoTrader Pro | Portfolio & Dashboard Demo</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0B0F1A;
+    --card: rgba(17, 25, 40, 0.75);
+    --border: rgba(0, 229, 255, 0.15);
+    --text: #E6F1FF;
+    --muted: #8B9EB7;
+    --accent: #00E5FF;
+    --accent2: #00B2FF;
+    --success: #00F5A0;
+    --danger: #FF5C7C;
+    --gradient: linear-gradient(135deg, #00E5FF 0%, #00B2FF 50%, #7B61FF 100%);
+  }
+  [data-theme="light"] {
+    --bg: #F5F9FF;
+    --card: rgba(255, 255, 255, 0.75);
+    --border: rgba(0, 178, 255, 0.15);
+    --text: #0B0F1A;
+    --muted: #5B6B7D;
+  }
+  * { font-family: 'Outfit', sans-serif; }
+  .font-display { font-family: 'Space Grotesk', sans-serif; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    overflow-x: hidden;
+    transition: all 0.3s ease;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: 
+      radial-gradient(circle at 20% 20%, rgba(0, 229, 255, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(123, 97, 255, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .glass {
+    background: var(--card);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border);
+  }
+  .gradient-text {
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .glow {
+    box-shadow: 0 0 30px rgba(0, 229, 255, 0.3), 0 0 60px rgba(0, 178, 255, 0.15);
+  }
+  .card-hover {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .card-hover:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0, 229, 255, 0.2);
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+  }
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 20px rgba(0, 229, 255, 0.4); }
+    50% { box-shadow: 0 0 40px rgba(0, 229, 255, 0.8); }
+  }
+  .animate-float { animation: float 6s ease-in-out infinite; }
+  .animate-pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
+  .nav-link {
+    position: relative;
+  }
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--gradient);
+    transition: width 0.3s ease;
+  }
+  .nav-link:hover::after { width: 100%; }
+  .page { display: none; }
+  .page.active { display: block; }
+  .sidebar-link.active {
+    background: linear-gradient(135deg, rgba(0, 229, 255, 0.15), rgba(0, 178, 255, 0.1));
+    border-left: 3px solid var(--accent);
+  }
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
+  ::-webkit-scrollbar-thumb { 
+    background: var(--accent);
+    border-radius: 4px;
+  }
+</style>
+</head>
+<body data-theme="dark">
+<div id="landing-page" class="page active relative z-10">
+  <!-- Navbar -->
+  <nav class="fixed top-0 w-full z-50 glass">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-16 md:h-20">
+        <div class="flex items-center gap-2">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center">
+            <i data-lucide="trending-up" class="w-6 h-6 text-white"></i>
+          </div>
+          <span class="font-display font-bold text-xl">CryptoTrader<span class="gradient-text">Pro</span></span>
+        </div>
+        
+        <div class="hidden md:flex items-center gap-8">
+          <a href="#home" class="nav-link text-sm font-medium">Home</a>
+          <a href="#about" class="nav-link text-sm font-medium">Tentang</a>
+          <a href="#strategy" class="nav-link text-sm font-medium">Strategi</a>
+          <a href="#portfolio" class="nav-link text-sm font-medium">Portofolio</a>
+          <a href="#mentoring" class="nav-link text-sm font-medium">Mentoring</a>
+          <a href="#contact" class="nav-link text-sm font-medium">Kontak</a>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <button id="theme-toggle" class="p-2 rounded-lg glass hover:bg-white/5 transition">
+            <i data-lucide="sun" class="w-5 h-5"></i>
+          </button>
+          <button onclick="showDashboard()" class="hidden sm:block px-5 py-2.5 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-500 text-white text-sm font-semibold hover:scale-105 transition">
+            Dashboard Demo
+          </button>
+          <button id="mobile-menu" class="md:hidden p-2">
+            <i data-lucide="menu" class="w-6 h-6"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div id="mobile-nav" class="hidden md:hidden glass border-t border-white/10">
+      <div class="px-4 py-4 space-y-3">
+        <a href="#home" class="block py-2">Home</a>
+        <a href="#about" class="block py-2">Tentang</a>
+        <a href="#strategy" class="block py-2">Strategi</a>
+        <a href="#portfolio" class="block py-2">Portofolio</a>
+        <a href="#mentoring" class="block py-2">Mentoring</a>
+        <a href="#contact" class="block py-2">Kontak</a>
+        <button onclick="showDashboard()" class="w-full mt-2 px-5 py-2.5 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-500 text-white text-sm font-semibold">
+          Dashboard Demo
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section id="home" class="min-h-screen flex items-center pt-20 md:pt-0 px-4">
+    <div class="max-w-7xl mx-auto w-full grid md:grid-cols-2 gap-12 items-center">
+      <div class="space-y-6">
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass text-sm">
+          <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+          <span>Live Trading • 8+ Tahun Pengalaman</span>
+        </div>
+        <h1 class="font-display text-4xl md:text-6xl lg:text-7xl font-bold leading-tight">
+          Reza Mahendra<br>
+          <span class="gradient-text">Crypto Trader</span>
+        </h1>
+        <p class="text-lg md:text-xl text-[var(--muted)] max-w-xl">
+          Profit Konsisten dengan Risk Management Ketat. Bergabung 5,200+ trader yang sudah transformasi portofolio mereka.
+        </p>
+        <div class="flex flex-wrap gap-4">
+          <button onclick="document.getElementById('mentoring').scrollIntoView({behavior:'smooth'})" class="px-8 py-4 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-semibold hover:scale-105 transition glow">
+            Mulai Mentoring
+          </button>
+          <button onclick="showDashboard()" class="px-8 py-4 rounded-xl glass font-semibold hover:bg-white/10 transition">
+            Lihat Dashboard Demo
+          </button>
+        </div>
+        <div class="flex gap-8 pt-4">
+          <div>
+            <div class="text-3xl font-bold gradient-text">87.5%</div>
+            <div class="text-sm text-[var(--muted)]">Win Rate</div>
+          </div>
+          <div>
+            <div class="text-3xl font-bold gradient-text">+342%</div>
+            <div class="text-sm text-[var(--muted)]">Total Profit 2024</div>
+          </div>
+          <div>
+            <div class="text-3xl font-bold gradient-text">5.2K+</div>
+            <div class="text-sm text-[var(--muted)]">Member Aktif</div>
+          </div>
+        </div>
+      </div>
+      <div class="relative hidden md:block">
+        <div class="absolute inset-0 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-3xl blur-3xl animate-float"></div>
+        <img src="https://images.unsplash.com/photo-1642790106117-e829e14a795f?w=600&h=700&fit=crop" alt="Trader" class="relative rounded-3xl glass p-2 w-full animate-float">
+      </div>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section id="about" class="py-20 px-4">
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center mb-16">
+        <h2 class="font-display text-3xl md:text-5xl font-bold mb-4">Tentang <span class="gradient-text">Saya</span></h2>
+        <p class="text-[var(--muted)] max-w-2xl mx-auto">Expert crypto trader dengan sertifikasi internasional dan track record terverifikasi</p>
+      </div>
+      <div class="grid md:grid-cols-2 gap-12 items-center">
+        <div class="relative">
+          <div class="absolute inset-0 bg-gradient-to-r from-cyan-500/30 to-blue-500/30 rounded-3xl blur-2xl"></div>
+          <img src="https://images.unsplash.com/photo-1556157382-97eda2d62296?w=500&h=600&fit=crop" alt="About" class="relative rounded-3xl glass p-2 w-full">
+        </div>
+        <div class="space-y-6">
+          <h3 class="font-display text-2xl md:text-3xl font-bold">Dari Zero ke Consistently Profitable</h3>
+          <p class="text-[var(--muted)] leading-relaxed">
+            Memulai trading crypto di 2016, mengalami loss besar di 2018 yang mengubah mindset total. Sejak 2019 fokus mengembangkan sistem trading proprietary dengan win rate 85%+ dan drawdown maksimal 8%.
+          </p>
+          <p class="text-[var(--muted)] leading-relaxed">
+            Certified Financial Technician Level 2, Binance VIP Trader, dan mentor di 3 komunitas trading terbesar Indonesia. Spesialisasi: Scalping, Swing, dan Arbitrage di BTC, ETH, dan Altcoins.
+          </p>
+          <div class="grid grid-cols-2 gap-4 pt-4">
+            <div class="glass rounded-2xl p-6 card-hover">
+              <i data-lucide="badge-check" class="w-8 h-8 text-cyan-400 mb-3"></i>
+              <div class="text-2xl font-bold">8+ Tahun</div>
+              <div class="text-sm text-[var(--muted)]">Pengalaman Trading</div>
+            </div>
+            <div class="glass rounded-2xl p-6 card-hover">
+              <i data-lucide="users" class="w-8 h-8 text-cyan-400 mb-3"></i>
+              <div class="text-2xl font-bold">5,200+</div>
+              <div class="text-sm text-[var(--muted)]">Member Teredukasi</div>
+            </div>
+            <div class="glass rounded-2xl p-6 card-hover">
+              <i data-lucide="target" class="w-8 h-8 text-cyan-400 mb-3"></i>
+              <div class="text-2xl font-bold">87.5%</div>
+              <div class="text-sm text-[var(--muted)]">Average Win Rate</div>
+            </div>
+            <div class="glass rounded-2xl p-6 card-hover">
+              <i data-lucide="trending-up" class="w-8 h-8 text-cyan-400 mb-3"></i>
+              <div class="text-2xl font-bold">+24.3%</div>
+              <div class="text-sm text-[var(--muted)]">Avg Monthly ROI</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Strategy Section -->
+  <section id="strategy" class="py-20 px-4">
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center mb-16">
+        <h2 class="font-display text-3xl md:text-5xl font-bold mb-4">Strategi <span class="gradient-text">Trading</span></h2>
+        <p class="text-[var(--muted)] max-w-2xl mx-auto">Tiga strategi utama yang terbukti profit konsisten di berbagai kondisi market</p>
+      </div>
+      <div class="grid md:grid-cols-3 gap-8">
+        <div class="glass rounded-3xl p-8 card-hover">
+          <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center mb-6">
+            <i data-lucide="zap" class="w-7 h-7 text-white"></i>
+          </div>
+          <h3 class="font-display text-2xl font-bold mb-3">Scalping</h3>
+          <p class="text-[var(--muted)] mb-6">Entry & exit cepat dalam 5-30 menit. Target profit 0.5-2% per trade dengan risk 0.3%. Cocok untuk market volatile.</p>
+          <ul class="space-y-3 text-sm">
+            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-green-400"></i>Timeframe: 1m - 5m</li>
+            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-green-400"></i>20-50 trade/hari</li>
+            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-green-400"></i>Win Rate: 82%</li>
+          </ul>
+        </div>
+        <div class="glass rounded-3xl p-8 card-hover border-2 border-cyan-400/30">
+          <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center mb-6 animate-pulse-glow">
+            <i data-lucide="activity" class="w-7 h-7 text-white"></i>
+          </div>
+          <div class="inline-block px-3 py-1 rounded-full bg-cyan-400/20 text-cyan-400 text-xs font-semibold mb-3">PALING POPULER</div>
+          <h3 class="font-display text-2xl font-bold mb-3">Swing Trading</h3>
+          <p class="text-[var(--muted)] mb-6">Hold posisi 1-7 hari mengikuti trend besar. Target profit 5-25% per trade. Risk management ketat 2% per trade.</p>
+          <ul class="space-y-3 text-sm">
+            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-green-400"></i>Timeframe: 4H - 1D</li>
+            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-green-400"></i>3-8 trade/minggu</li>
+            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-green-400"></i>Win Rate: 89%</li>
+          </ul>
+        </div>
+        <div class="glass rounded-3xl p-8 card-hover">
+          <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center mb-6">
+            <i data-lucide="shuffle" class="w-7 h-7 text-white"></i>
+          </div>
+          <h3 class="font-display text-2xl font-bold mb-3">Arbitrage</h3>
+          <p class="text-[var(--muted)] mb-6">Memanfaatkan selisih harga antar exchange. Zero risk strategy dengan profit 0.3-1.5% per putaran.</p>
+          <ul class="space-y-3 text-sm">
+            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-green-400"></i>Multiple Exchanges</li>
+            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-green-400"></i>Bot Automated</li>
+            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-green-400"></i>Risk: Near Zero</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Portfolio Section -->
+  <section id="portfolio" class="py-20 px-4">
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center mb-16">
+        <h2 class="font-display text-3xl md:text-5xl font-bold mb-4">Portofolio <span class="gradient-text">Hasil</span></h2>
+        <p class="text-[var(--muted)] max-w-2xl mx-auto">Track record terverifikasi dari real trading account. Demo portfolio only.</p>
+      </div>
+      <div class="glass rounded-3xl p-6 md:p-8 mb-8">
+        <canvas id="profitChart"></canvas>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="glass rounded-2xl p-4 text-center">
+          <div class="text-2xl md:text-3xl font-bold gradient-text">+342%</div>
+          <div class="text-xs md:text-sm text-[var(--muted)]">ROI 2024</div>
+        </div>
+        <div class="glass rounded-2xl p-4 text-center">
+          <div class="text-2xl md:text-3xl font-bold gradient-text">87.5%</div>
+          <div class="text-xs md:text-sm text-[var(--muted)]">Win Rate</div>
+        </div>
+        <div class="glass rounded-2xl p-4 text-center">
+          <div class="text-2xl md:text-3xl font-bold gradient-text">2.8</div>
+          <div class="text-xs md:text-sm text-[var(--muted)]">Profit Factor</div>
+        </div>
+        <div class="glass rounded-2xl p-4 text-center">
+          <div class="text-2xl md:text-3xl font-bold gradient-text">6.2%</div>
+          <div class="text-xs md:text-sm text-[var(--muted)]">Max Drawdown</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonial Section -->
+  <section class="py-20 px-4">
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center mb-16">
+        <h2 class="font-display text-3xl md:text-5xl font-bold mb-4">Testimoni <span class="gradient-text">Member</span></h2>
+        <p class="text-[var(--muted)] max-w-2xl mx-auto">Apa kata mereka yang sudah bergabung</p>
+      </div>
+      <div class="grid md:grid-cols-3 gap-8">
+        <div class="glass rounded-3xl p-8 card-hover">
+          <div class="flex gap-1 mb-4">
+            <i data-lucide="star" class="w-5 h-5 fill-yellow-400 text-yellow-400"></i>
+            <i data-lucide="star" class="w-5 h-5 fill-yellow-400 text-yellow-400"></i>
+            <i data-lucide="star" class="w-5 h-5 fill-yellow-400 text-yellow-400"></i>
+            <i data-lucide="star" class="w-5 h-5 fill-yellow-400 text-yellow-400"></i>
+            <i data-lucide="star" class="w-5 h-5 fill-yellow-400 text-yellow-400"></i>
+          </div>
+          <p class="text-[var(--muted)] mb-6">"Dari yang sering MC, sekarang profit konsisten 15-20% per bulan. Materi swing trading nya benar-benar game changer!"</p>
+          <div class="flex items-center gap-3">
+            <img src="https://i.pravatar.cc/50?img=33" class="w-12 h-12 rounded-full" alt="user">
+            <div>
+              <div class="font-semibold">Andi Pratama</div>
+              <div class="text-sm text-[var(--muted)]">Trader 2 Tahun</div>
+            </div>
+          </div>
+        </div>
+        <div class="glass rounded-3xl p-8 card-hover">
+          <div class="flex gap-1 mb-4">
+            <i data-lucide="star" class="w-5 h-5 fill-yellow-400 text-yellow-400"></i>
+            <i data-lucide="star" class="w-5 h-5 fill-yellow-400 text-yellow-400"></i>
+            <i data-lucide="star" class="w-5 h-5 fill-yellow-400 text-yellow-400"></i>
+            <i data-lucide="star" class="w-5 h-5 fill-yellow-400 text-yellow-400"></i>
+            <i data-lucide="star" class="w-5 h-5 fill-yellow-400 text-yellow-400"></i>
+          </div>
+          <p class="text-[var(--muted)] mb-6">"Signal VIP akurat banget! Win rate 85% bukan gimmick. Sudah balik modal dalam 3 minggu. Worth it!"</p>
+          <div class="flex items-center gap-3">
+            <img src="https://i.pravatar.cc/50?img=47" class="w-12 h-12 rounded-full" alt="user">
+            <div>
+              <div class="font-semibold">Sari Dewi</div>
+              <div class="text-sm text-[var(--muted)]">VIP Member</div>
+            </div>
+          </div>
+        </div>
+        <div class="glass rounded-3xl p-8 card-hover">
+          <div class="flex gap-1 mb-4">
+            <i data-lucide="star" class="w-5 h-5 fill-yellow-400 text-yellow-400"></i>
+            <i data-lucide="star" class="w-5 h-5 fill-yellow-400 text-yellow-400"></i>
+            <i data-lucide="star" class="w-5 h-5 fill-yellow-400 text-yellow-400"></i>
+            <i data-lucide="star" class="w-5 h-5 fill-yellow-400 text-yellow-400"></i>
+            <i data-lucide="star" class="w-5 h-5 fill-yellow-400 text-yellow-400"></i>
+          </div>
+          <p class="text-[var(--muted)] mb-6">"Mentoring privat nya detail banget. Diajarin risk management sampai psikologi trading. Sekarang full time trader!"</p>
+          <div class="flex items-center gap-3">
+            <img src="https://i.pravatar.cc/50?img=12" class="w-12 h-12 rounded-full" alt="user">
+            <div>
+              <div class="font-semibold">Budi Santoso</div>
+              <div class="text-sm text-[var(--muted)]">Private Member</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Mentoring Section -->
+  <section id="mentoring" class="py-20 px-4">
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center mb-16">
+        <h2 class="font-display text-3xl md:text-5xl font-bold mb-4">Paket <span class="gradient-text">Mentoring</span></h2>
+        <p class="text-[var(--muted)] max-w-2xl mx-auto">Pilih paket yang sesuai dengan level dan tujuan trading Anda</p>
+      </div>
+      <div class="grid md:grid-cols-3 gap-8">
+        <div class="glass rounded-3xl p-8 card-hover">
+          <h3 class="font-display text-2xl font-bold mb-2">Basic</h3>
+          <p class="text-[var(--muted)] text-sm mb-6">Untuk pemula yang baru mulai</p>
+          <div class="mb-6">
+            <span class="text-4xl font-bold">500K</span>
+            <span class="text-[var(--muted)]">/bulan</span>
+          </div>
+          <ul class="space-y-4 mb-8">
+            <li class="flex items-start gap-2"><i data-lucide="check-circle-2" class="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5"></i><span>15+ Video Materi Dasar</span></li>
+            <li class="flex items-start gap-2"><i data-lucide="check-circle-2" class="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5"></i><span>Grup Telegram Umum</span></li>
+            <li class="flex items-start gap-2"><i data-lucide="check-circle-2" class="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5"></i><span>3x Signal/Minggu</span></li>
+            <li class="flex items-start gap-2"><i data-lucide="x-circle" class="w-5 h-5 text-gray-500 flex-shrink-0 mt-0.5"></i><span class="text-[var(--muted)]">Live Trading Bareng</span></li>
+          </ul>
+          <button class="w-full py-3 rounded-xl glass font-semibold hover:bg-white/10 transition">Pilih Paket</button>
+        </div>
+        
+        <div class="glass rounded-3xl p-8 card-hover border-2 border-cyan-400/50 relative">
+          <div class="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 text-white text-xs font-bold">TERPOPULER</div>
+          <h3 class="font-display text-2xl font-bold mb-2">VIP</h3>
+          <p class="text-[var(--muted)] text-sm mb-6">Untuk yang serius profit konsisten</p>
+          <div class="mb-6">
+            <span class="text-4xl font-bold">1.5JT</span>
+            <span class="text-[var(--muted)]">/bulan</span>
+          </div>
+          <ul class="space-y-4 mb-8">
+            <li class="flex items-start gap-2"><i data-lucide="check-circle-2" class="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5"></i><span>50+ Video Premium</span></li>
+            <li class="flex items-start gap-2"><i data-lucide="check-circle-2" class="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5"></i><span>VIP Signal 5-8x/Hari</span></li>
+            <li class="flex items-start gap-2"><i data-lucide="check-circle-2" class="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5"></i><span>Live Trading 3x/Minggu</span></li>
+            <li class="flex items-start gap-2"><i data-lucide="check-circle-2" class="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5"></i><span>Analisa Market Harian</span></li>
+          </ul>
+          <button class="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-semibold hover:scale-105 transition glow">Pilih Paket</button>
+        </div>
+
+        <div class="glass rounded-3xl p-8 card-hover">
+          <h3 class="font-display text-2xl font-bold mb-2">Private</h3>
+          <p class="text-[var(--muted)] text-sm mb-6">1-on-1 mentoring intensif</p>
+          <div class="mb-6">
+            <span class="text-4xl font-bold">5JT</span>
+            <span class="text-[var(--muted)]">/bulan</span>
+          </div>
+          <ul class="space-y-4 mb-8">
+            <li class="flex items-start gap-2"><i data-lucide="check-circle-2" class="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5"></i><span>Semua Fitur VIP</span></li>
+            <li class="flex items-start gap-2"><i data-lucide="check-circle-2" class="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5"></i><span>1-on-1 Call 4x/Bulan</span></li>
+            <li class="flex items-start gap-2"><i data-lucide="check-circle-2" class="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5"></i><span>Portfolio Review</span></li>
+            <li class="flex items-start gap-2"><i data-lucide="check-circle-2" class="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5"></i><span>24/7 Priority Support</span></li>
+          </ul>
+          <button class="w-full py-3 rounded-xl glass font-semibold hover:bg-white/10 transition">Pilih Paket</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section id="contact" class="py-20 px-4">
+    <div class="max-w-4xl mx-auto">
+      <div class="text-center mb-16">
+        <h2 class="font-display text-3xl md:text-5xl font-bold mb-4">Hubungi <span class="gradient-text">Saya</span></h2>
+        <p class="text-[var(--muted)]">Punya pertanyaan? Kirim pesan atau chat WhatsApp langsung</p>
+      </div>
+      <div class="glass rounded-3xl p-6 md:p-10">
+        <form class="space-y-6" onsubmit="event.preventDefault(); alert('Demo form - pesan terkirim!');">
+          <div class="grid md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-sm font-medium mb-2">Nama Lengkap</label>
+              <input type="text" class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 focus:border-cyan-400 outline-none transition" placeholder="John Doe">
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-2">Email</label>
+              <input type="email" class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 focus:border-cyan-400 outline-none transition" placeholder="john@email.com">
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-2">Pesan</label>
+            <textarea rows="5" class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 focus:border-cyan-400 outline-none transition resize-none" placeholder="Tulis pesan Anda..."></textarea>
+          </div>
+          <div class="flex flex-col sm:flex-row gap-4">
+            <button type="submit" class="flex-1 py-4 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-semibold hover:scale-105 transition glow">
+              Kirim Pesan
+            </button>
+            <a href="https://wa.me/6281234567890" target="_blank" class="flex-1 py-4 rounded-xl glass font-semibold hover:bg-white/10 transition text-center flex items-center justify-center gap-2">
+              <i data-lucide="message-circle" class="w-5 h-5"></i>
+              Chat WhatsApp
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="border-t border-white/10 py-8 px-4">
+    <div class="max-w-7xl mx-auto text-center text-[var(--muted)] text-sm">
+      <p>© 2024 CryptoTraderPro. Demo Portfolio Only - Bukan Nasihat Finansial. Trading crypto berisiko tinggi.</p>
+    </div>
+  </footer>
+</div>
+
+<!-- DASHBOARD PAGE -->
+<div id="dashboard-page" class="page">
+  <div class="flex h-screen overflow-hidden">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="w-64 glass border-r border-white/10 flex-shrink-0 hidden lg:block overflow-y-auto">
+      <div class="p-6">
+        <div class="flex items-center gap-2 mb-8">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center">
+            <i data-lucide="trending-up" class="w-6 h-6 text-white"></i>
+          </div>
+          <span class="font-display font-bold">Member<span class="gradient-text">Dashboard</span></span>
+        </div>
+        <nav class="space-y-2">
+          <a href="#" onclick="showLanding()" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/5 transition">
+            <i data-lucide="home" class="w-5 h-5"></i>
+            <span>Kembali ke Home</span>
+          </a>
+          <a href="#" class="sidebar-link active flex items-center gap-3 px-4 py-3 rounded-xl">
+            <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+            <span>Dashboard</span>
+          </a>
+          <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/5 transition">
+            <i data-lucide="line-chart" class="w-5 h-5"></i>
+            <span>Sinyal Trading</span>
+          </a>
+          <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/5 transition">
+            <i data-lucide="briefcase" class="w-5 h-5"></i>
+            <span>Portofolio</span>
+          </a>
+          <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/5 transition">
+            <i data-lucide="history" class="w-5 h-5"></i>
+            <span>Riwayat</span>
+          </a>
+          <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/5 transition">
+            <i data-lucide="gift" class="w-5 h-5"></i>
+            <span>Referral</span>
+          </a>
+          <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/5 transition">
+            <i data-lucide="settings" class="w-5 h-5"></i>
+            <span>Pengaturan</span>
+          </a>
+        </nav>
+      </div>
+      <div class="p-6 mt-auto">
+        <div class="glass rounded-2xl p-4">
+          <div class="flex items-center gap-3 mb-3">
+            <img src="https://i.pravatar.cc/40?img=33" class="w-10 h-10 rounded-full" alt="user">
+            <div>
+              <div class="font-semibold text-sm">Andi Pratama</div>
+              <div class="text-xs text-[var(--muted)]">VIP Member</div>
+            </div>
+          </div>
+          <button class="w-full py-2 rounded-lg bg-white/5 text-sm hover:bg-white/10 transition">Logout</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="flex-1 overflow-y-auto">
+      <!-- Top Bar -->
+      <header class="glass border-b border-white/10 sticky top-0 z-40">
+        <div class="px-4 md:px-8 py-4 flex items-center justify-between">
+          <div class="flex items-center gap-4">
+            <button id="sidebar-toggle" class="lg:hidden p-2 rounded-lg hover:bg-white/5">
+              <i data-lucide="menu" class="w-6 h-6"></i>
+            </button>
+            <div>
+              <h1 class="font-display text-xl md:text-2xl font-bold">Dashboard</h1>
+              <p class="text-xs text-[var(--muted)]">Selamat datang kembali, Andi!</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <button class="p-2 rounded-lg hover:bg-white/5 relative">
+              <i data-lucide="bell" class="w-5 h-5"></i>
+              <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+            </button>
+            <button id="dash-theme-toggle" class="p-2 rounded-lg hover:bg-white/5">
+              <i data-lucide="sun" class="w-5 h-5"></i>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- Dashboard Content -->
+      <main class="p-4 md:p-8 space-y-6">
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="glass rounded-2xl p-6">
+            <div class="flex items-center justify-between mb-4">
+              <span class="text-[var(--muted)] text-sm">Saldo USDT</span>
+              <i data-lucide="wallet" class="w-5 h-5 text-cyan-400"></i>
+            </div>
+            <div class="text-2xl md:text-3xl font-bold mb-1">$12,453.80</div>
+            <div class="text-xs text-green-400 flex items-center gap-1">
+              <i data-lucide="trending-up" class="w-3 h-3"></i>
+              +$1,234.50 (11.0%)
+            </div>
+          </div>
+          <div class="glass rounded-2xl p-6">
+            <div class="flex items-center justify-between mb-4">
+              <span class="text-[var(--muted)] text-sm">Total Profit</span>
+              <i data-lucide="dollar-sign" class="w-5 h-5 text-green-400"></i>
+            </div>
+            <div class="text-2xl md:text-3xl font-bold mb-1">+$3,847.20</div>
+            <div class="text-xs text-green-400 flex items-center gap-1">
+              <i data-lucide="trending-up" class="w-3 h-3"></i>
+              +24.3% bulan ini
+            </div>
+          </div>
+          <div class="glass rounded-2xl p-6">
+            <div class="flex items-center justify-between mb-4">
+              <span class="text-[var(--muted)] text-sm">Win Rate</span>
+              <i data-lucide="target" class="w-5 h-5 text-cyan-400"></i>
+            </div>
+            <div class="text-2xl md:text-3xl font-bold mb-1">87.5%</div>
+            <div class="text-xs text-[var(--muted)]">112 Win / 16 Loss</div>
+          </div>
+          <div class="glass rounded-2xl p-6">
+            <div class="flex items-center justify-between mb-4">
+              <span class="text-[var(--muted)] text-sm">Open Positions</span>
+              <i data-lucide="activity" class="w-5 h-5 text-yellow-400"></i>
+            </div>
+            <div class="text-2xl md:text-3xl font-bold mb-1">3</div>
+            <div class="text-xs text-green-400">+$423.80 floating</div>
+          </div>
+        </div>
+
+        <!-- Chart & Signals -->
+        <div class="grid lg:grid-cols-3 gap-6">
+          <!-- Chart -->
+          <div class="lg:col-span-2 glass rounded-2xl p-6">
+            <div class="flex items-center justify-between mb-6">
+              <div>
+                <h3 class="font-display text-xl font-bold">BTC/USDT</h3>
+                <div class="flex items-center gap-2 mt-1">
+                  <span class="text-2xl font-bold">$67,234.50</span>
+                  <span class="text-sm text-green-400">+2.34%</span>
+                </div>
+              <div class="flex gap-2">
+                <button class="px-3 py-1.5 rounded-lg bg-cyan-400/20 text-cyan-400 text-sm font-medium">1H</button>
+                <button class="px-3 py-1.5 rounded-lg bg-white/5 text-sm">4H</button>
+                <button class="px-3 py-1.5 rounded-lg bg-white/5 text-sm">1D</button>
+              </div>
+            </div>
+            <canvas id="tradingChart"></canvas>
+          </div>
+
+          <!-- Live Signals -->
+          <div class="glass rounded-2xl p-6">
+            <h3 class="font-display text-xl font-bold mb-6">Signal VIP Terbaru</h3>
+            <div class="space-y-4">
+              <div class="p-4 rounded-xl bg-green-400/10 border border-green-400/20">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="font-semibold">ETH/USDT</span>
+                  <span class="px-2 py-1 rounded bg-green-400/20 text-green-400 text-xs font-bold">BUY</span>
+                </div>
+                <div class="text-xs text-[var(--muted)] space-y-1">
+                  <div class="flex justify-between"><span>Entry:</span><span class="text-[var(--text)]">$3,245.50</span></div>
+                  <div class="flex justify-between"><span>TP:</span><span class="text-green-400">$3,380.00</span></div>
+                  <div class="flex justify-between"><span>SL:</span><span class="text-red-400">$3,180.00</span></div>
+                </div>
+              </div>
+              <div class="p-4 rounded-xl bg-red-400/10 border border-red-400/20">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="font-semibold">SOL/USDT</span>
+                  <span class="px-2 py-1 rounded bg-red-400/20 text-red-400 text-xs font-bold">SELL</span>
+                </div>
+                <div class="text-xs text-[var(--muted)] space-y-1">
+                  <div class="flex justify-between"><span>Entry:</span><span class="text-[var(--text)]">$142.80</span></div>
+                  <div class="flex justify-between"><span>TP:</span><span class="text-green-400">$135.50</span></div>
+                  <div class="flex justify-between"><span>SL:</span><span class="text-red-400">$146.20</span></div>
+                </div>
+              </div>
+              <div class="p-4 rounded-xl bg-white/5">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="font-semibold">BNB/USDT</span>
+                  <span class="px-2 py-1 rounded bg-yellow-400/20 text-yellow-400 text-xs font-bold">WAIT</span>
+                </div>
+                <div class="text-xs text-[var(--muted)]">Menunggu konfirmasi breakout resistance</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Open Positions Table -->
+        <div class="glass rounded-2xl p-6">
+          <h3 class="font-display text-xl font-bold mb-6">Open Positions</h3>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-white/10 text-[var(--muted)]">
+                  <th class="text-left py-3 px-2">Pair</th>
+                  <th class="text-left py-3 px-2">Type</th>
+                  <th class="text-right py-3 px-2">Entry</th>
+                  <th class="text-right py-3 px-2">Current</th>
+                  <th class="text-right py-3 px-2">Size</th>
+                  <th class="text-right py-3 px-2">PnL</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="border-b border-white/5">
+                  <td class="py-4 px-2 font-semibold">BTC/USDT</td>
+                  <td class="py-4 px-2"><span class="px-2 py-1 rounded bg-green-400/20 text-green-400 text-xs">LONG</span></td>
+                  <td class="py-4 px-2 text-right">$65,420</td>
+                  <td class="py-4 px-2 text-right">$67,234</td>
+                  <td class="py-4 px-2 text-right">0.15 BTC</td>
+                  <td class="py-4 px-2 text-right text-green-400 font-semibold">+$272.10</td>
+                </tr>
+                <tr class="border-b border-white/5">
+                  <td class="py-4 px-2 font-semibold">ETH/USDT</td>
+                  <td class="py-4 px-2"><span class="px-2 py-1 rounded bg-green-400/20 text-green-400 text-xs">LONG</span></td>
+                  <td class="py-4 px-2 text-right">$3,180</td>
+                  <td class="py-4 px-2 text-right">$3,245</td>
+                  <td class="py-4 px-2 text-right">2.5 ETH</td>
+                  <td class="py-4 px-2 text-right text-green-400 font-semibold">+$162.50</td>
+                </tr>
+                <tr>
+                  <td class="py-4 px-2 font-semibold">SOL/USDT</td>
+                  <td class="py-4 px-2"><span class="px-2 py-1 rounded bg-red-400/20 text-red-400 text-xs">SHORT</span></td>
+                  <td class="py-4 px-2 text-right">$145.20</td>
+                  <td class="py-4 px-2 text-right">$142.80</td>
+                  <td class="py-4 px-2 text-right">50 SOL</td>
+                  <td class="py-4 px-2 text-right text-green-400 font-semibold">+$120.00</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- History & Referral -->
+        <div class="grid lg:grid-cols-2 gap-6">
+          <div class="glass rounded-2xl p-6">
+            <h3 class="font-display text-xl font-bold mb-6">Riwayat Transaksi</h3>
+            <div class="space-y-3">
+              <div class="flex items-center justify-between p-3 rounded-xl bg-white/5">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-lg bg-green-400/20 flex items-center justify-center">
+                    <i data-lucide="arrow-down-left" class="w-5 h-5 text-green-400"></i>
+                  </div>
+                  <div>
+                    <div class="font-semibold text-sm">BTC/USDT Long</div>
+                    <div class="text-xs text-[var(--muted)]">12 Okt 2024, 14:23</div>
+                  </div>
+                <div class="text-right">
+                  <div class="text-green-400 font-semibold">+$847.20</div>
+                  <div class="text-xs text-[var(--muted)]">Closed</div>
+                </div>
+              </div>
+              <div class="flex items-center justify-between p-3 rounded-xl bg-white/5">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-lg bg-green-400/20 flex items-center justify-center">
+                    <i data-lucide="arrow-down-left" class="w-5 h-5 text-green-400"></i>
+                  </div>
+                  <div>
+                    <div class="font-semibold text-sm">ETH/USDT Long</div>
+                    <div class="text-xs text-[var(--muted)]">11 Okt 2024, 09:15</div>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <div class="text-green-400 font-semibold">+$423.50</div>
+                  <div class="text-xs text-[var(--muted)]">Closed</div>
+                </div>
+              </div>
+              <div class="flex items-center justify-between p-3 rounded-xl bg-white/5">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-lg bg-red-400/20 flex items-center justify-center">
+                    <i data-lucide="arrow-up-right" class="w-5 h-5 text-red-400"></i>
+                  </div>
+                  <div>
+                    <div class="font-semibold text-sm">BNB/USDT Short</div>
+                    <div class="text-xs text-[var(--muted)]">10 Okt 2024, 16:40</div>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <div class="text-red-400 font-semibold">-$124.00</div>
+                  <div class="text-xs text-[var(--muted)]">SL Hit</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="glass rounded-2xl p-6">
+            <h3 class="font-display text-xl font-bold mb-6">Program Referral</h3>
+            <div class="mb-6">
+              <div class="text-sm text-[var(--muted)] mb-2">Link Referral Anda</div>
+              <div class="flex gap-2">
+                <input type="text" value="https://cryptotrader.pro/ref/ANDI2024" readonly class="flex-1 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-sm">
+                <button onclick="copyReferral()" class="px-4 py-2.5 rounded-xl bg-cyan-400/20 text-cyan-400 hover:bg-cyan-400/30 transition">
+                  <i data-lucide="copy" class="w-5 h-5"></i>
+                </button>
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4 mb-6">
+              <div class="p-4 rounded-xl bg-white/5">
+                <div class="text-2xl font-bold gradient-text">23</div>
+                <div class="text-xs text-[var(--muted)]">Total Referral</div>
+              </div>
+              <div class="p-4 rounded-xl bg-white/5">
+                <div class="text-2xl font-bold gradient-text">$1,247</div>
+                <div class="text-xs text-[var(--muted)]">Komisi Earned</div>
+              </div>
+            </div>
+            <div class="p-4 rounded-xl bg-gradient-to-r from-cyan-500/10 to-blue-500/10 border border-cyan-400/20">
+              <div class="text-sm font-semibold mb-1">Dapatkan 20% komisi seumur hidup!</div>
+              <div class="text-xs text-[var(--muted)]">Setiap member yang join via link Anda</div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+</div>
+
+<script>
+  lucide.createIcons();
+
+  // Theme Toggle
+  const themeToggle = document.getElementById('theme-toggle');
+  const dashThemeToggle = document.getElementById('dash-theme-toggle');
+  
+  function toggleTheme() {
+    const current = document.body.getAttribute('data-theme');
+    const newTheme = current === 'dark' ? 'light' : 'dark';
+    document.body.setAttribute('data-theme', newTheme);
+    updateChartTheme();
+  }
+  
+  themeToggle?.addEventListener('click', toggleTheme);
+  dashThemeToggle?.addEventListener('click', toggleTheme);
+
+  // Mobile Menu
+  document.getElementById('mobile-menu')?.addEventListener('click', () => {
+    document.getElementById('mobile-nav').classList.toggle('hidden');
+  });
+
+  // Sidebar Toggle Mobile
+  document.getElementById('sidebar-toggle')?.addEventListener('click', () => {
+    document.getElementById('sidebar').classList.toggle('hidden');
+  });
+
+  // Page Navigation
+  function showDashboard() {
+    document.getElementById('landing-page').classList.remove('active');
+    document.getElementById('dashboard-page').classList.add('active');
+    window.scrollTo(0, 0);
+    setTimeout(initTradingChart, 100);
+  }
+
+  function showLanding() {
+    document.getElementById('dashboard-page').classList.remove('active');
+    document.getElementById('landing-page').classList.add('active');
+    window.scrollTo(0, 0);
+  }
+
+  // Smooth scroll
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      e.preventDefault();
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth' });
+        document.getElementById('mobile-nav')?.classList.add('hidden');
+      }
+    });
+  });
+
+  // Copy Referral
+  function copyReferral() {
+    navigator.clipboard.writeText('https://cryptotrader.pro/ref/ANDI2024');
+    alert('Link referral berhasil disalin!');
+  }
+
+  // Chart.js Config
+  let profitChart, tradingChart;
+
+  function initProfitChart() {
+    const ctx = document.getElementById('profitChart');
+    if (!ctx) return;
+    
+    const isDark = document.body.getAttribute('data-theme') !== 'light';
+    const textColor = isDark ? '#E6F1FF' : '#0B0F1A';
+    const gridColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
+    
+    profitChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt'],
+        datasets: [{
+          label: 'Cumulative Profit %',
+          data: [12, 28, 45, 62, 89, 124, 156, 198, 267, 342],
+          borderColor: '#00E5FF',
+          backgroundColor: 'rgba(0, 229, 255, 0.1)',
+          fill: true,
+          tension: 0.4,
+          borderWidth: 3,
+          pointBackgroundColor: '#00E5FF',
+          pointBorderColor: '#fff',
+          pointBorderWidth: 2,
+          pointRadius: 5,
+          pointHoverRadius: 7
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        aspectRatio: 2.5,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: isDark ? 'rgba(17, 25, 40, 0.9)' : 'rgba(255, 255, 255, 0.9)',
+            titleColor: textColor,
+            bodyColor: textColor,
+            borderColor: '#00E5FF',
+            borderWidth: 1,
+            padding: 12,
+            displayColors: false
+          }
+        },
+        scales: {
+          y: {
+            grid: { color: gridColor },
+            ticks: { color: textColor, callback: (val) => val + '%' }
+          },
+          x: {
+            grid: { display: false },
+            ticks: { color: textColor }
+          }
+        }
+      }
+    });
+  }
+
+  function initTradingChart() {
+    const ctx = document.getElementById('tradingChart');
+    if (!ctx || tradingChart) return;
+    
+    const isDark = document.body.getAttribute('data-theme') !== 'light';
+    const textColor = isDark ? '#E6F1FF' : '#0B0F1A';
+    const gridColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
+    
+    // Generate dummy candlestick-like data
+    const dataPoints = 50;
+    const basePrice = 67000;
+    const data = Array.from({length: dataPoints}, (_, i) => 
+      basePrice + Math.sin(i / 5) * 1000 + (Math.random() - 0.5) * 500
+    );
+    
+    tradingChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: Array.from({length: dataPoints}, (_, i) => `${i}h`),
+        datasets: [{
+          label: 'BTC/USDT',
+          data: data,
+          borderColor: '#00E5FF',
+          backgroundColor: 'rgba(0, 229, 255, 0.1)',
+          fill: true,
+          tension: 0.4,
+          borderWidth: 2,
+          pointRadius: 0,
+          pointHoverRadius: 5
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        aspectRatio: 2,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: isDark ? 'rgba(17, 25, 40, 0.9)' : 'rgba(255, 255, 255, 0.9)',
+            titleColor: textColor,
+            bodyColor: textColor,
+            borderColor: '#00E5FF',
+            borderWidth: 1
+          }
+        },
+        scales: {
+          y: {
+            grid: { color: gridColor },
+            ticks: { color: textColor, callback: (val) => '$' + (val/1000).toFixed(1) + 'k' }
+          },
+          x: {
+            grid: { display: false },
+            ticks: { color: textColor, maxTicksLimit: 8 }
+          }
+        }
+      }
+    });
+  }
+
+  function updateChartTheme() {
+    const isDark = document.body.getAttribute('data-theme') !== 'light';
+    const textColor = isDark ? '#E6F1FF' : '#0B0F1A';
+    const gridColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
+    
+    if (profitChart) {
+      profitChart.options.scales.y.ticks.color = textColor;
+      profitChart.options.scales.x.ticks.color = textColor;
+      profitChart.options.scales.y.grid.color = gridColor;
+      profitChart.update();
+    }
+    if (tradingChart) {
+      tradingChart.options.scales.y.ticks.color = textColor;
+      tradingChart.options.scales.x.ticks.color = textColor;
+      tradingChart.options.scales.y.grid.color = gridColor;
+      tradingChart.update();
+    }
+  }
+
+  // Init
+  window.addEventListener('load', () => {
+    initProfitChart();
+  });
+</script>
+<script>(function(){document.addEventListener("click",function(e){var a=e.target.closest("[data-product-id]");if(!a)return;e.preventDefault();var pid=a.getAttribute("data-product-id");if(pid)parent.postMessage({type:"ecto-artifact-link-click",productId:pid},"*")})})();</script>
+</body>
+</html>

@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BioLink Pro - Link-in-Bio + Mini Store Demo</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --primary: #7c3aed;
+        --secondary: #ec4899;
+        --accent: #ffffff;
+        --text: #1f2937;
+    }
+    
+    [data-theme="pink"] {
+        --primary: #ec4899;
+        --secondary: #f472b6;
+    }
+    
+    [data-theme="green"] {
+        --primary: #10b981;
+        --secondary: #34d399;
+    }
+    
+    [data-theme="dark"] {
+        --primary: #1f2937;
+        --secondary: #374151;
+        --accent: #111827;
+        --text: #f9fafb;
+    }
+    
+    body {
+        font-family: 'Outfit', sans-serif;
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        min-height: 100vh;
+        color: var(--text);
+    }
+    
+    .fade-in {
+        animation: fadeIn 0.6s ease-out forwards;
+        opacity: 0;
+    }
+    
+    @keyframes fadeIn {
+        to { opacity: 1; transform: translateY(0); }
+        from { opacity: 0; transform: translateY(10px); }
+    }
+    
+    .card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    [data-theme="dark"] .card {
+        background: rgba(31, 41, 55, 0.95);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #f9fafb;
+    }
+    
+    .link-item {
+        transition: all 0.2s ease;
+    }
+    
+    .link-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+    
+    .drag-over {
+        border: 2px dashed var(--primary);
+        background: rgba(124, 58, 237, 0.05);
+    }
+    
+    .editable[contenteditable="true"] {
+        outline: 2px dashed var(--primary);
+        padding: 2px 4px;
+        border-radius: 6px;
+        cursor: text;
+    }
+    
+    .modal-backdrop {
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(4px);
+    }
+    
+    /* Hide scrollbar for cleaner mobile */
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+    .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+</style>
+</head>
+<body data-theme="ungu">
+    <!-- Admin Mode Toggle -->
+    <div class="fixed top-4 right-4 z-50">
+        <div class="card rounded-full shadow-lg px-3 py-2 flex items-center gap-2">
+            <span class="text-xs font-medium" id="modeLabel">Preview</span>
+            <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="adminToggle" class="sr-only peer">
+                <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+            </label>
+        </div>
+    </div>
+    
+    <!-- Theme Switcher -->
+    <div class="fixed top-4 left-4 z-50" id="themeSwitcher">
+        <div class="card rounded-full shadow-lg p-2 flex gap-1">
+            <button data-theme="ungu" class="w-6 h-6 rounded-full bg-gradient-to-br from-violet-600 to-pink-500 border-2 border-white theme-btn"></button>
+            <button data-theme="pink" class="w-6 h-6 rounded-full bg-gradient-to-br from-pink-500 to-rose-400 theme-btn"></button>
+            <button data-theme="green" class="w-6 h-6 rounded-full bg-gradient-to-br from-emerald-500 to-teal-400 theme-btn"></button>
+            <button data-theme="dark" class="w-6 h-6 rounded-full bg-gradient-to-br from-gray-700 to-gray-900 theme-btn"></button>
+        </div>
+    </div>
+
+    <main class="max-w-[400px] mx-auto px-4 py-8 space-y-6">
+        <!-- PROFILE SECTION -->
+        <section class="card rounded-2xl shadow-lg p-6 text-center fade-in" style="animation-delay: 0.1s">
+            <div class="relative inline-block mb-4">
+                <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&crop=faces" 
+                     alt="Avatar" 
+                     class="w-[100px] h-[100px] rounded-full mx-auto object-cover border-4 border-white shadow-lg" 
+                     id="avatarImg">
+                <button id="editAvatar" class="hidden absolute bottom-0 right-0 bg-purple-600 text-white p-1.5 rounded-full shadow-lg">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                </button>
+            </div>
+            <h1 class="text-2xl font-bold mb-1 editable" data-field="username">@sariskincare</h1>
+            <p class="text-sm text-gray-600 mb-4 editable" data-field="bio">Skincare BPOM | Konsul Gratis | Reseller Welcome ✨</p>
+            
+            <!-- STATS -->
+            <div class="grid grid-cols-3 gap-2 mb-4 text-center">
+                <div>
+                    <p class="font-bold text-lg editable" data-field="followers">120K</p>
+                    <p class="text-xs text-gray-500">Followers</p>
+                </div>
+                <div>
+                    <p class="font-bold text-lg editable" data-field="rating">4.9⭐</p>
+                    <p class="text-xs text-gray-500">Rating</p>
+                </div>
+                <div>
+                    <p class="font-bold text-lg editable" data-field="sold">2.3K</p>
+                    <p class="text-xs text-gray-500">Terjual</p>
+                </div>
+            </div>
+            
+            <!-- SOCIAL ICONS -->
+            <div class="flex justify-center gap-3" id="socialIcons">
+                <a href="#" class="social-link w-10 h-10 flex items-center justify-center rounded-xl bg-gradient-to-br from-pink-500 to-rose-500 text-white shadow-lg hover:scale-110 transition" data-platform="ig">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                </a>
+                <a href="#" class="social-link w-10 h-10 flex items-center justify-center rounded-xl bg-gradient-to-br from-gray-900 to-black text-white shadow-lg hover:scale-110 transition" data-platform="tiktok">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></svg>
+                </a>
+                <a href="#" class="social-link w-10 h-10 flex items-center justify-center rounded-xl bg-gradient-to-br from-orange-500 to-red-500 text-white shadow-lg hover:scale-110 transition" data-platform="shopee">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+                </a>
+                <a href="#" class="social-link w-10 h-10 flex items-center justify-center rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 text-white shadow-lg hover:scale-110 transition" data-platform="wa">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+                </a>
+            </div>
+            <button id="addSocial" class="hidden mt-3 text-xs text-purple-600 font-medium">+ Tambah Social Media</button>
+        </section>
+
+        <!-- LINK SECTION -->
+        <section class="space-y-3 fade-in" style="animation-delay: 0.2s">
+            <div id="linksList" class="space-y-3">
+                <!-- Links will be rendered here -->
+            </div>
+            <button id="addLinkBtn" class="hidden w-full card rounded-2xl shadow-lg p-4 text-purple-600 font-medium border-2 border-dashed border-purple-300 hover:bg-purple-50 transition">
+                + Tambah Link Baru
+            </button>
+        </section>
+
+        <!-- MINI STORE -->
+        <section class="card rounded-2xl shadow-lg p-5 fade-in" style="animation-delay: 0.3s">
+            <h2 class="text-lg font-bold mb-4 flex items-center gap-2">
+                <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                <span class="editable" data-field="storeTitle">Best Seller Bulan Ini</span>
+            </h2>
+            <div id="productsGrid" class="grid grid-cols-2 gap-3">
+                <!-- Products will be rendered here -->
+            </div>
+            <button id="addProductBtn" class="hidden w-full mt-3 card rounded-xl p-3 text-purple-600 font-medium border-2 border-dashed border-purple-300 hover:bg-purple-50 transition text-sm">
+                + Tambah Produk
+            </button>
+        </section>
+
+        <!-- ANALYTICS SECTION -->
+        <section class="card rounded-2xl shadow-lg p-5 fade-in" style="animation-delay: 0.4s">
+            <h2 class="text-lg font-bold mb-4 flex items-center gap-2">
+                <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                Statistik Minggu Ini
+            </h2>
+            <div class="grid grid-cols-3 gap-3 mb-4">
+                <div class="bg-purple-50 rounded-xl p-3 text-center">
+                    <p class="text-2xl font-bold text-purple-600" id="totalClicks">3.421</p>
+                    <p class="text-xs text-gray-600">Total Klik</p>
+                </div>
+                <div class="bg-pink-50 rounded-xl p-3 text-center">
+                    <p class="text-sm font-bold text-pink-600" id="topLink">Katalog</p>
+                    <p class="text-xs text-gray-600">Terbanyak</p>
+                </div>
+                <div class="bg-green-50 rounded-xl p-3 text-center">
+                    <p class="text-sm font-bold text-green-600" id="totalSales">4.25JT</p>
+                    <p class="text-xs text-gray-600">Penjualan</p>
+                </div>
+            </div>
+            <div>
+                <p class="text-xs text-gray-500 mb-2">7 Hari Terakhir</p>
+                <canvas id="analyticsChart" class="w-full" height="80"></canvas>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="text-center space-y-3 fade-in pb-8" style="animation-delay: 0.5s">
+            <button class="bg-white text-purple-600 font-semibold px-6 py-3 rounded-2xl shadow-lg hover:shadow-xl transition w-full">
+                Buat Punya Kamu
+            </button>
+            <div class="text-xs text-white/80">
+                <p class="font-medium">Powered by BioLink Pro</p>
+                <p class="mt-1 opacity-70">Demo Portfolio • Semua data hanya simulasi</p>
+            </div>
+        </footer>
+    </main>
+
+    <!-- MODALS -->
+    <!-- Testimoni Modal -->
+    <div id="testimoniModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-backdrop">
+        <div class="card rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-hidden">
+            <div class="p-5 border-b flex justify-between items-center">
+                <h3 class="text-lg font-bold">Testimoni Customer</h3>
+                <button class="closeModal p-1 hover:bg-gray-100 rounded-lg">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <div class="p-5 overflow-y-auto no-scrollbar max-h-[calc(90vh-80px)] space-y-4">
+                <div class="bg-purple-50 p-4 rounded-xl">
+                    <div class="flex items-center gap-3 mb-2">
+                        <img src="https://i.pravatar.cc/40?img=1" class="w-10 h-10 rounded-full" alt="">
+                        <div>
+                            <p class="font-semibold text-sm">Rina S.</p>
+                            <div class="text-yellow-400 text-xs">⭐⭐⭐⭐⭐</div>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-700">"Serumnya beneran bikin glowing! 2 minggu udah keliatan bedanya. Bakal repeat order 😍"</p>
+                </div>
+                <div class="bg-pink-50 p-4 rounded-xl">
+                    <div class="flex items-center gap-3 mb-2">
+                        <img src="https://i.pravatar.cc/40?img=5" class="w-10 h-10 rounded-full" alt="">
+                        <div>
+                            <p class="font-semibold text-sm">Dewi A.</p>
+                            <div class="text-yellow-400 text-xs">⭐⭐⭐⭐⭐</div>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-700">"Adminnya fast respon banget. Konsul gratisnya juga detail. Sunscreen gak lengket samsek!"</p>
+                </div>
+                <div class="bg-green-50 p-4 rounded-xl">
+                    <div class="flex items-center gap-3 mb-2">
+                        <img src="https://i.pravatar.cc/40?img=9" class="w-10 h-10 rounded-full" alt="">
+                        <div>
+                            <p class="font-semibold text-sm">Maya P.</p>
+                            <div class="text-yellow-400 text-xs">⭐⭐⭐⭐⭐</div>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-700">"Join reseller worth it banget. Margin gede, produk laris. Udah balik modal hari pertama!"</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Modal -->
+    <div id="productModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-backdrop">
+        <div class="card rounded-2xl shadow-2xl max-w-md w-full">
+            <div class="p-5 border-b flex justify-between items-center">
+                <h3 class="text-lg font-bold" id="modalProductName">Nama Produk</h3>
+                <button class="closeModal p-1 hover:bg-gray-100 rounded-lg">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <div class="p-5 space-y-4">
+                <img id="modalProductImg" src="" class="w-full h-48 object-cover rounded-xl" alt="">
+                <div>
+                    <p class="text-2xl font-bold text-purple-600" id="modalProductPrice">Rp0</p>
+                    <p class="text-sm text-gray-500 line-through" id="modalProductOldPrice"></p>
+                </div>
+                <div>
+                    <label class="text-sm font-medium mb-2 block">Pilih Varian</label>
+                    <select id="productVariant" class="w-full p-3 border rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                        <option>30ml - Travel Size</option>
+                        <option>50ml - Regular</option>
+                        <option>100ml - Jumbo Size</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-sm font-medium mb-2 block">Jumlah</label>
+                    <div class="flex items-center gap-3">
+                        <button id="decreaseQty" class="w-10 h-10 rounded-xl bg-gray-100 hover:bg-gray-200 font-bold">-</button>
+                        <input type="number" id="productQty" value="1" min="1" class="flex-1 p-3 border rounded-xl text-center font-semibold">
+                        <button id="increaseQty" class="w-10 h-10 rounded-xl bg-gray-100 hover:bg-gray-200 font-bold">+</button>
+                    </div>
+                </div>
+                <button id="checkoutWA" class="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 rounded-xl transition flex items-center justify-center gap-2">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+                    Checkout via WA
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-gray-900 text-white px-6 py-3 rounded-2xl shadow-2xl z-[60] hidden">
+        <p class="text-sm font-medium">Tersimpan!</p>
+    </div>
+
+<script>
+    // STATE MANAGEMENT
+    let state = {
+        isAdmin: false,
+        analytics: {
+            totalClicks: 3421,
+            linkClicks: { link1: 1200, link2: 890, link3: 654, link4: 432, link5: 245 },
+            weeklyData: [320, 450, 380, 520, 680, 594, 477]
+        },
+        links: [
+            { id: 'link1', title: 'Katalog Skincare - Diskon 30%', url: '#', badge: 'HOT', icon: '🛍️' },
+            { id: 'link2', title: 'Join Reseller Dapat Untung 40%', url: '#', badge: null, icon: '💰' },
+            { id: 'link3', title: 'Konsul Kulit Gratis via WA', url: '#', badge: null, icon: '💬' },
+            { id: 'link4', title: 'Testimoni Customer', url: '#testimoni', badge: null, icon: '⭐' },
+            { id: 'link5', title: 'Giveaway iPhone - Klik!', url: '#', badge: null, icon: '🎁' },
+        ],
+        products: [
+            { id: 'p1', name: 'Serum Vit C', price: 89000, oldPrice: 120000, img: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=400' },
+            { id: 'p2', name: 'Toner Glow', price: 65000, oldPrice: null, img: 'https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=400' },
+            { id: 'p3', name: 'Sunscreen SPF50', price: 95000, oldPrice: null, img: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=400' },
+            { id: 'p4', name: 'Paket Glowing', price: 240000, oldPrice: 350000, img: 'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=400' },
+        ]
+    };
+
+    // DOM ELEMENTS
+    const adminToggle = document.getElementById('adminToggle');
+    const modeLabel = document.getElementById('modeLabel');
+    const linksList = document.getElementById('linksList');
+    const productsGrid = document.getElementById('productsGrid');
+    const addLinkBtn = document.getElementById('addLinkBtn');
+    const addProductBtn = document.getElementById('addProductBtn');
+    const toast = document.getElementById('toast');
+
+    // INIT
+    document.addEventListener('DOMContentLoaded', () => {
+        renderLinks();
+        renderProducts();
+        initChart();
+        initEventListeners();
+        updateAnalyticsDisplay();
+    });
+
+    // RENDER FUNCTIONS
+    function renderLinks() {
+        linksList.innerHTML = state.links.map((link, index) => `
+            <div class="link-item card rounded-2xl shadow-lg p-4 flex items-center justify-between group cursor-pointer" 
+                 draggable="${state.isAdmin}" 
+                 data-link-id="${link.id}" 
+                 data-index="${index}">
+                <div class="flex items-center gap-3 flex-1">
+                    <span class="text-2xl">${link.icon}</span>
+                    <div class="flex-1">
+                        <p class="font-semibold editable" data-field="link-title-${link.id}">${link.title}</p>
+                    </div>
+                    ${link.badge ? `<span class="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-lg">${link.badge}</span>` : ''}
+                </div>
+                ${state.isAdmin ? `
+                    <div class="flex gap-2 ml-2">
+                        <button class="edit-link-btn p-2 hover:bg-gray-100 rounded-lg" data-id="${link.id}">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                        </button>
+                        <button class="delete-link-btn p-2 hover:bg-red-100 text-red-600 rounded-lg" data-id="${link.id}">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </button>
+                        <svg class="w-5 h-5 text-gray-400 cursor-move" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path></svg>
+                    </div>
+                ` : ''}
+            </div>
+        `).join('');
+        
+        attachLinkEvents();
+    }
+
+    function renderProducts() {
+        productsGrid.innerHTML = state.products.map(product => `
+            <div class="card rounded-2xl shadow-lg overflow-hidden group cursor-pointer product-card" 
+                 draggable="${state.isAdmin}"
+                 data-product-id="${product.id}">
+                <div class="relative">
+                    <img src="${product.img}" alt="${product.name}" class="w-full h-32 object-cover">
+                    ${product.oldPrice ? `
+                        <span class="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-lg">
+                            ${Math.round((1 - product.price / product.oldPrice) * 100)}%
+                        </span>
+                    ` : ''}
+                    ${state.isAdmin ? `
+                        <button class="absolute top-2 right-2 bg-white p-1.5 rounded-lg shadow-lg delete-product-btn opacity-0 group-hover:opacity-100 transition" data-id="${product.id}">
+                            <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </button>
+                    ` : ''}
+                </div>
+                <div class="p-3">
+                    <p class="font-semibold text-sm mb-1 truncate editable" data-field="product-name-${product.id}">${product.name}</p>
+                    <div class="flex items-baseline gap-1 mb-2">
+                        <p class="text-purple-600 font-bold text-sm">Rp${(product.price/1000).toFixed(0)}K</p>
+                        ${product.oldPrice ? `<p class="text-xs text-gray-400 line-through">Rp${(product.oldPrice/1000).toFixed(0)}K</p>` : ''}
+                    </div>
+                    <button class="w-full bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold py-2 rounded-xl transition buy-btn" data-product='${JSON.stringify(product)}'>
+                        Beli
+                    </button>
+                </div>
+            </div>
+        `).join('');
+        
+        attachProductEvents();
+    }
+
+    // EVENT LISTENERS
+    function initEventListeners() {
+        // Admin Toggle
+        adminToggle.addEventListener('change', (e) => {
+            state.isAdmin = e.target.checked;
+            modeLabel.textContent = state.isAdmin ? 'Edit' : 'Preview';
+            toggleAdminMode();
+        });
+
+        // Theme Switcher
+        document.querySelectorAll('.theme-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.body.setAttribute('data-theme', btn.dataset.theme);
+            });
+        });
+
+        // Add Link/Product
+        addLinkBtn.addEventListener('click', addNewLink);
+        addProductBtn.addEventListener('click', addNewProduct);
+
+        // Modal Close
+        document.querySelectorAll('.closeModal').forEach(btn => {
+            btn.addEventListener('click', closeModals);
+        });
+
+        // Product Modal
+        document.getElementById('decreaseQty').addEventListener('click', () => {
+            const qty = document.getElementById('productQty');
+            if (qty.value > 1) qty.value--;
+        });
+        document.getElementById('increaseQty').addEventListener('click', () => {
+            const qty = document.getElementById('productQty');
+            qty.value++;
+        });
+        
+        // Social Links Analytics
+        document.querySelectorAll('.social-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                if (!state.isAdmin) {
+                    e.preventDefault();
+                    incrementClick(`social-${link.dataset.platform}`);
+                }
+            });
+        });
+    }
+
+    function attachLinkEvents() {
+        document.querySelectorAll('.link-item').forEach(item => {
+            if (!state.isAdmin) {
+                item.addEventListener('click', (e) => {
+                    if (!e.target.closest('button')) {
+                        const linkId = item.dataset.linkId;
+                        incrementClick(linkId);
+                        
+                        if (item.querySelector('[data-field^="link-title"]')?.textContent.includes('Testimoni')) {
+                            openModal('testimoniModal');
+                        }
+                    }
+                });
+            }
+            
+            // Drag & Drop in Admin Mode
+            if (state.isAdmin) {
+                item.addEventListener('dragstart', handleDragStart);
+                item.addEventListener('dragover', handleDragOver);
+                item.addEventListener('drop', handleDrop);
+                item.addEventListener('dragend', handleDragEnd);
+            }
+        });
+
+        document.querySelectorAll('.delete-link-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                state.links = state.links.filter(l => l.id !== btn.dataset.id);
+                renderLinks();
+                showToast('Link dihapus');
+            });
+        });
+    }
+
+    function attachProductEvents() {
+        document.querySelectorAll('.buy-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const product = JSON.parse(btn.dataset.product);
+                openProductModal(product);
+            });
+        });
+
+        document.querySelectorAll('.delete-product-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                state.products = state.products.filter(p => p.id !== btn.dataset.id);
+                renderProducts();
+                showToast('Produk dihapus');
+            });
+        });
+    }
+
+    // ADMIN MODE
+    function toggleAdminMode() {
+        document.querySelectorAll('.editable').forEach(el => {
+            el.contentEditable = state.isAdmin;
+        });
+        
+        document.getElementById('addLinkBtn').classList.toggle('hidden', !state.isAdmin);
+        document.getElementById('addProductBtn').classList.toggle('hidden', !state.isAdmin);
+        document.getElementById('editAvatar').classList.toggle('hidden', !state.isAdmin);
+        document.getElementById('addSocial').classList.toggle('hidden', !state.isAdmin);
+        
+        renderLinks();
+        renderProducts();
+        
+        if (state.isAdmin && !document.getElementById('saveBtn')) {
+            const saveBtn = document.createElement('button');
+            saveBtn.id = 'saveBtn';
+            saveBtn.className = 'fixed bottom-6 right-6 bg-purple-600 hover:bg-purple-700 text-white font-semibold px-6 py-3 rounded-2xl shadow-2xl z-40 flex items-center gap-2';
+            saveBtn.innerHTML = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Simpan';
+            saveBtn.onclick = () => {
+                showToast('Tersimpan!');
+                adminToggle.click();
+            };
+            document.body.appendChild(saveBtn);
+        } else {
+            document.getElementById('saveBtn')?.remove();
+        }
+    }
+
+    // DRAG & DROP
+    let draggedElement = null;
+
+    function handleDragStart(e) {
+        draggedElement = e.target;
+        e.dataTransfer.effectAllowed = 'move';
+        setTimeout(() => e.target.classList.add('opacity-50'), 0);
+    }
+
+    function handleDragOver(e) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        const target = e.target.closest('.link-item');
+        if (target && target !== draggedElement) {
+            target.classList.add('drag-over');
+        }
+    }
+
+    function handleDrop(e) {
+        e.preventDefault();
+        const target = e.target.closest('.link-item');
+        if (target && target !== draggedElement) {
+            const draggedIndex = parseInt(draggedElement.dataset.index);
+            const targetIndex = parseInt(target.dataset.index);
+            [state.links[draggedIndex], state.links[targetIndex]] = [state.links[targetIndex], state.links[draggedIndex]];
+            renderLinks();
+        }
+        document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+    }
+
+    function handleDragEnd(e) {
+        e.target.classList.remove('opacity-50');
+        document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+    }
+
+    // MODALS
+    function openModal(modalId) {
+        document.getElementById(modalId).classList.remove('hidden');
+        document.getElementById(modalId).classList.add('flex');
+    }
+
+    function closeModals() {
+        document.querySelectorAll('.modal-backdrop').forEach(modal => {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        });
+    }
+
+    function openProductModal(product) {
+        document.getElementById('modalProductName').textContent = product.name;
+        document.getElementById('modalProductImg').src = product.img;
+        document.getElementById('modalProductPrice').textContent = `Rp${product.price.toLocaleString('id-ID')}`;
+        document.getElementById('modalProductOldPrice').textContent = product.oldPrice ? `Rp${product.oldPrice.toLocaleString('id-ID')}` : '';
+        document.getElementById('productQty').value = 1;
+        
+        document.getElementById('checkoutWA').onclick = () => {
+            const qty = document.getElementById('productQty').value;
+            const variant = document.getElementById('productVariant').value;
+            const message = `Halo kak, mau order ${product.name} ${variant} ${qty} ya`;
+            const waUrl = `https://wa.me/6281234567890?text=${encodeURIComponent(message)}`;
+            window.open(waUrl, '_blank');
+            incrementClick(product.id);
+            closeModals();
+        };
+        
+        openModal('productModal');
+    }
+
+    // ANALYTICS
+    function incrementClick(id) {
+        state.analytics.totalClicks++;
+        state.analytics.linkClicks[id] = (state.analytics.linkClicks[id] || 0) + 1;
+        updateAnalyticsDisplay();
+    }
+
+    function updateAnalyticsDisplay() {
+        document.getElementById('totalClicks').textContent = state.analytics.totalClicks.toLocaleString('id-ID');
+        
+        // Find top link
+        let topLink = 'link1';
+        let maxClicks = 0;
+        Object.entries(state.analytics.linkClicks).forEach(([id, clicks]) => {
+            if (clicks > maxClicks) {
+                maxClicks = clicks;
+                topLink = id;
+            }
+        });
+        
+        const topLinkData = state.links.find(l => l.id === topLink);
+        if (topLinkData) {
+            document.getElementById('topLink').textContent = topLinkData.title.split(' ')[0];
+        }
+        
+        // Update chart if exists
+        updateChart();
+    }
+
+    // CHART
+    let chartCanvas, chartCtx;
+
+    function initChart() {
+        chartCanvas = document.getElementById('analyticsChart');
+        chartCtx = chartCanvas.getContext('2d');
+        updateChart();
+    }
+
+    function updateChart() {
+        if (!chartCtx) return;
+        
+        const width = chartCanvas.width = chartCanvas.offsetWidth;
+        const height = chartCanvas.height = 80;
+        const data = state.analytics.weeklyData;
+        const max = Math.max(...data);
+        const barWidth = width / data.length;
+        
+        chartCtx.clearRect(0, 0, width, height);
+        
+        data.forEach((value, i) => {
+            const barHeight = (value / max) * (height - 10);
+            const x = i * barWidth + barWidth * 0.2;
+            const y = height - barHeight;
+            const w = barWidth * 0.6;
+            
+            const gradient = chartCtx.createLinearGradient(0, y, 0, height);
+            gradient.addColorStop(0, '#7c3aed');
+            gradient.addColorStop(1, '#ec4899');
+            
+            chartCtx.fillStyle = gradient;
+            chartCtx.beginPath();
+            chartCtx.roundRect(x, y, w, barHeight, 6);
+            chartCtx.fill();
+        });
+    }
+
+    // UTILITIES
+    function showToast(message) {
+        toast.querySelector('p').textContent = message;
+        toast.classList.remove('hidden');
+        setTimeout(() => toast.classList.add('hidden'), 2000);
+    }
+
+    function addNewLink() {
+        const newId = 'link' + Date.now();
+        state.links.push({
+            id: newId,
+            title: 'Link Baru - Edit Text',
+            url: '#',
+            badge: null,
+            icon: '🔗'
+        });
+        renderLinks();
+        showToast('Link ditambahkan');
+    }
+
+    function addNewProduct() {
+        const newId = 'p' + Date.now();
+        state.products.push({
+            id: newId,
+            name: 'Produk Baru',
+            price: 99000,
+            oldPrice: null,
+            img: 'https://images.unsplash.com/photo-1526947425960-945c6e72858f?w=400'
+        });
+        renderProducts();
+        showToast('Produk ditambahkan');
+    }
+
+    // Close modal on backdrop click
+    document.querySelectorAll('.modal-backdrop').forEach(modal => {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModals();
+        });
+    });
+
+    // Responsive chart resize
+    window.addEventListener('resize', () => {
+        setTimeout(updateChart, 100);
+    });
+</script>
+<script>(function(){document.addEventListener("click",function(e){var a=e.target.closest("[data-product-id]");if(!a)return;e.preventDefault();var pid=a.getAttribute("data-product-id");if(pid)parent.postMessage({type:"ecto-artifact-link-click",productId:pid},"*")})})();</script>
+</body>
+</html>

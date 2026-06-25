@@ -1,0 +1,1587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BoardFlow MLM - Board to Board System Dashboard</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+  
+  :root {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8fafc;
+    --bg-tertiary: #f1f5f9;
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --border-color: #e2e8f0;
+    --card-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  }
+  
+  .dark {
+    --bg-primary: #0f172a;
+    --bg-secondary: #1e293b;
+    --bg-tertiary: #334155;
+    --text-primary: #f8fafc;
+    --text-secondary: #cbd5e1;
+    --border-color: #334155;
+    --card-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.3);
+  }
+  
+  * {
+    font-family: 'Inter', sans-serif;
+  }
+  
+  body {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  .card {
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--card-shadow);
+    transition: all 0.3s ease;
+  }
+  
+  .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  }
+  
+  .gradient-bg {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+  
+  .gradient-text {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .board-slot {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .board-slot.filled {
+    animation: popIn 0.4s ease;
+  }
+  
+  @keyframes popIn {
+    0% { transform: scale(0); opacity: 0; }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  
+  @keyframes splitBoard {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); box-shadow: 0 0 30px rgba(102, 126, 234, 0.6); }
+    100% { transform: scale(1); }
+  }
+  
+  .splitting {
+    animation: splitBoard 0.6s ease;
+  }
+  
+  .modal-backdrop {
+    backdrop-filter: blur(8px);
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  
+  .tree-node {
+    transition: all 0.2s ease;
+  }
+  
+  .tree-node:hover {
+    transform: scale(1.05);
+  }
+  
+  .nav-link {
+    position: relative;
+  }
+  
+  .nav-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+  
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: var(--bg-tertiary);
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: #94a3b8;
+    border-radius: 4px;
+  }
+  
+  .dark ::-webkit-scrollbar-thumb {
+    background: #475569;
+  }
+</style>
+</head>
+<body>
+<!-- Landing Page -->
+<section id="landing" class="min-h-screen">
+  <!-- Header -->
+  <header class="sticky top-0 z-50 card border-b border-b-[var(--border-color)]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-16">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 gradient-bg rounded-lg flex items-center justify-center">
+            <i class="fas fa-layer-group text-white text-xl"></i>
+          </div>
+          <span class="text-xl font-bold gradient-text">BoardFlow MLM</span>
+        </div>
+        <nav class="hidden md:flex items-center gap-8">
+          <a href="#features" class="nav-link text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition">Features</a>
+          <a href="#how-it-works" class="nav-link text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition">How It Works</a>
+          <button onclick="showDashboard()" class="px-5 py-2 gradient-bg text-white rounded-lg font-medium hover:opacity-90 transition">
+            Launch Dashboard <i class="fas fa-arrow-right ml-2"></i>
+          </button>
+          <button id="themeToggle" onclick="toggleTheme()" class="w-10 h-10 rounded-lg card flex items-center justify-center">
+            <i class="fas fa-moon text-[var(--text-primary)]"></i>
+          </button>
+        </nav>
+        <button class="md:hidden" onclick="toggleMobileMenu()">
+          <i class="fas fa-bars text-2xl text-[var(--text-primary)]"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile Menu -->
+  <div id="mobileMenu" class="hidden md:hidden card border-b border-b-[var(--border-color)]">
+    <div class="px-4 py-3 space-y-3">
+      <a href="#features" class="block text-[var(--text-secondary)]">Features</a>
+      <a href="#how-it-works" class="block text-[var(--text-secondary)]">How It Works</a>
+      <button onclick="showDashboard()" class="w-full px-5 py-2 gradient-bg text-white rounded-lg font-medium">
+        Launch Dashboard
+      </button>
+    </div>
+  </div>
+
+  <!-- Hero Section -->
+  <div class="relative overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32">
+      <div class="grid lg:grid-cols-2 gap-12 items-center">
+        <div class="space-y-8">
+          <div class="inline-block px-4 py-2 rounded-full card text-sm font-medium">
+            <i class="fas fa-bolt text-yellow-500 mr-2"></i>Next-Gen Board to Board System
+          </div>
+          <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight">
+            Revolutionize Your <span class="gradient-text">MLM Network</span> with Board Splitting
+          </h1>
+          <p class="text-lg text-[var(--text-secondary)] leading-relaxed">
+            Board to Board MLM is a structured compensation plan where members fill 15-slot boards. When full, the board splits and members cycle to higher boards with increasing payouts. Track everything in real-time.
+          </p>
+          <div class="flex flex-wrap gap-4">
+            <button onclick="showDashboard()" class="px-8 py-4 gradient-bg text-white rounded-lg font-semibold hover:opacity-90 transition shadow-lg">
+              Explore Dashboard <i class="fas fa-chart-line ml-2"></i>
+            </button>
+            <button onclick="scrollToSection('how-it-works')" class="px-8 py-4 card text-[var(--text-primary)] rounded-lg font-semibold hover:bg-[var(--bg-tertiary)] transition">
+              How It Works <i class="fas fa-play-circle ml-2"></i>
+            </button>
+          </div>
+          <div class="flex flex-wrap gap-6 pt-4">
+            <div class="flex items-center gap-2">
+              <i class="fas fa-check-circle text-green-500"></i>
+              <span class="text-sm text-[var(--text-secondary)]">Auto Board Splitting</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <i class="fas fa-check-circle text-green-500"></i>
+              <span class="text-sm text-[var(--text-secondary)]">Real-time Tracking</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <i class="fas fa-check-circle text-green-500"></i>
+              <span class="text-sm text-[var(--text-secondary)]">No Backend Needed</span>
+            </div>
+          </div>
+        </div>
+        <div class="relative">
+          <div class="card rounded-2xl p-8 space-y-6">
+            <div class="flex justify-between items-center">
+              <h3 class="text-xl font-bold">Board #A247</h3>
+              <span class="px-3 py-1 bg-green-500/10 text-green-600 dark:text-green-400 rounded-full text-sm font-medium">Active</span>
+            </div>
+            <div class="grid grid-cols-5 gap-3">
+              <div class="col-span-5 flex justify-center">
+                <div class="board-slot w-16 h-16 rounded-xl gradient-bg flex items-center justify-center text-white font-bold shadow-lg">1</div>
+              </div>
+              <div class="col-span-5 flex justify-center gap-3">
+                <div class="board-slot filled w-14 h-14 rounded-xl bg-blue-500 flex items-center justify-center text-white text-sm font-semibold">2</div>
+                <div class="board-slot filled w-14 h-14 rounded-xl bg-blue-500 flex items-center justify-center text-white text-sm font-semibold">3</div>
+              </div>
+              <div class="col-span-5 flex justify-center gap-2">
+                <div class="board-slot filled w-12 h-12 rounded-xl bg-purple-500 flex items-center justify-center text-white text-xs font-semibold">4</div>
+                <div class="board-slot filled w-12 h-12 rounded-xl bg-purple-500 flex items-center justify-center text-white text-xs font-semibold">5</div>
+                <div class="board-slot filled w-12 h-12 rounded-xl bg-purple-500 flex items-center justify-center text-white text-xs font-semibold">6</div>
+                <div class="board-slot filled w-12 h-12 rounded-xl bg-purple-500 flex items-center justify-center text-white text-xs font-semibold">7</div>
+              </div>
+              <div class="board-slot filled w-12 h-12 rounded-lg bg-pink-500 flex items-center justify-center text-white text-xs">8</div>
+              <div class="board-slot filled w-12 h-12 rounded-lg bg-pink-500 flex items-center justify-center text-white text-xs">9</div>
+              <div class="board-slot filled w-12 h-12 rounded-lg bg-pink-500 flex items-center justify-center text-white text-xs">10</div>
+              <div class="board-slot filled w-12 h-12 rounded-lg bg-pink-500 flex items-center justify-center text-white text-xs">11</div>
+              <div class="board-slot filled w-12 h-12 rounded-lg bg-pink-500 flex items-center justify-center text-white text-xs">12</div>
+              <div class="board-slot w-12 h-12 rounded-lg border-2 border-dashed border-[var(--border-color)] flex items-center justify-center text-[var(--text-secondary)] text-xs">13</div>
+              <div class="board-slot w-12 h-12 rounded-lg border-2 border-dashed border-[var(--border-color)] flex items-center justify-center text-[var(--text-secondary)] text-xs">14</div>
+              <div class="board-slot w-12 h-12 rounded-lg border-2 border-dashed border-[var(--border-color)] flex items-center justify-center text-[var(--text-secondary)] text-xs">15</div>
+            </div>
+            <div class="flex justify-between items-center pt-4 border-t border-[var(--border-color)]">
+              <span class="text-sm text-[var(--text-secondary)]">12/15 Filled</span>
+              <span class="text-sm font-semibold text-green-600 dark:text-green-400">3 slots to split</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Features -->
+  <div id="features" class="py-20 bg-[var(--bg-primary)]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl lg:text-4xl font-bold mb-4">Everything You Need to Manage Boards</h2>
+        <p class="text-[var(--text-secondary)] text-lg">Comprehensive tools for members, admins, and network growth</p>
+      </div>
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div class="card rounded-xl p-6">
+          <div class="w-12 h-12 gradient-bg rounded-lg flex items-center justify-center mb-4">
+            <i class="fas fa-project-diagram text-white text-xl"></i>
+          </div>
+          <h3 class="text-xl font-bold mb-2">Interactive Board View</h3>
+          <p class="text-[var(--text-secondary)]">Visual 15-slot board representation with real-time fill status and auto-split animation</p>
+        </div>
+        <div class="card rounded-xl p-6">
+          <div class="w-12 h-12 gradient-bg rounded-lg flex items-center justify-center mb-4">
+            <i class="fas fa-users text-white text-xl"></i>
+          </div>
+          <h3 class="text-xl font-bold mb-2">Member Management</h3>
+          <p class="text-[var(--text-secondary)]">Search, filter, and manage members with board status, earnings, and sponsor tracking</p>
+        </div>
+        <div class="card rounded-xl p-6">
+          <div class="w-12 h-12 gradient-bg rounded-lg flex items-center justify-center mb-4">
+            <i class="fas fa-sitemap text-white text-xl"></i>
+          </div>
+          <h3 class="text-xl font-bold mb-2">Genealogy Tree</h3>
+          <p class="text-[var(--text-secondary)]">Visualize downline structure and track board progression for each member</p>
+        </div>
+        <div class="card rounded-xl p-6">
+          <div class="w-12 h-12 gradient-bg rounded-lg flex items-center justify-center mb-4">
+            <i class="fas fa-calculator text-white text-xl"></i>
+          </div>
+          <h3 class="text-xl font-bold mb-2">Bonus Calculator</h3>
+          <p class="text-[var(--text-secondary)]">Simulate earnings from direct referrals, board completion, and level bonuses</p>
+        </div>
+        <div class="card rounded-xl p-6">
+          <div class="w-12 h-12 gradient-bg rounded-lg flex items-center justify-center mb-4">
+            <i class="fas fa-chart-line text-white text-xl"></i>
+          </div>
+          <h3 class="text-xl font-bold mb-2">Analytics Dashboard</h3>
+          <p class="text-[var(--text-secondary)]">Track revenue, payouts, active boards, and completed cycles with charts</p>
+        </div>
+        <div class="card rounded-xl p-6">
+          <div class="w-12 h-12 gradient-bg rounded-lg flex items-center justify-center mb-4">
+            <i class="fas fa-receipt text-white text-xl"></i>
+          </div>
+          <h3 class="text-xl font-bold mb-2">Transaction History</h3>
+          <p class="text-[var(--text-secondary)]">Complete log of deposits, bonuses, withdrawals, and board commissions</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- How It Works -->
+  <div id="how-it-works" class="py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl lg:text-4xl font-bold mb-4">How Board to Board Works</h2>
+        <p class="text-[var(--text-secondary)] text-lg">Simple 4-step cycle for exponential growth</p>
+      </div>
+      <div class="grid md:grid-cols-4 gap-8">
+        <div class="text-center">
+          <div class="w-16 h-16 mx-auto gradient-bg rounded-full flex items-center justify-center text-white text-2xl font-bold mb-4">1</div>
+          <h3 class="text-lg font-bold mb-2">Join Board</h3>
+          <p class="text-[var(--text-secondary)] text-sm">Member enters at position 15 in an active board</p>
+        </div>
+        <div class="text-center">
+          <div class="w-16 h-16 mx-auto gradient-bg rounded-full flex items-center justify-center text-white text-2xl font-bold mb-4">2</div>
+          <h3 class="text-lg font-bold mb-2">Fill Positions</h3>
+          <p class="text-[var(--text-secondary)] text-sm">Recruit or auto-fill to complete all 15 slots</p>
+        </div>
+        <div class="text-center">
+          <div class="w-16 h-16 mx-auto gradient-bg rounded-full flex items-center justify-center text-white text-2xl font-bold mb-4">3</div>
+          <h3 class="text-lg font-bold mb-2">Board Splits</h3>
+          <p class="text-[var(--text-secondary)] text-sm">Top member cycles out, board splits into 2 new boards</p>
+        </div>
+        <div class="text-center">
+          <div class="w-16 h-16 mx-auto gradient-bg rounded-full flex items-center justify-center text-white text-2xl font-bold mb-4">4</div>
+          <h3 class="text-lg font-bold mb-2">Earn & Advance</h3>
+          <p class="text-[var(--text-secondary)] text-sm">Receive payout and move to next level board</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="card border-t border-t-[var(--border-color)] py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-[var(--text-secondary)]">
+      <p>&copy; 2024 BoardFlow MLM. Demo system with sample data. No backend required.</p>
+    </div>
+  </footer>
+</section>
+
+<!-- Dashboard -->
+<section id="dashboard" class="hidden min-h-screen">
+  <!-- Dashboard Header -->
+  <header class="sticky top-0 z-40 card border-b border-b-[var(--border-color)]">
+    <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-16">
+        <div class="flex items-center gap-3">
+          <button onclick="showLanding()" class="lg:hidden">
+            <i class="fas fa-arrow-left text-xl text-[var(--text-primary)]"></i>
+          </button>
+          <div class="w-10 h-10 gradient-bg rounded-lg flex items-center justify-center">
+            <i class="fas fa-layer-group text-white text-xl"></i>
+          </div>
+          <div class="hidden sm:block">
+            <span class="text-xl font-bold gradient-text">BoardFlow</span>
+            <span class="text-sm text-[var(--text-secondary)] ml-2">Dashboard</span>
+          </div>
+        </div>
+        <nav class="hidden lg:flex items-center gap-6">
+          <button onclick="showTab('overview')" class="nav-link tab-btn active py-4 text-sm font-medium text-[var(--text-primary)]">Overview</button>
+          <button onclick="showTab('boards')" class="nav-link tab-btn py-4 text-sm font-medium text-[var(--text-secondary)]">Boards</button>
+          <button onclick="showTab('members')" class="nav-link tab-btn py-4 text-sm font-medium text-[var(--text-secondary)]">Members</button>
+          <button onclick="showTab('transactions')" class="nav-link tab-btn py-4 text-sm font-medium text-[var(--text-secondary)]">Transactions</button>
+          <button onclick="showTab('genealogy')" class="nav-link tab-btn py-4 text-sm font-medium text-[var(--text-secondary)]">Genealogy</button>
+          <button onclick="showTab('calculator')" class="nav-link tab-btn py-4 text-sm font-medium text-[var(--text-secondary)]">Calculator</button>
+        </nav>
+        <div class="flex items-center gap-3">
+          <button id="themeToggleDash" onclick="toggleTheme()" class="w-10 h-10 rounded-lg card flex items-center justify-center">
+            <i class="fas fa-moon text-[var(--text-primary)]"></i>
+          </button>
+          <div class="hidden sm:flex items-center gap-2 card px-3 py-2 rounded-lg">
+            <div class="w-8 h-8 gradient-bg rounded-full flex items-center justify-center text-white text-sm font-bold">AD</div>
+            <span class="text-sm font-medium">Admin</span>
+          </div>
+          <button class="lg:hidden" onclick="toggleDashboardMenu()">
+            <i class="fas fa-bars text-xl text-[var(--text-primary)]"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile Dashboard Menu -->
+  <div id="dashMobileMenu" class="hidden lg:hidden card border-b border-b-[var(--border-color)]">
+    <div class="px-4 py-3 space-y-2">
+      <button onclick="showTab('overview')" class="block w-full text-left px-3 py-2 rounded-lg text-[var(--text-primary)]">Overview</button>
+      <button onclick="showTab('boards')" class="block w-full text-left px-3 py-2 rounded-lg text-[var(--text-secondary)]">Boards</button>
+      <button onclick="showTab('members')" class="block w-full text-left px-3 py-2 rounded-lg text-[var(--text-secondary)]">Members</button>
+      <button onclick="showTab('transactions')" class="block w-full text-left px-3 py-2 rounded-lg text-[var(--text-secondary)]">Transactions</button>
+      <button onclick="showTab('genealogy')" class="block w-full text-left px-3 py-2 rounded-lg text-[var(--text-secondary)]">Genealogy</button>
+      <button onclick="showTab('calculator')" class="block w-full text-left px-3 py-2 rounded-lg text-[var(--text-secondary)]">Calculator</button>
+    </div>
+  </div>
+
+  <main class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Overview Tab -->
+    <div id="tab-overview" class="tab-content space-y-6">
+      <!-- Metrics -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+        <div class="card rounded-xl p-6">
+          <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 bg-blue-500/10 rounded-lg flex items-center justify-center">
+              <i class="fas fa-users text-blue-500 text-xl"></i>
+            </div>
+            <span class="text-xs text-green-600 dark:text-green-400 font-medium">+12%</span>
+          </div>
+          <p class="text-[var(--text-secondary)] text-sm mb-1">Total Members</p>
+          <p class="text-3xl font-bold" id="metric-members">0</p>
+        </div>
+        <div class="card rounded-xl p-6">
+          <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 bg-purple-500/10 rounded-lg flex items-center justify-center">
+              <i class="fas fa-th text-purple-500 text-xl"></i>
+            </div>
+            <span class="text-xs text-green-600 dark:text-green-400 font-medium">+3</span>
+          </div>
+          <p class="text-[var(--text-secondary)] text-sm mb-1">Active Boards</p>
+          <p class="text-3xl font-bold" id="metric-boards">0</p>
+        </div>
+        <div class="card rounded-xl p-6">
+          <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 bg-green-500/10 rounded-lg flex items-center justify-center">
+              <i class="fas fa-sync text-green-500 text-xl"></i>
+            </div>
+            <span class="text-xs text-green-600 dark:text-green-400 font-medium">+8</span>
+          </div>
+          <p class="text-[var(--text-secondary)] text-sm mb-1">Completed Cycles</p>
+          <p class="text-3xl font-bold" id="metric-cycles">0</p>
+        </div>
+        <div class="card rounded-xl p-6">
+          <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 bg-yellow-500/10 rounded-lg flex items-center justify-center">
+              <i class="fas fa-dollar-sign text-yellow-500 text-xl"></i>
+            </div>
+            <span class="text-xs text-green-600 dark:text-green-400 font-medium">+24%</span>
+          </div>
+          <p class="text-[var(--text-secondary)] text-sm mb-1">Total Revenue</p>
+          <p class="text-3xl font-bold" id="metric-revenue">$0</p>
+        </div>
+        <div class="card rounded-xl p-6">
+          <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 bg-pink-500/10 rounded-lg flex items-center justify-center">
+              <i class="fas fa-hand-holding-usd text-pink-500 text-xl"></i>
+            </div>
+            <span class="text-xs text-green-600 dark:text-green-400 font-medium">+18%</span>
+          </div>
+          <p class="text-[var(--text-secondary)] text-sm mb-1">Total Payouts</p>
+          <p class="text-3xl font-bold" id="metric-payouts">$0</p>
+        </div>
+      </div>
+
+      <!-- Charts -->
+      <div class="grid lg:grid-cols-2 gap-6">
+        <div class="card rounded-xl p-6">
+          <h3 class="text-lg font-bold mb-4">Revenue & Payouts Trend</h3>
+          <canvas id="revenueChart"></canvas>
+        </div>
+        <div class="card rounded-xl p-6">
+          <h3 class="text-lg font-bold mb-4">Board Status Distribution</h3>
+          <canvas id="boardChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Recent Activity -->
+      <div class="grid lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 card rounded-xl p-6">
+          <h3 class="text-lg font-bold mb-4">Recent Board Splits</h3>
+          <div id="recentSplits" class="space-y-3"></div>
+        </div>
+        <div class="card rounded-xl p-6">
+          <h3 class="text-lg font-bold mb-4">Top Earners</h3>
+          <div id="topEarners" class="space-y-3"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Boards Tab -->
+    <div id="tab-boards" class="tab-content hidden space-y-6">
+      <div class="flex flex-wrap justify-between items-center gap-4">
+        <h2 class="text-2xl font-bold">Board Visualization</h2>
+        <div class="flex gap-3">
+          <select id="boardSelect" onchange="renderBoard()" class="card px-4 py-2 rounded-lg text-[var(--text-primary)] bg-[var(--bg-primary)] border border-[var(--border-color)]">
+          </select>
+          <button onclick="simulateFill()" class="px-4 py-2 gradient-bg text-white rounded-lg font-medium hover:opacity-90 transition">
+            <i class="fas fa-plus mr-2"></i>Simulate Fill
+          </button>
+        </div>
+      </div>
+      
+      <div class="grid lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 card rounded-xl p-6">
+          <div class="flex justify-between items-center mb-6">
+            <div>
+              <h3 class="text-xl font-bold" id="boardTitle">Board #A247</h3>
+              <p class="text-sm text-[var(--text-secondary)]" id="boardLevel">Level 1 Board</p>
+            </div>
+            <span id="boardStatus" class="px-4 py-2 bg-green-500/10 text-green-600 dark:text-green-400 rounded-full text-sm font-medium">Active</span>
+          </div>
+          <div id="boardVisualization" class="flex justify-center"></div>
+          <div class="mt-6 pt-6 border-t border-[var(--border-color)] grid grid-cols-3 gap-4 text-center">
+            <div>
+              <p class="text-2xl font-bold text-blue-500" id="filledSlots">0</p>
+              <p class="text-sm text-[var(--text-secondary)]">Filled</p>
+            </div>
+            <div>
+              <p class="text-2xl font-bold text-purple-500" id="emptySlots">15</p>
+              <p class="text-sm text-[var(--text-secondary)]">Remaining</p>
+            </div>
+            <div>
+              <p class="text-2xl font-bold text-green-500" id="boardEarnings">$0</p>
+              <p class="text-sm text-[var(--text-secondary)]">Total Value</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="space-y-6">
+          <div class="card rounded-xl p-6">
+            <h3 class="text-lg font-bold mb-4">Board Info</h3>
+            <div class="space-y-3 text-sm">
+              <div class="flex justify-between">
+                <span class="text-[var(--text-secondary)]">Board ID:</span>
+                <span class="font-medium" id="infoBoardId">-</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-[var(--text-secondary)]">Level:</span>
+                <span class="font-medium" id="infoLevel">-</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-[var(--text-secondary)]">Created:</span>
+                <span class="font-medium" id="infoCreated">-</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-[var(--text-secondary)]">Split Count:</span>
+                <span class="font-medium" id="infoSplits">-</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-[var(--text-secondary)]">Entry Fee:</span>
+                <span class="font-medium" id="infoEntryFee">-</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-[var(--text-secondary)]">Payout:</span>
+                <span class="font-medium text-green-600 dark:text-green-400" id="infoPayout">-</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="card rounded-xl p-6">
+            <h3 class="text-lg font-bold mb-4">Quick Actions</h3>
+            <div class="space-y-2">
+              <button onclick="addMemberToBoardModal()" class="w-full px-4 py-2 card hover:bg-[var(--bg-tertiary)] rounded-lg text-left text-sm transition">
+                <i class="fas fa-user-plus mr-2 text-blue-500"></i>Add Member
+              </button>
+              <button onclick="triggerSplit()" class="w-full px-4 py-2 card hover:bg-[var(--bg-tertiary)] rounded-lg text-left text-sm transition">
+                <i class="fas fa-code-branch mr-2 text-purple-500"></i>Force Split
+              </button>
+              <button onclick="viewBoardMembers()" class="w-full px-4 py-2 card hover:bg-[var(--bg-tertiary)] rounded-lg text-left text-sm transition">
+                <i class="fas fa-list mr-2 text-green-500"></i>View Members
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Members Tab -->
+    <div id="tab-members" class="tab-content hidden space-y-6">
+      <div class="flex flex-wrap justify-between items-center gap-4">
+        <h2 class="text-2xl font-bold">Member Management</h2>
+        <button onclick="openAddMemberModal()" class="px-4 py-2 gradient-bg text-white rounded-lg font-medium hover:opacity-90 transition">
+          <i class="fas fa-plus mr-2"></i>Add Member
+        </button>
+      </div>
+      
+      <div class="card rounded-xl p-6">
+        <div class="flex flex-wrap gap-4 mb-6">
+          <div class="flex-1 min-w-[200px]">
+            <input type="text" id="memberSearch" placeholder="Search by username, sponsor..." oninput="filterMembers()" class="w-full px-4 py-2 card bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-purple-500">
+          </div>
+          <select id="levelFilter" onchange="filterMembers()" class="px-4 py-2 card bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)]">
+            <option value="">All Levels</option>
+            <option value="1">Level 1</option>
+            <option value="2">Level 2</option>
+            <option value="3">Level 3</option>
+            <option value="4">Level 4</option>
+          </select>
+          <select id="statusFilter" onchange="filterMembers()" class="px-4 py-2 card bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)]">
+            <option value="">All Status</option>
+            <option value="active">Active</option>
+            <option value="cycling">Cycling</option>
+            <option value="completed">Completed</option>
+          </select>
+        </div>
+        
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead>
+              <tr class="border-b border-[var(--border-color)]">
+                <th class="text-left py-3 px-4 text-sm font-semibold text-[var(--text-secondary)]">Username</th>
+                <th class="text-left py-3 px-4 text-sm font-semibold text-[var(--text-secondary)]">Sponsor</th>
+                <th class="text-left py-3 px-4 text-sm font-semibold text-[var(--text-secondary)]">Level</th>
+                <th class="text-left py-3 px-4 text-sm font-semibold text-[var(--text-secondary)]">Board</th>
+                <th class="text-left py-3 px-4 text-sm font-semibold text-[var(--text-secondary)]">Status</th>
+                <th class="text-left py-3 px-4 text-sm font-semibold text-[var(--text-secondary)]">Earnings</th>
+                <th class="text-left py-3 px-4 text-sm font-semibold text-[var(--text-secondary)]">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="membersTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Transactions Tab -->
+    <div id="tab-transactions" class="tab-content hidden space-y-6">
+      <h2 class="text-2xl font-bold">Transaction History</h2>
+      
+      <div class="grid lg:grid-cols-4 gap-6 mb-6">
+        <div class="card rounded-xl p-4">
+          <p class="text-[var(--text-secondary)] text-sm mb-1">Total Deposits</p>
+          <p class="text-2xl font-bold text-green-600 dark:text-green-400" id="totalDeposits">$0</p>
+        </div>
+        <div class="card rounded-xl p-4">
+          <p class="text-[var(--text-secondary)] text-sm mb-1">Total Bonuses</p>
+          <p class="text-2xl font-bold text-blue-600 dark:text-blue-400" id="totalBonuses">$0</p>
+        </div>
+        <div class="card rounded-xl p-4">
+          <p class="text-[var(--text-secondary)] text-sm mb-1">Total Withdrawals</p>
+          <p class="text-2xl font-bold text-purple-600 dark:text-purple-400" id="totalWithdrawals">$0</p>
+        </div>
+        <div class="card rounded-xl p-4">
+          <p class="text-[var(--text-secondary)] text-sm mb-1">Pending</p>
+          <p class="text-2xl font-bold text-yellow-600 dark:text-yellow-400" id="totalPending">$0</p>
+        </div>
+      </div>
+      
+      <div class="card rounded-xl p-6">
+        <div class="flex flex-wrap gap-4 mb-6">
+          <select id="txTypeFilter" onchange="filterTransactions()" class="px-4 py-2 card bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)]">
+            <option value="">All Types</option>
+            <option value="deposit">Deposit</option>
+            <option value="bonus">Bonus</option>
+            <option value="withdrawal">Withdrawal</option>
+            <option value="commission">Commission</option>
+          </select>
+          <input type="date" id="txDateFilter" onchange="filterTransactions()" class="px-4 py-2 card bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)]">
+        </div>
+        
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead>
+              <tr class="border-b border-[var(--border-color)]">
+                <th class="text-left py-3 px-4 text-sm font-semibold text-[var(--text-secondary)]">Date</th>
+                <th class="text-left py-3 px-4 text-sm font-semibold text-[var(--text-secondary)]">Member</th>
+                <th class="text-left py-3 px-4 text-sm font-semibold text-[var(--text-secondary)]">Type</th>
+                <th class="text-left py-3 px-4 text-sm font-semibold text-[var(--text-secondary)]">Description</th>
+                <th class="text-left py-3 px-4 text-sm font-semibold text-[var(--text-secondary)]">Amount</th>
+                <th class="text-left py-3 px-4 text-sm font-semibold text-[var(--text-secondary)]">Status</th>
+              </tr>
+            </thead>
+            <tbody id="transactionsTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Genealogy Tab -->
+    <div id="tab-genealogy" class="tab-content hidden space-y-6">
+      <div class="flex flex-wrap justify-between items-center gap-4">
+        <h2 class="text-2xl font-bold">Downline Genealogy Tree</h2>
+        <div class="flex gap-3">
+          <input type="text" id="genealogySearch" placeholder="Search member..." class="px-4 py-2 card bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)]">
+          <button onclick="searchGenealogy()" class="px-4 py-2 gradient-bg text-white rounded-lg font-medium hover:opacity-90 transition">
+            <i class="fas fa-search mr-2"></i>Search
+          </button>
+        </div>
+      </div>
+      
+      <div class="card rounded-xl p-6">
+        <div id="genealogyTree" class="overflow-auto min-h-[500px]"></div>
+      </div>
+    </div>
+
+    <!-- Calculator Tab -->
+    <div id="tab-calculator" class="tab-content hidden space-y-6">
+      <h2 class="text-2xl font-bold">Commission & Bonus Calculator</h2>
+      
+      <div class="grid lg:grid-cols-2 gap-6">
+        <div class="card rounded-xl p-6">
+          <h3 class="text-lg font-bold mb-4">Simulation Parameters</h3>
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-[var(--text-secondary)] mb-2">Board Level</label>
+              <select id="calcLevel" onchange="calculateEarnings()" class="w-full px-4 py-2 card bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)]">
+                <option value="1">Level 1 - $100 Entry</option>
+                <option value="2">Level 2 - $250 Entry</option>
+                <option value="3">Level 3 - $500 Entry</option>
+                <option value="4">Level 4 - $1000 Entry</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-[var(--text-secondary)] mb-2">Direct Referrals</label>
+              <input type="number" id="calcReferrals" value="4" min="0" max="15" onchange="calculateEarnings()" class="w-full px-4 py-2 card bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)]">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-[var(--text-secondary)] mb-2">Spillover Members</label>
+              <input type="number" id="calcSpillover" value="2" min="0" max="15" onchange="calculateEarnings()" class="w-full px-4 py-2 card bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)]">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-[var(--text-secondary)] mb-2">Completed Cycles</label>
+              <input type="number" id="calcCycles" value="1" min="1" max="10" onchange="calculateEarnings()" class="w-full px-4 py-2 card bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)]">
+            </div>
+          </div>
+        </div>
+        
+        <div class="card rounded-xl p-6">
+          <h3 class="text-lg font-bold mb-4">Projected Earnings</h3>
+          <div class="space-y-4">
+            <div class="flex justify-between items-center p-4 card rounded-lg">
+              <span class="text-[var(--text-secondary)]">Entry Fee</span>
+              <span class="text-xl font-bold text-red-500" id="calcEntryFee">-$100</span>
+            </div>
+            <div class="flex justify-between items-center p-4 card rounded-lg">
+              <span class="text-[var(--text-secondary)]">Direct Referral Bonus</span>
+              <span class="text-xl font-bold text-green-500" id="calcDirectBonus">+$0</span>
+            </div>
+            <div class="flex justify-between items-center p-4 card rounded-lg">
+              <span class="text-[var(--text-secondary)]">Board Completion Bonus</span>
+              <span class="text-xl font-bold text-green-500" id="calcBoardBonus">+$0</span>
+            </div>
+            <div class="flex justify-between items-center p-4 card rounded-lg">
+              <span class="text-[var(--text-secondary)]">Level Advancement Bonus</span>
+              <span class="text-xl font-bold text-green-500" id="calcLevelBonus">+$0</span>
+            </div>
+            <div class="flex justify-between items-center p-4 gradient-bg rounded-lg text-white">
+              <span class="font-semibold">Net Profit</span>
+              <span class="text-2xl font-bold" id="calcNetProfit">$0</span>
+            </div>
+            <div class="pt-4 border-t border-[var(--border-color)]">
+              <p class="text-sm text-[var(--text-secondary)] mb-2">ROI: <span class="font-bold text-[var(--text-primary)]" id="calcROI">0%</span></p>
+              <p class="text-xs text-[var(--text-secondary)]">* Calculations based on standard board-to-board compensation plan</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="card rounded-xl p-6">
+        <h3 class="text-lg font-bold mb-4">Earnings Breakdown Chart</h3>
+        <canvas id="earningsChart"></canvas>
+      </div>
+    </div>
+  </main>
+</section>
+
+<!-- Modals -->
+<div id="memberModal" class="hidden fixed inset-0 z-50 modal-backdrop flex items-center justify-center p-4">
+  <div class="card rounded-xl max-w-md w-full p-6" onclick="event.stopPropagation()">
+    <h3 class="text-xl font-bold mb-4" id="modalTitle">Add Member</h3>
+    <div class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium text-[var(--text-secondary)] mb-2">Username</label>
+        <input type="text" id="modalUsername" class="w-full px-4 py-2 card bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)]">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-[var(--text-secondary)] mb-2">Sponsor</label>
+        <select id="modalSponsor" class="w-full px-4 py-2 card bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)]"></select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-[var(--text-secondary)] mb-2">Board Level</label>
+        <select id="modalLevel" class="w-full px-4 py-2 card bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)]">
+          <option value="1">Level 1</option>
+          <option value="2">Level 2</option>
+          <option value="3">Level 3</option>
+          <option value="4">Level 4</option>
+        </select>
+      </div>
+    </div>
+    <div class="flex gap-3 mt-6">
+      <button onclick="closeModal('memberModal')" class="flex-1 px-4 py-2 card hover:bg-[var(--bg-tertiary)] rounded-lg font-medium transition">Cancel</button>
+      <button onclick="saveMember()" class="flex-1 px-4 py-2 gradient-bg text-white rounded-lg font-medium hover:opacity-90 transition">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// Demo Data Generation
+const boardLevels = [
+  { level: 1, entryFee: 100, payout: 800, name: "Bronze" },
+  { level: 2, entryFee: 250, payout: 2000, name: "Silver" },
+  { level: 3, entryFee: 500, payout: 4000, name: "Gold" },
+  { level: 4, entryFee: 1000, payout: 8000, name: "Platinum" }
+];
+
+let boards = [];
+let members = [];
+let transactions = [];
+let charts = {};
+
+// Generate sample data
+function generateDemoData() {
+  // Generate boards
+  for (let i = 0; i < 4; i++) {
+    const level = boardLevels[i];
+    boards.push({
+      id: `B${1000 + i}`,
+      level: level.level,
+      name: `${level.name} Board`,
+      entryFee: level.entryFee,
+      payout: level.payout,
+      slots: Array(15).fill(null),
+      filledCount: 0,
+      status: 'active',
+      created: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000),
+      splitCount: Math.floor(Math.random() * 5)
+    });
+  }
+
+  // Generate members
+  const firstNames = ['John', 'Jane', 'Mike', 'Sarah', 'David', 'Emily', 'Chris', 'Lisa', 'Tom', 'Emma', 'Alex', 'Sofia'];
+  const lastNames = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez'];
+  
+  for (let i = 0; i < 65; i++) {
+    const sponsor = i === 0 ? null : members[Math.floor(Math.random() * Math.min(i, 10))].username;
+    const boardIdx = Math.floor(Math.random() * boards.length);
+    const board = boards[boardIdx];
+    const position = board.filledCount;
+    
+    const member = {
+      id: `M${1000 + i}`,
+      username: i === 0 ? 'admin' : `${firstNames[Math.floor(Math.random() * firstNames.length)]}${lastNames[Math.floor(Math.random() * lastNames.length)]}${i}`,
+      sponsor: sponsor,
+      level: board.level,
+      boardId: board.id,
+      position: position + 1,
+      status: ['active', 'cycling', 'completed'][Math.floor(Math.random() * 3)],
+      earnings: Math.floor(Math.random() * 5000) + 500,
+      joinDate: new Date(Date.now() - Math.random() * 90 * 24 * 60 * 60 * 1000),
+      referrals: 0
+    };
+    
+    members.push(member);
+    
+    if (board.filledCount < 15) {
+      board.slots[board.filledCount] = member.username;
+      board.filledCount++;
+    }
+  }
+
+  // Calculate referrals
+  members.forEach(m => {
+    m.referrals = members.filter(member => member.sponsor === m.username).length;
+  });
+
+  // Generate transactions
+  const txTypes = ['deposit', 'bonus', 'withdrawal', 'commission'];
+  const txStatuses = ['completed', 'pending', 'completed', 'completed'];
+  
+  for (let i = 0; i < 150; i++) {
+    const member = members[Math.floor(Math.random() * members.length)];
+    const type = txTypes[Math.floor(Math.random() * txTypes.length)];
+    transactions.push({
+      id: `T${10000 + i}`,
+      member: member.username,
+      type: type,
+      amount: type === 'withdrawal' ? -(Math.floor(Math.random() * 1000) + 100) : Math.floor(Math.random() * 500) + 50,
+      description: getTxDescription(type, member),
+      date: new Date(Date.now() - Math.random() * 60 * 24 * 60 * 60 * 1000),
+      status: txStatuses[Math.floor(Math.random() * txStatuses.length)]
+    });
+  }
+  
+  transactions.sort((a, b) => b.date - a.date);
+}
+
+function getTxDescription(type, member) {
+  const descriptions = {
+    deposit: `Board entry fee - Level ${member.level}`,
+    bonus: `Board completion bonus`,
+    withdrawal: `Withdrawal to wallet`,
+    commission: `Direct referral commission`
+  };
+  return descriptions[type];
+}
+
+// Theme Management
+function toggleTheme() {
+  document.documentElement.classList.toggle('dark');
+  const isDark = document.documentElement.classList.contains('dark');
+  localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  updateThemeIcon();
+  updateCharts();
+}
+
+function updateThemeIcon() {
+  const isDark = document.documentElement.classList.contains('dark');
+  const icons = document.querySelectorAll('#themeToggle i, #themeToggleDash i');
+  icons.forEach(icon => {
+    icon.className = isDark ? 'fas fa-sun text-[var(--text-primary)]' : 'fas fa-moon text-[var(--text-primary)]';
+  });
+}
+
+function initTheme() {
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  if (savedTheme === 'dark') {
+    document.documentElement.classList.add('dark');
+  }
+  updateThemeIcon();
+}
+
+// Navigation
+function showLanding() {
+  document.getElementById('landing').classList.remove('hidden');
+  document.getElementById('dashboard').classList.add('hidden');
+  window.scrollTo(0, 0);
+}
+
+function showDashboard() {
+  document.getElementById('landing').classList.add('hidden');
+  document.getElementById('dashboard').classList.remove('hidden');
+  updateMetrics();
+  renderRecentActivity();
+  initCharts();
+}
+
+function showTab(tabName) {
+  document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
+  document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+  
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.classList.remove('active');
+    btn.classList.add('text-[var(--text-secondary)]');
+    btn.classList.remove('text-[var(--text-primary)]');
+  });
+  
+  event.target.classList.add('active');
+  event.target.classList.add('text-[var(--text-primary)]');
+  event.target.classList.remove('text-[var(--text-secondary)]');
+  
+  if (tabName === 'boards') renderBoard();
+  if (tabName === 'members') renderMembersTable();
+  if (tabName === 'transactions') renderTransactionsTable();
+  if (tabName === 'genealogy') renderGenealogyTree();
+  if (tabName === 'calculator') calculateEarnings();
+  
+  document.getElementById('dashMobileMenu').classList.add('hidden');
+}
+
+function toggleMobileMenu() {
+  document.getElementById('mobileMenu').classList.toggle('hidden');
+}
+
+function toggleDashboardMenu() {
+  document.getElementById('dashMobileMenu').classList.toggle('hidden');
+}
+
+function scrollToSection(id) {
+  document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+}
+
+// Metrics
+function updateMetrics() {
+  const totalMembers = members.length;
+  const activeBoards = boards.filter(b => b.status === 'active').length;
+  const completedCycles = boards.reduce((sum, b) => sum + b.splitCount, 0);
+  const totalRevenue = transactions.filter(t => t.type === 'deposit').reduce((sum, t) => sum + Math.abs(t.amount), 0);
+  const totalPayouts = transactions.filter(t => t.type === 'withdrawal' || t.type === 'bonus').reduce((sum, t) => sum + Math.abs(t.amount), 0);
+  
+  animateValue('metric-members', 0, totalMembers, 1000);
+  animateValue('metric-boards', 0, activeBoards, 1000);
+  animateValue('metric-cycles', 0, completedCycles, 1000);
+  animateValue('metric-revenue', 0, totalRevenue, 1000, '$');
+  animateValue('metric-payouts', 0, totalPayouts, 1000, '$');
+}
+
+function animateValue(id, start, end, duration, prefix = '') {
+  const element = document.getElementById(id);
+  const range = end - start;
+  const increment = range / (duration / 16);
+  let current = start;
+  
+  const timer = setInterval(() => {
+    current += increment;
+    if ((increment > 0 && current >= end) || (increment < 0 && current <= end)) {
+      current = end;
+      clearInterval(timer);
+    }
+    element.textContent = prefix + Math.floor(current).toLocaleString();
+  }, 16);
+}
+
+function renderRecentActivity() {
+  const recentSplits = transactions.filter(t => t.type === 'bonus').slice(0, 5);
+  const splitsHtml = recentSplits.map(t => `
+    <div class="flex items-center justify-between p-3 card rounded-lg">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 gradient-bg rounded-lg flex items-center justify-center text-white">
+          <i class="fas fa-trophy"></i>
+        </div>
+        <div>
+          <p class="font-medium text-sm">${t.member}</p>
+          <p class="text-xs text-[var(--text-secondary)]">${t.description}</p>
+        </div>
+      </div>
+      <div class="text-right">
+        <p class="font-bold text-green-600 dark:text-green-400">+$${Math.abs(t.amount)}</p>
+        <p class="text-xs text-[var(--text-secondary)]">${formatDate(t.date)}</p>
+      </div>
+    </div>
+  `).join('');
+  document.getElementById('recentSplits').innerHTML = splitsHtml || '<p class="text-[var(--text-secondary)] text-sm">No recent activity</p>';
+  
+  const topEarners = [...members].sort((a, b) => b.earnings - a.earnings).slice(0, 5);
+  const earnersHtml = topEarners.map((m, idx) => `
+    <div class="flex items-center justify-between p-3 card rounded-lg">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 gradient-bg rounded-full flex items-center justify-center text-white text-sm font-bold">${idx + 1}</div>
+        <div>
+          <p class="font-medium text-sm">${m.username}</p>
+          <p class="text-xs text-[var(--text-secondary)]">Level ${m.level}</p>
+        </div>
+      </div>
+      <p class="font-bold text-green-600 dark:text-green-400">$${m.earnings.toLocaleString()}</p>
+    </div>
+  `).join('');
+  document.getElementById('topEarners').innerHTML = earnersHtml;
+}
+
+// Charts
+function initCharts() {
+  const isDark = document.documentElement.classList.contains('dark');
+  const textColor = isDark ? '#cbd5e1' : '#475569';
+  const gridColor = isDark ? '#334155' : '#e2e8f0';
+  
+  // Revenue Chart
+  const revenueCtx = document.getElementById('revenueChart');
+  if (revenueCtx && !charts.revenue) {
+    const last7Days = Array.from({length: 7}, (_, i) => {
+      const date = new Date();
+      date.setDate(date.getDate() - (6 - i));
+      return date;
+    });
+    
+    const revenueData = last7Days.map(date => {
+      return transactions
+        .filter(t => t.type === 'deposit' && formatDate(t.date) === formatDate(date))
+        .reduce((sum, t) => sum + Math.abs(t.amount), 0);
+    });
+    
+    const payoutData = last7Days.map(date => {
+      return transactions
+        .filter(t => (t.type === 'withdrawal' || t.type === 'bonus') && formatDate(t.date) === formatDate(date))
+        .reduce((sum, t) => sum + Math.abs(t.amount), 0);
+    });
+    
+    charts.revenue = new Chart(revenueCtx, {
+      type: 'line',
+      data: {
+        labels: last7Days.map(d => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })),
+        datasets: [{
+          label: 'Revenue',
+          data: revenueData,
+          borderColor: '#667eea',
+          backgroundColor: 'rgba(102, 126, 234, 0.1)',
+          tension: 0.4,
+          fill: true
+        }, {
+          label: 'Payouts',
+          data: payoutData,
+          borderColor: '#764ba2',
+          backgroundColor: 'rgba(118, 75, 162, 0.1)',
+          tension: 0.4,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+          legend: { labels: { color: textColor } }
+        },
+        scales: {
+          x: { ticks: { color: textColor }, grid: { color: gridColor } },
+          y: { ticks: { color: textColor }, grid: { color: gridColor } }
+        }
+      }
+    });
+  }
+  
+  // Board Chart
+  const boardCtx = document.getElementById('boardChart');
+  if (boardCtx && !charts.board) {
+    charts.board = new Chart(boardCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Active', 'Splitting', 'Completed'],
+        datasets: [{
+          data: [
+            boards.filter(b => b.status === 'active').length,
+            boards.filter(b => b.status === 'splitting').length,
+            boards.filter(b => b.status === 'completed').length
+          ],
+          backgroundColor: ['#667eea', '#764ba2', '#10b981']
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+          legend: { labels: { color: textColor } }
+        }
+      }
+    });
+  }
+}
+
+function updateCharts() {
+  Object.values(charts).forEach(chart => chart.destroy());
+  charts = {};
+  initCharts();
+}
+
+// Board Visualization
+function renderBoard() {
+  const selectEl = document.getElementById('boardSelect');
+  if (selectEl.options.length === 0) {
+    boards.forEach((board, idx) => {
+      const option = document.createElement('option');
+      option.value = idx;
+      option.textContent = `${board.name} - ${board.id}`;
+      selectEl.appendChild(option);
+    });
+  }
+  
+  const boardIdx = parseInt(selectEl.value) || 0;
+  const board = boards[boardIdx];
+  
+  document.getElementById('boardTitle').textContent = `${board.name} - ${board.id}`;
+  document.getElementById('boardLevel').textContent = `Level ${board.level} Board`;
+  document.getElementById('boardStatus').textContent = board.status.charAt(0).toUpperCase() + board.status.slice(1);
+  document.getElementById('boardStatus').className = `px-4 py-2 rounded-full text-sm font-medium ${board.status === 'active' ? 'bg-green-500/10 text-green-600 dark:text-green-400' : 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400'}`;
+  
+  const boardHtml = `
+    <div class="space-y-3">
+      <div class="flex justify-center">
+        <div class="board-slot w-20 h-20 rounded-xl ${board.slots[0] ? 'gradient-bg' : 'border-2 border-dashed border-[var(--border-color)]'} flex items-center justify-center text-white font-bold shadow-lg ${board.slots[0] ? 'filled' : ''}">
+          ${board.slots[0] ? '<i class="fas fa-crown text-2xl"></i>' : '1'}
+        </div>
+      </div>
+      <div class="flex justify-center gap-3">
+        ${[1,2].map(i => `
+          <div class="board-slot w-16 h-16 rounded-xl ${board.slots[i] ? 'bg-blue-500' : 'border-2 border-dashed border-[var(--border-color)]'} flex items-center justify-center text-white text-sm font-semibold ${board.slots[i] ? 'filled' : 'text-[var(--text-secondary)]'}">
+            ${board.slots[i] ? i+1 : i+1}
+          </div>
+        `).join('')}
+      </div>
+      <div class="flex justify-center gap-2">
+        ${[3,4,5,6].map(i => `
+          <div class="board-slot w-14 h-14 rounded-xl ${board.slots[i] ? 'bg-purple-500' : 'border-2 border-dashed border-[var(--border-color)]'} flex items-center justify-center text-white text-xs font-semibold ${board.slots[i] ? 'filled' : 'text-[var(--text-secondary)]'}">
+            ${board.slots[i] ? i+1 : i+1}
+          </div>
+        `).join('')}
+      </div>
+      <div class="grid grid-cols-4 gap-2">
+        ${[7,8,9,10,11,12,13,14].map(i => `
+          <div class="board-slot w-full aspect-square rounded-lg ${board.slots[i] ? 'bg-pink-500' : 'border-2 border-dashed border-[var(--border-color)]'} flex items-center justify-center text-white text-xs ${board.slots[i] ? 'filled' : 'text-[var(--text-secondary)]'}">
+            ${board.slots[i] ? i+1 : i+1}
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+  
+  document.getElementById('boardVisualization').innerHTML = boardHtml;
+  document.getElementById('filledSlots').textContent = board.filledCount;
+  document.getElementById('emptySlots').textContent = 15 - board.filledCount;
+  document.getElementById('boardEarnings').textContent = `$${(board.filledCount * board.entryFee).toLocaleString()}`;
+  
+  document.getElementById('infoBoardId').textContent = board.id;
+  document.getElementById('infoLevel').textContent = `Level ${board.level} - ${board.name}`;
+  document.getElementById('infoCreated').textContent = formatDate(board.created);
+  document.getElementById('infoSplits').textContent = board.splitCount;
+  document.getElementById('infoEntryFee').textContent = `$${board.entryFee}`;
+  document.getElementById('infoPayout').textContent = `$${board.payout}`;
+}
+
+function simulateFill() {
+  const boardIdx = parseInt(document.getElementById('boardSelect').value) || 0;
+  const board = boards[boardIdx];
+  
+  if (board.filledCount >= 15) {
+    triggerSplit();
+    return;
+  }
+  
+  const newMember = {
+    id: `M${1000 + members.length}`,
+    username: `Demo${members.length}`,
+    sponsor: members[Math.floor(Math.random() * members.length)].username,
+    level: board.level,
+    boardId: board.id,
+    position: board.filledCount + 1,
+    status: 'active',
+    earnings: 0,
+    joinDate: new Date(),
+    referrals: 0
+  };
+  
+  members.push(newMember);
+  board.slots[board.filledCount] = newMember.username;
+  board.filledCount++;
+  
+  if (board.filledCount === 15) {
+    setTimeout(() => triggerSplit(), 500);
+  }
+  
+  renderBoard();
+  updateMetrics();
+}
+
+function triggerSplit() {
+  const boardIdx = parseInt(document.getElementById('boardSelect').value) || 0;
+  const board = boards[boardIdx];
+  
+  document.getElementById('boardVisualization').classList.add('splitting');
+  setTimeout(() => {
+    document.getElementById('boardVisualization').classList.remove('splitting');
+  }, 600);
+  
+  board.splitCount++;
+  board.filledCount = Math.floor(Math.random() * 8) + 4;
+  board.slots = Array(15).fill(null);
+  
+  for (let i = 0; i < board.filledCount; i++) {
+    const randomMember = members[Math.floor(Math.random() * members.length)];
+    board.slots[i] = randomMember.username;
+  }
+  
+  transactions.unshift({
+    id: `T${10000 + transactions.length}`,
+    member: members[0].username,
+    type: 'bonus',
+    amount: board.payout,
+    description: `Board ${board.id} split bonus`,
+    date: new Date(),
+    status: 'completed'
+  });
+  
+  alert(`Board ${board.id} has split! Top member cycled out with $${board.payout} payout.`);
+  renderBoard();
+  updateMetrics();
+}
+
+function addMemberToBoardModal() {
+  openAddMemberModal();
+}
+
+function viewBoardMembers() {
+  showTab('members');
+}
+
+// Members Table
+function renderMembersTable() {
+  const searchTerm = document.getElementById('memberSearch').value.toLowerCase();
+  const levelFilter = document.getElementById('levelFilter').value;
+  const statusFilter = document.getElementById('statusFilter').value;
+  
+  let filtered = members.filter(m => {
+    const matchesSearch = m.username.toLowerCase().includes(searchTerm) || 
+                         (m.sponsor && m.sponsor.toLowerCase().includes(searchTerm));
+    const matchesLevel = !levelFilter || m.level == levelFilter;
+    const matchesStatus = !statusFilter || m.status === statusFilter;
+    return matchesSearch && matchesLevel && matchesStatus;
+  });
+  
+  const html = filtered.map(m => `
+    <tr class="border-b border-[var(--border-color)] hover:bg-[var(--bg-tertiary)] transition">
+      <td class="py-3 px-4">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 gradient-bg rounded-full flex items-center justify-center text-white text-xs font-bold">
+            ${m.username.substring(0, 2).toUpperCase()}
+          </div>
+          <span class="font-medium">${m.username}</span>
+        </div>
+      </td>
+      <td class="py-3 px-4 text-sm text-[var(--text-secondary)]">${m.sponsor || '-'}</td>
+      <td class="py-3 px-4">
+        <span class="px-2 py-1 bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded text-xs font-medium">L${m.level}</span>
+      </td>
+      <td class="py-3 px-4 text-sm">${m.boardId}</td>
+      <td class="py-3 px-4">
+        <span class="px-2 py-1 rounded text-xs font-medium ${
+          m.status === 'active' ? 'bg-green-500/10 text-green-600 dark:text-green-400' :
+          m.status === 'cycling' ? 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400' :
+          'bg-gray-500/10 text-gray-600 dark:text-gray-400'
+        }">${m.status}</span>
+      </td>
+      <td class="py-3 px-4 font-semibold text-green-600 dark:text-green-400">$${m.earnings.toLocaleString()}</td>
+      <td class="py-3 px-4">
+        <button onclick="viewMember('${m.id}')" class="text-purple-600 dark:text-purple-400 hover:underline text-sm">
+          <i class="fas fa-eye mr-1"></i>View
+        </button>
+      </td>
+    </tr>
+  `).join('');
+  
+  document.getElementById('membersTable').innerHTML = html || '<tr><td colspan="7" class="py-8 text-center text-[var(--text-secondary)]">No members found</td></tr>';
+}
+
+function filterMembers() {
+  renderMembersTable();
+}
+
+function viewMember(id) {
+  const member = members.find(m => m.id === id);
+  alert(`Member Details:\n\nUsername: ${member.username}\nSponsor: ${member.sponsor || 'None'}\nLevel: ${member.level}\nBoard: ${member.boardId}\nPosition: ${member.position}\nStatus: ${member.status}\nEarnings: $${member.earnings}\nReferrals: ${member.referrals}\nJoin Date: ${formatDate(member.joinDate)}`);
+}
+
+// Transactions
+function renderTransactionsTable() {
+  const typeFilter = document.getElementById('txTypeFilter').value;
+  const dateFilter = document.getElementById('txDateFilter').value;
+  
+  let filtered = transactions.filter(t => {
+    const matchesType = !typeFilter || t.type === typeFilter;
+    const matchesDate = !dateFilter || formatDate(t.date) === dateFilter;
+    return matchesType && matchesDate;
+  });
+  
+  const html = filtered.map(t => `
+    <tr class="border-b border-[var(--border-color)] hover:bg-[var(--bg-tertiary)] transition">
+      <td class="py-3 px-4 text-sm">${formatDate(t.date)}</td>
+      <td class="py-3 px-4 text-sm font-medium">${t.member}</td>
+      <td class="py-3 px-4">
+        <span class="px-2 py-1 rounded text-xs font-medium ${
+          t.type === 'deposit' ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400' :
+          t.type === 'bonus' ? 'bg-green-500/10 text-green-600 dark:text-green-400' :
+          t.type === 'withdrawal' ? 'bg-purple-500/10 text-purple-600 dark:text-purple-400' :
+          'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400'
+        }">${t.type}</span>
+      </td>
+      <td class="py-3 px-4 text-sm text-[var(--text-secondary)]">${t.description}</td>
+      <td class="py-3 px-4 font-semibold ${t.amount >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}">
+        ${t.amount >= 0 ? '+' : ''}$${Math.abs(t.amount).toLocaleString()}
+      </td>
+      <td class="py-3 px-4">
+        <span class="px-2 py-1 rounded text-xs font-medium ${
+          t.status === 'completed' ? 'bg-green-500/10 text-green-600 dark:text-green-400' :
+          'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400'
+        }">${t.status}</span>
+      </td>
+    </tr>
+  `).join('');
+  
+  document.getElementById('transactionsTable').innerHTML = html || '<tr><td colspan="6" class="py-8 text-center text-[var(--text-secondary)]">No transactions found</td></tr>';
+  
+  // Update totals
+  const deposits = transactions.filter(t => t.type === 'deposit').reduce((sum, t) => sum + Math.abs(t.amount), 0);
+  const bonuses = transactions.filter(t => t.type === 'bonus').reduce((sum, t) => sum + Math.abs(t.amount), 0);
+  const withdrawals = transactions.filter(t => t.type === 'withdrawal').reduce((sum, t) => sum + Math.abs(t.amount), 0);
+  const pending = transactions.filter(t => t.status === 'pending').reduce((sum, t) => sum + Math.abs(t.amount), 0);
+  
+  document.getElementById('totalDeposits').textContent = `$${deposits.toLocaleString()}`;
+  document.getElementById('totalBonuses').textContent = `$${bonuses.toLocaleString()}`;
+  document.getElementById('totalWithdrawals').textContent = `$${withdrawals.toLocaleString()}`;
+  document.getElementById('totalPending').textContent = `$${pending.toLocaleString()}`;
+}
+
+function filterTransactions() {
+  renderTransactionsTable();
+}
+
+// Genealogy Tree
+function renderGenealogyTree(rootUsername = 'admin') {
+  const rootMember = members.find(m => m.username === rootUsername) || members[0];
+  
+  function buildTree(member, level = 0) {
+    if (level > 3) return '';
+    
+    const children = members.filter(m => m.sponsor === member.username);
+    const hasChildren = children.length > 0;
+    
+    return `
+      <div class="tree-node ${level > 0 ? 'ml-8 mt-4' : ''} ${level === 0 ? 'mb-6' : ''}">
+        <div class="inline-block card rounded-lg p-4 ${level === 0 ? 'gradient-bg text-white' : ''}">
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 ${level === 0 ? 'bg-white/20' : 'gradient-bg'} rounded-full flex items-center justify-center ${level === 0 ? 'text-white' : 'text-white'} font-bold">
+              ${member.username.substring(0, 2).toUpperCase()}
+            </div>
+            <div>
+              <p class="font-bold ${level === 0 ? 'text-white' : ''}">${member.username}</p>
+              <p class="text-xs ${level === 0 ? 'text-white/80' : 'text-[var(--text-secondary)]'}">Level ${member.level} | ${member.boardId}</p>
+              <p class="text-xs ${level === 0 ? 'text-white/80' : 'text-green-600 dark:text-green-400'}">$${member.earnings}</p>
+            </div>
+          </div>
+        </div>
+        ${hasChildren ? `<div class="border-l-2 border-[var(--border-color)] ml-6 mt-2">${children.map(child => buildTree(child, level + 1)).join('')}</div>` : ''}
+      </div>
+    `;
+  }
+  
+  document.getElementById('genealogyTree').innerHTML = buildTree(rootMember);
+}
+
+function searchGenealogy() {
+  const searchTerm = document.getElementById('genealogySearch').value;
+  if (searchTerm) {
+    const member = members.find(m => m.username.toLowerCase().includes(searchTerm.toLowerCase()));
+    if (member) {
+      renderGenealogyTree(member.username);
+    } else {
+      alert('Member not found');
+    }
+  } else {
+    renderGenealogyTree();
+  }
+}
+
+// Calculator
+function calculateEarnings() {
+  const level = parseInt(document.getElementById('calcLevel').value);
+  const referrals = parseInt(document.getElementById('calcReferrals').value) || 0;
+  const spillover = parseInt(document.getElementById('calcSpillover').value) || 0;
+  const cycles = parseInt(document.getElementById('calcCycles').value) || 1;
+  
+  const levelData = boardLevels[level - 1];
+  const entryFee = levelData.entryFee;
+  const payout = levelData.payout;
+  
+  const directBonus = referrals * (entryFee * 0.1);
+  const boardBonus = payout * cycles;
+  const levelBonus = level > 1 ? (levelData.entryFee * 0.5 * cycles) : 0;
+  
+  const totalEarnings = directBonus + boardBonus + levelBonus;
+  const netProfit = totalEarnings - (entryFee * cycles);
+  const roi = ((netProfit / (entryFee * cycles)) * 100).toFixed(1);
+  
+  document.getElementById('calcEntryFee').textContent = `-$${(entryFee * cycles).toLocaleString()}`;
+  document.getElementById('calcDirectBonus').textContent = `+$${directBonus.toLocaleString()}`;
+  document.getElementById('calcBoardBonus').textContent = `+$${boardBonus.toLocaleString()}`;
+  document.getElementById('calcLevelBonus').textContent = `+$${levelBonus.toLocaleString()}`;
+  document.getElementById('calcNetProfit').textContent = `$${netProfit.toLocaleString()}`;
+  document.getElementById('calcROI').textContent = `${roi}%`;
+  
+  renderEarningsChart(directBonus, boardBonus, levelBonus, entryFee * cycles);
+}
+
+function renderEarningsChart(direct, board, level, entry) {
+  const ctx = document.getElementById('earningsChart');
+  if (charts.earnings) charts.earnings.destroy();
+  
+  const isDark = document.documentElement.classList.contains('dark');
+  const textColor = isDark ? '#cbd5e1' : '#475569';
+  
+  charts.earnings = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Entry Fee', 'Direct Bonus', 'Board Bonus', 'Level Bonus', 'Net Profit'],
+      datasets: [{
+        label: 'Amount ($)',
+        data: [-entry, direct, board, level, direct + board + level - entry],
+        backgroundColor: [
+          '#ef4444',
+          '#10b981',
+          '#667eea',
+          '#764ba2',
+          '#f59e0b'
+        ]
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: {
+        legend: { display: false }
+      },
+      scales: {
+        x: { ticks: { color: textColor } },
+        y: { ticks: { color: textColor } }
+      }
+    }
+  });
+}
+
+// Modals
+function openAddMemberModal() {
+  const sponsorSelect = document.getElementById('modalSponsor');
+  sponsorSelect.innerHTML = '<option value="">None</option>' + 
+    members.slice(0, 20).map(m => `<option value="${m.username}">${m.username}</option>`).join('');
+  
+  document.getElementById('modalTitle').textContent = 'Add New Member';
+  document.getElementById('modalUsername').value = '';
+  document.getElementById('memberModal').classList.remove('hidden');
+}
+
+function closeModal(modalId) {
+  document.getElementById(modalId).classList.add('hidden');
+}
+
+function saveMember() {
+  const username = document.getElementById('modalUsername').value.trim();
+  const sponsor = document.getElementById('modalSponsor').value;
+  const level = parseInt(document.getElementById('modalLevel').value);
+  
+  if (!username) {
+    alert('Please enter a username');
+    return;
+  }
+  
+  if (members.find(m => m.username === username)) {
+    alert('Username already exists');
+    return;
+  }
+  
+  const board = boards.find(b => b.level === level) || boards[0];
+  
+  const newMember = {
+    id: `M${1000 + members.length}`,
+    username: username,
+    sponsor: sponsor || null,
+    level: level,
+    boardId: board.id,
+    position: board.filledCount + 1,
+    status: 'active',
+    earnings: 0,
+    joinDate: new Date(),
+    referrals: 0
+  };
+  
+  members.push(newMember);
+  
+  if (board.filledCount < 15) {
+    board.slots[board.filledCount] = newMember.username;
+    board.filledCount++;
+  }
+  
+  transactions.unshift({
+    id: `T${10000 + transactions.length}`,
+    member: username,
+    type: 'deposit',
+    amount: board.entryFee,
+    description: `Board entry fee - Level ${level}`,
+    date: new Date(),
+    status: 'completed'
+  });
+  
+  closeModal('memberModal');
+  renderMembersTable();
+  renderTransactionsTable();
+  updateMetrics();
+  alert(`Member ${username} added successfully!`);
+}
+
+// Utilities
+function formatDate(date) {
+  return new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+  initTheme();
+  generateDemoData();
+  renderBoard();
+  
+  // Close modals on backdrop click
+  document.getElementById('memberModal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal('memberModal');
+  });
+});
+
+// Close mobile menus on outside click
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('#mobileMenu') && !e.target.closest('button[onclick="toggleMobileMenu()"]')) {
+    document.getElementById('mobileMenu').classList.add('hidden');
+  }
+  if (!e.target.closest('#dashMobileMenu') && !e.target.closest('button[onclick="toggleDashboardMenu()"]')) {
+    document.getElementById('dashMobileMenu').classList.add('hidden');
+  }
+});
+</script>
+<script>(function(){document.addEventListener("click",function(e){var a=e.target.closest("[data-product-id]");if(!a)return;e.preventDefault();var pid=a.getAttribute("data-product-id");if(pid)parent.postMessage({type:"ecto-artifact-link-click",productId:pid},"*")})})();</script>
+</body>
+</html>

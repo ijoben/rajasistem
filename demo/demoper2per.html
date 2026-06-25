@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NusaP2P - Demo Portfolio P2P Crypto Marketplace</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+    * {
+        font-family: 'Inter', sans-serif;
+    }
+    body {
+        background: #f5f7fa;
+    }
+    .header-gradient {
+        background: linear-gradient(135deg, #0d47a1 0%, #1565c0 100%);
+    }
+    .btn-buy {
+        background: #16a34a;
+        transition: all 0.2s ease;
+    }
+    .btn-buy:hover {
+        background: #15803d;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+    }
+    .btn-sell {
+        background: #dc2626;
+        transition: all 0.2s ease;
+    }
+    .btn-sell:hover {
+        background: #b91c1c;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+    }
+    .card-hover {
+        transition: all 0.3s ease;
+    }
+    .card-hover:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    }
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: 500;
+    }
+    .toggle-active {
+        background: #0d47a1 !important;
+        color: white !important;
+    }
+    .tab-active {
+        border-bottom: 3px solid #0d47a1;
+        color: #0d47a1;
+        font-weight: 600;
+    }
+    .modal-backdrop {
+        backdrop-filter: blur(4px);
+        background: rgba(0,0,0,0.5);
+    }
+    .chat-bubble-user {
+        background: #0d47a1;
+        color: white;
+        border-radius: 18px 18px 4px 18px;
+    }
+    .chat-bubble-bot {
+        background: #e5e7eb;
+        color: #1f2937;
+        border-radius: 18px 18px 18px 4px;
+    }
+    @keyframes slideIn {
+        from { transform: translateY(100%); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    .slide-in {
+        animation: slideIn 0.3s ease-out;
+    }
+    .fade-in {
+        animation: fadeIn 0.3s ease-out;
+    }
+    .toast-show {
+        animation: slideIn 0.3s ease-out;
+    }
+    @media (max-width: 768px) {
+        .table-desktop { display: none !important; }
+        .card-mobile { display: block; }
+    }
+    @media (min-width: 769px) {
+        .card-mobile { display: none !important; }
+    }
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+    ::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+        background: #a8a8a8;
+    }
+</style>
+</head>
+<body class="bg-[#f5f7fa]">
+
+<!-- DISCLAIMER BANNER -->
+<div class="bg-yellow-400 text-black text-center py-2 px-4 text-sm font-semibold">
+    <i class="fa-solid fa-triangle-exclamation mr-2"></i>
+    DEMO PORTFOLIO ONLY - BUKAN P2P ASLI - TIDAK ADA TRANSAKSI CRYPTO SUNGKUHAN
+</div>
+
+<!-- HEADER -->
+<header class="header-gradient text-white shadow-lg sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+            <div class="flex items-center gap-6">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-coins text-2xl"></i>
+                    <h1 class="text-xl sm:text-2xl font-bold">NusaP2P</h1>
+                </div>
+                <div class="hidden md:flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-lg">
+                    <i class="fa-solid fa-wallet text-sm"></i>
+                    <span class="text-sm">Saldo: <span class="font-bold" id="userBalance">IDR 5.000.000</span></span>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 sm:gap-3">
+                <button onclick="openPostAdModal()" class="bg-white text-[#0d47a1] px-3 sm:px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-100 transition flex items-center gap-2">
+                    <i class="fa-solid fa-plus"></i>
+                    <span class="hidden sm:inline">Posting Iklan</span>
+                </button>
+                <button class="hover:bg-white/10 p-2 rounded-lg transition">
+                    <i class="fa-regular fa-bell text-lg"></i>
+                </button>
+                <button class="hover:bg-white/10 p-2 rounded-lg transition flex items-center gap-2">
+                    <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                        <i class="fa-solid fa-user text-sm"></i>
+                    </div>
+                </button>
+            </div>
+        </div>
+        <!-- Mobile Balance -->
+        <div class="md:hidden pb-3">
+            <div class="bg-white/10 px-3 py-1.5 rounded-lg inline-flex items-center gap-2">
+                <i class="fa-solid fa-wallet text-sm"></i>
+                <span class="text-sm">Saldo: <span class="font-bold">IDR 5.000.000</span></span>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- MAIN CONTENT -->
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    
+    <!-- TABS -->
+    <div class="bg-white rounded-xl shadow-sm mb-6">
+        <div class="flex border-b">
+            <button onclick="switchMainTab('market')" id="tab-market" class="tab-active flex-1 sm:flex-none sm:px-8 py-4 text-sm transition">
+                <i class="fa-solid fa-store mr-2"></i>P2P Market
+            </button>
+            <button onclick="switchMainTab('orders')" id="tab-orders" class="flex-1 sm:flex-none sm:px-8 py-4 text-sm text-gray-600 hover:text-[#0d47a1] transition">
+                <i class="fa-solid fa-receipt mr-2"></i>Pesanan Saya <span id="orderBadge" class="hidden ml-1 bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">0</span>
+            </button>
+        </div>
+
+        <!-- MARKET TAB CONTENT -->
+        <div id="marketContent" class="p-4 sm:p-6">
+            <!-- FILTER BAR -->
+            <div class="mb-6 space-y-4">
+                <div class="flex flex-wrap gap-3">
+                    <!-- Beli/Jual Toggle -->
+                    <div class="flex bg-gray-100 rounded-lg p-1">
+                        <button onclick="setFilterType('buy')" id="filterBuy" class="toggle-active px-4 sm:px-6 py-2 rounded-md text-sm font-semibold transition">Beli</button>
+                        <button onclick="setFilterType('sell')" id="filterSell" class="px-4 sm:px-6 py-2 rounded-md text-sm font-semibold text-gray-600 transition">Jual</button>
+                    </div>
+                    <!-- Coin Select -->
+                    <select id="coinFilter" onchange="applyFilters()" class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#0d47a1] focus:border-transparent">
+                        <option value="USDT">USDT</option>
+                        <option value="BTC">BTC</option>
+                        <option value="ETH">ETH</option>
+                    </select>
+                    <!-- Payment Method -->
+                    <select id="paymentFilter" onchange="applyFilters()" class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#0d47a1] focus:border-transparent">
+                        <option value="all">Semua Bank</option>
+                        <option value="BCA">BCA</option>
+                        <option value="Mandiri">Mandiri</option>
+                        <option value="Dana">Dana</option>
+                        <option value="OVO">OVO</option>
+                    </select>
+                    <!-- Amount Input -->
+                    <input id="amountFilter" type="number" placeholder="Nominal IDR" oninput="applyFilters()" class="px-4 py-2 border border-gray-300 rounded-lg text-sm w-full sm:w-auto focus:ring-2 focus:ring-[#0d47a1] focus:border-transparent">
+                </div>
+            </div>
+
+            <!-- TABLE DESKTOP -->
+            <div class="table-desktop overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-50 border-b border-gray-200">
+                        <tr class="text-left text-xs font-semibold text-gray-600 uppercase">
+                            <th class="px-4 py-3">Penjual</th>
+                            <th class="px-4 py-3">Harga</th>
+                            <th class="px-4 py-3">Limit</th>
+                            <th class="px-4 py-3">Metode Bayar</th>
+                            <th class="px-4 py-3 text-right">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adsTableBody" class="divide-y divide-gray-100">
+                        <!-- Ads will be rendered here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- CARD MOBILE -->
+            <div id="adsCardContainer" class="card-mobile space-y-3">
+                <!-- Ads cards will be rendered here -->
+            </div>
+        </div>
+
+        <!-- ORDERS TAB CONTENT -->
+        <div id="ordersContent" class="hidden p-4 sm:p-6">
+            <div id="ordersList" class="space-y-4">
+                <div class="text-center py-12 text-gray-400">
+                    <i class="fa-regular fa-receipt text-5xl mb-4"></i>
+                    <p class="text-sm">Belum ada pesanan</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- MODAL BELI USDT -->
+<div id="buyModal" class="hidden fixed inset-0 z-50 flex items-end sm:items-center justify-center modal-backdrop" onclick="closeBuyModal()">
+    <div class="bg-white w-full sm:max-w-lg sm:rounded-2xl rounded-t-2xl slide-in max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
+        <div class="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between">
+            <h3 class="text-lg font-bold text-gray-900">Beli <span id="buyCoin">USDT</span></h3>
+            <button onclick="closeBuyModal()" class="text-gray-400 hover:text-gray-600">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+        </div>
+        <div class="p-6 space-y-5">
+            <!-- Seller Info -->
+            <div class="flex items-center gap-3 p-4 bg-gray-50 rounded-xl">
+                <div class="w-12 h-12 bg-gradient-to-br from-[#0d47a1] to-blue-600 rounded-full flex items-center justify-center text-white font-bold">
+                    <span id="sellerInitial">C</span>
+                </div>
+                <div class="flex-1">
+                    <div class="font-semibold text-gray-900" id="sellerName">CryptoKing</div>
+                    <div class="text-xs text-gray-500 flex items-center gap-2">
+                        <span><i class="fa-solid fa-star text-yellow-500"></i> <span id="sellerRating">4.9</span></span>
+                        <span>•</span>
+                        <span><span id="sellerTrades">500+</span> transaksi</span>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <div class="text-xs text-gray-500">Harga</div>
+                    <div class="font-bold text-gray-900">IDR <span id="sellerPrice">16.420</span></div>
+                </div>
+            </div>
+
+            <!-- Input Amount -->
+            <div class="space-y-3">
+                <div>
+                    <label class="text-sm font-medium text-gray-700 mb-2 block">Saya bayar</label>
+                    <div class="relative">
+                        <input id="payAmount" type="number" placeholder="100000" oninput="calculateReceive()" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#0d47a1] focus:border-transparent">
+                        <span class="absolute right-4 top-3.5 text-gray-500 font-semibold">IDR</span>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">Limit: IDR <span id="limitMin">100.000</span> - <span id="limitMax">5.000.000</span></p>
+                </div>
+                <div class="flex justify-center">
+                    <i class="fa-solid fa-arrow-down text-gray-400"></i>
+                </div>
+                <div>
+                    <label class="text-sm font-medium text-gray-700 mb-2 block">Saya terima</label>
+                    <div class="relative">
+                        <input id="receiveAmount" type="text" readonly class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl font-semibold text-gray-900">
+                        <span class="absolute right-4 top-3.5 text-gray-500 font-semibold" id="receiveCoin">USDT</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Method -->
+            <div>
+                <label class="text-sm font-medium text-gray-700 mb-2 block">Metode Pembayaran</label>
+                <select id="buyPaymentMethod" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#0d47a1] focus:border-transparent">
+                </select>
+            </div>
+
+            <!-- Notice -->
+            <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 text-xs text-blue-800">
+                <i class="fa-solid fa-circle-info mr-1"></i>
+                Pastikan transfer sesuai nominal. Order akan otomatis batal dalam 15 menit jika belum dibayar.
+            </div>
+
+            <button onclick="confirmOrder()" class="w-full btn-buy text-white py-3.5 rounded-xl font-semibold text-base">
+                Konfirmasi Beli
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL POSTING IKLAN -->
+<div id="postAdModal" class="hidden fixed inset-0 z-50 flex items-end sm:items-center justify-center modal-backdrop" onclick="closePostAdModal()">
+    <div class="bg-white w-full sm:max-w-lg sm:rounded-2xl rounded-t-2xl slide-in max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
+        <div class="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between">
+            <h3 class="text-lg font-bold text-gray-900">Posting Iklan P2P</h3>
+            <button onclick="closePostAdModal()" class="text-gray-400 hover:text-gray-600">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+        </div>
+        <div class="p-6 space-y-4">
+            <div class="flex bg-gray-100 rounded-lg p-1">
+                <button onclick="setAdType('sell')" id="adTypeSell" class="toggle-active flex-1 py-2 rounded-md text-sm font-semibold transition">Saya Mau Jual</button>
+                <button onclick="setAdType('buy')" id="adTypeBuy" class="flex-1 py-2 rounded-md text-sm font-semibold text-gray-600 transition">Saya Mau Beli</button>
+            </div>
+
+            <div>
+                <label class="text-sm font-medium text-gray-700 mb-2 block">Coin</label>
+                <select id="adCoin" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#0d47a1]">
+                    <option value="USDT">USDT</option>
+                    <option value="BTC">BTC</option>
+                    <option value="ETH">ETH</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="text-sm font-medium text-gray-700 mb-2 block">Harga per Coin</label>
+                <input id="adPrice" type="number" placeholder="16420" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#0d47a1]">
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="text-sm font-medium text-gray-700 mb-2 block">Limit Min</label>
+                    <input id="adMin" type="number" placeholder="100000" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#0d47a1]">
+                </div>
+                <div>
+                    <label class="text-sm font-medium text-gray-700 mb-2 block">Limit Max</label>
+                    <input id="adMax" type="number" placeholder="5000000" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#0d47a1]">
+                </div>
+            </div>
+
+            <div>
+                <label class="text-sm font-medium text-gray-700 mb-2 block">Metode Pembayaran</label>
+                <div class="space-y-2">
+                    <label class="flex items-center gap-2 p-3 border border-gray-300 rounded-xl cursor-pointer hover:bg-gray-50">
+                        <input type="checkbox" value="BCA" class="ad-payment-checkbox w-4 h-4 text-[#0d47a1]">
+                        <span class="text-sm font-medium">BCA</span>
+                    </label>
+                    <label class="flex items-center gap-2 p-3 border border-gray-300 rounded-xl cursor-pointer hover:bg-gray-50">
+                        <input type="checkbox" value="Mandiri" class="ad-payment-checkbox w-4 h-4 text-[#0d47a1]">
+                        <span class="text-sm font-medium">Mandiri</span>
+                    </label>
+                    <label class="flex items-center gap-2 p-3 border border-gray-300 rounded-xl cursor-pointer hover:bg-gray-50">
+                        <input type="checkbox" value="Dana" class="ad-payment-checkbox w-4 h-4 text-[#0d47a1]">
+                        <span class="text-sm font-medium">Dana</span>
+                    </label>
+                    <label class="flex items-center gap-2 p-3 border border-gray-300 rounded-xl cursor-pointer hover:bg-gray-50">
+                        <input type="checkbox" value="OVO" class="ad-payment-checkbox w-4 h-4 text-[#0d47a1]">
+                        <span class="text-sm font-medium">OVO</span>
+                    </label>
+                </div>
+            </div>
+
+            <button onclick="submitAd()" class="w-full bg-[#0d47a1] text-white py-3.5 rounded-xl font-semibold hover:bg-blue-800 transition">
+                Posting Iklan
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- CHAT MODAL -->
+<div id="chatModal" class="hidden fixed inset-0 z-50 flex items-end sm:items-center justify-center modal-backdrop" onclick="closeChatModal()">
+    <div class="bg-white w-full sm:max-w-md sm:rounded-2xl rounded-t-2xl slide-in h-[80vh] sm:h-[600px] flex flex-col" onclick="event.stopPropagation()">
+        <div class="border-b px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-gradient-to-br from-[#0d47a1] to-blue-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                    <span id="chatSellerInitial">C</span>
+                </div>
+                <div>
+                    <div class="font-semibold text-gray-900" id="chatSellerName">CryptoKing</div>
+                    <div class="text-xs text-green-600"><i class="fa-solid fa-circle text-[8px]"></i> Online</div>
+                </div>
+            </div>
+            <button onclick="closeChatModal()" class="text-gray-400 hover:text-gray-600">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+        </div>
+        <div id="chatMessages" class="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50">
+            <!-- Messages will appear here -->
+        </div>
+        <div class="border-t p-4 bg-white">
+            <div class="flex gap-2">
+                <input id="chatInput" type="text" placeholder="Ketik pesan..." onkeypress="handleChatEnter(event)" class="flex-1 px-4 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-[#0d47a1] focus:border-transparent text-sm">
+                <button onclick="sendChatMessage()" class="bg-[#0d47a1] text-white w-10 h-10 rounded-full hover:bg-blue-800 transition">
+                    <i class="fa-solid fa-paper-plane text-sm"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- TOAST NOTIFICATION -->
+<div id="toast" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] bg-gray-900 text-white px-6 py-3 rounded-xl shadow-2xl text-sm font-medium">
+    <i class="fa-solid fa-circle-check mr-2 text-green-400"></i>
+    <span id="toastMessage">Order berhasil dibuat</span>
+</div>
+
+<script>
+    // ==================== STATE MANAGEMENT ====================
+    let state = {
+        userBalance: 5000000,
+        currentFilter: 'buy', // buy or sell
+        currentCoin: 'USDT',
+        selectedAd: null,
+        ads: [],
+        orders: [],
+        adType: 'sell', // for posting ad
+        activeOrderTimers: {}
+    };
+
+    // ==================== DUMMY DATA ====================
+    const dummyAds = [
+        { id: 1, seller: 'CryptoKing', rating: 4.9, trades: 1234, price: 16420, minLimit: 100000, maxLimit: 5000000, payments: ['BCA', 'Mandiri', 'Dana'], coin: 'USDT', type: 'sell' },
+        { id: 2, seller: 'BTC_Murah', rating: 4.8, trades: 892, price: 16450, minLimit: 200000, maxLimit: 10000000, payments: ['BCA', 'OVO'], coin: 'USDT', type: 'sell' },
+        { id: 3, seller: 'CoinHunter', rating: 5.0, trades: 2341, price: 16415, minLimit: 50000, maxLimit: 2000000, payments: ['Mandiri', 'Dana'], coin: 'USDT', type: 'sell' },
+        { id: 4, seller: 'SafeTrader', rating: 4.7, trades: 567, price: 16480, minLimit: 1000000, maxLimit: 20000000, payments: ['BCA'], coin: 'USDT', type: 'sell' },
+        { id: 5, seller: 'FastP2P', rating: 4.9, trades: 3421, price: 16435, minLimit: 100000, maxLimit: 3000000, payments: ['Dana', 'OVO'], coin: 'USDT', type: 'sell' },
+        { id: 6, seller: 'TrustedSeller', rating: 5.0, trades: 5432, price: 16425, minLimit: 150000, maxLimit: 8000000, payments: ['BCA', 'Mandiri'], coin: 'USDT', type: 'sell' },
+        { id: 7, seller: 'QuickSwap', rating: 4.8, trades: 1023, price: 16460, minLimit: 250000, maxLimit: 5000000, payments: ['OVO', 'Dana'], coin: 'USDT', type: 'sell' },
+        { id: 8, seller: 'BestRate', rating: 4.9, trades: 2876, price: 16430, minLimit: 100000, maxLimit: 4000000, payments: ['BCA', 'Mandiri', 'Dana', 'OVO'], coin: 'USDT', type: 'sell' },
+    ];
+
+    // ==================== INITIALIZATION ====================
+    function init() {
+        state.ads = [...dummyAds];
+        renderAds();
+    }
+
+    // ==================== UTILITY FUNCTIONS ====================
+    function formatIDR(num) {
+        return new Intl.NumberFormat('id-ID').format(num);
+    }
+
+    function formatTime(seconds) {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    function showToast(message, type = 'success') {
+        const toast = document.getElementById('toast');
+        const toastMsg = document.getElementById('toastMessage');
+        toastMsg.textContent = message;
+        toast.classList.remove('hidden');
+        toast.classList.add('toast-show');
+        setTimeout(() => {
+            toast.classList.add('hidden');
+            toast.classList.remove('toast-show');
+        }, 3000);
+    }
+
+    // ==================== TAB SWITCHING ====================
+    function switchMainTab(tab) {
+        document.getElementById('marketContent').classList.toggle('hidden', tab !== 'market');
+        document.getElementById('ordersContent').classList.toggle('hidden', tab !== 'orders');
+        document.getElementById('tab-market').classList.toggle('tab-active', tab === 'market');
+        document.getElementById('tab-orders').classList.toggle('tab-active', tab === 'orders');
+        
+        if (tab === 'orders') {
+            renderOrders();
+        }
+    }
+
+    // ==================== FILTER FUNCTIONS ====================
+    function setFilterType(type) {
+        state.currentFilter = type;
+        document.getElementById('filterBuy').classList.toggle('toggle-active', type === 'buy');
+        document.getElementById('filterSell').classList.toggle('toggle-active', type === 'sell');
+        applyFilters();
+    }
+
+    function applyFilters() {
+        state.currentCoin = document.getElementById('coinFilter').value;
+        renderAds();
+    }
+
+    // ==================== RENDER ADS ====================
+    function getFilteredAds() {
+        const paymentFilter = document.getElementById('paymentFilter').value;
+        const amountFilter = parseInt(document.getElementById('amountFilter').value) || 0;
+        
+        return state.ads.filter(ad => {
+            // Filter by type: if filter is 'buy', show sell ads, and vice versa
+            const typeMatch = state.currentFilter === 'buy' ? ad.type === 'sell' : ad.type === 'buy';
+            
+            // Filter by coin
+            const coinMatch = ad.coin === state.currentCoin;
+            
+            // Filter by payment
+            const paymentMatch = paymentFilter === 'all' || ad.payments.includes(paymentFilter);
+            
+            // Filter by amount
+            const amountMatch = amountFilter === 0 || (amountFilter >= ad.minLimit && amountFilter <= ad.maxLimit);
+            
+            return typeMatch && coinMatch && paymentMatch && amountMatch;
+        });
+    }
+
+    function renderAds() {
+        const ads = getFilteredAds();
+        
+        // Desktop Table
+        const tableBody = document.getElementById('adsTableBody');
+        tableBody.innerHTML = ads.map(ad => `
+            <tr class="hover:bg-gray-50 transition">
+                <td class="px-4 py-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-gradient-to-br from-[#0d47a1] to-blue-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                            ${ad.seller[0]}
+                        </div>
+                        <div>
+                            <div class="font-semibold text-gray-900">${ad.seller}</div>
+                            <div class="text-xs text-gray-500 flex items-center gap-1">
+                                <i class="fa-solid fa-star text-yellow-500"></i>
+                                <span>${ad.rating}</span>
+                                <span>•</span>
+                                <span>${ad.trades}+ transaksi</span>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+                <td class="px-4 py-4">
+                    <div class="font-bold text-gray-900">${formatIDR(ad.price)}</div>
+                    <div class="text-xs text-gray-500">IDR/${ad.coin}</div>
+                </td>
+                <td class="px-4 py-4">
+                    <div class="text-sm text-gray-900">${formatIDR(ad.minLimit)} - ${formatIDR(ad.maxLimit)}</div>
+                    <div class="text-xs text-gray-500">IDR</div>
+                </td>
+                <td class="px-4 py-4">
+                    <div class="flex flex-wrap gap-1">
+                        ${ad.payments.map(p => `<span class="badge bg-blue-100 text-blue-800">${p}</span>`).join('')}
+                    </div>
+                </td>
+                <td class="px-4 py-4 text-right">
+                    <button onclick="openBuyModal(${ad.id})" class="${state.currentFilter === 'buy' ? 'btn-buy' : 'btn-sell'} text-white px-6 py-2 rounded-lg text-sm font-semibold">
+                        ${state.currentFilter === 'buy' ? 'BELI' : 'JUAL'} ${ad.coin}
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+
+        // Mobile Cards
+        const cardContainer = document.getElementById('adsCardContainer');
+        cardContainer.innerHTML = ads.map(ad => `
+            <div class="bg-white rounded-xl p-4 shadow-sm card-hover">
+                <div class="flex items-start justify-between mb-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-gradient-to-br from-[#0d47a1] to-blue-600 rounded-full flex items-center justify-center text-white font-bold">
+                            ${ad.seller[0]}
+                        </div>
+                        <div>
+                            <div class="font-semibold text-gray-900">${ad.seller}</div>
+                            <div class="text-xs text-gray-500 flex items-center gap-1">
+                                <i class="fa-solid fa-star text-yellow-500"></i>
+                                <span>${ad.rating}</span>
+                                <span>•</span>
+                                <span>${ad.trades}+</span>
+                            </div>
+                        </div>
+                    <div class="text-right">
+                        <div class="text-xs text-gray-500">Harga</div>
+                        <div class="font-bold text-gray-900">${formatIDR(ad.price)}</div>
+                    </div>
+                </div>
+                <div class="space-y-2 mb-3 text-sm">
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Limit:</span>
+                        <span class="font-medium text-gray-900">${formatIDR(ad.minLimit)} - ${formatIDR(ad.maxLimit)}</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600">Metode:</span>
+                        <div class="flex flex-wrap gap-1 justify-end">
+                            ${ad.payments.map(p => `<span class="badge bg-blue-100 text-blue-800">${p}</span>`).join('')}
+                        </div>
+                    </div>
+                </div>
+                <button onclick="openBuyModal(${ad.id})" class="${state.currentFilter === 'buy' ? 'btn-buy' : 'btn-sell'} w-full text-white py-2.5 rounded-lg text-sm font-semibold">
+                    ${state.currentFilter === 'buy' ? 'BELI' : 'JUAL'} ${ad.coin}
+                </button>
+            </div>
+        `).join('');
+
+        if (ads.length === 0) {
+            tableBody.innerHTML = `<tr><td colspan="5" class="text-center py-12 text-gray-400">Tidak ada iklan yang cocok</td></tr>`;
+            cardContainer.innerHTML = `<div class="text-center py-12 text-gray-400"><i class="fa-regular fa-folder-open text-5xl mb-4"></i><p class="text-sm">Tidak ada iklan yang cocok</p></div>`;
+        }
+    }
+
+    // ==================== BUY MODAL ====================
+    function openBuyModal(adId) {
+        state.selectedAd = state.ads.find(ad => ad.id === adId);
+        if (!state.selectedAd) return;
+
+        document.getElementById('sellerName').textContent = state.selectedAd.seller;
+        document.getElementById('sellerInitial').textContent = state.selectedAd.seller[0];
+        document.getElementById('sellerRating').textContent = state.selectedAd.rating;
+        document.getElementById('sellerTrades').textContent = state.selectedAd.trades + '+';
+        document.getElementById('sellerPrice').textContent = formatIDR(state.selectedAd.price);
+        document.getElementById('limitMin').textContent = formatIDR(state.selectedAd.minLimit);
+        document.getElementById('limitMax').textContent = formatIDR(state.selectedAd.maxLimit);
+        document.getElementById('buyCoin').textContent = state.selectedAd.coin;
+        document.getElementById('receiveCoin').textContent = state.selectedAd.coin;
+
+        // Populate payment methods
+        const paymentSelect = document.getElementById('buyPaymentMethod');
+        paymentSelect.innerHTML = state.selectedAd.payments.map(p => `<option value="${p}">${p}</option>`).join('');
+
+        // Reset inputs
+        document.getElementById('payAmount').value = '';
+        document.getElementById('receiveAmount').value = '';
+
+        document.getElementById('buyModal').classList.remove('hidden');
+    }
+
+    function closeBuyModal() {
+        document.getElementById('buyModal').classList.add('hidden');
+        state.selectedAd = null;
+    }
+
+    function calculateReceive() {
+        const payAmount = parseFloat(document.getElementById('payAmount').value) || 0;
+        if (state.selectedAd && payAmount > 0) {
+            const receive = (payAmount / state.selectedAd.price).toFixed(6);
+            document.getElementById('receiveAmount').value = receive;
+        } else {
+            document.getElementById('receiveAmount').value = '';
+        }
+    }
+
+    function confirmOrder() {
+        const payAmount = parseFloat(document.getElementById('payAmount').value);
+        const paymentMethod = document.getElementById('buyPaymentMethod').value;
+
+        if (!payAmount || payAmount < state.selectedAd.minLimit || payAmount > state.selectedAd.maxLimit) {
+            showToast(`Nominal harus antara ${formatIDR(state.selectedAd.minLimit)} - ${formatIDR(state.selectedAd.maxLimit)}`, 'error');
+            return;
+        }
+
+        const order = {
+            id: Date.now(),
+            adId: state.selectedAd.id,
+            seller: state.selectedAd.seller,
+            coin: state.selectedAd.coin,
+            price: state.selectedAd.price,
+            payAmount: payAmount,
+            receiveAmount: (payAmount / state.selectedAd.price).toFixed(6),
+            paymentMethod: paymentMethod,
+            status: 'waiting_payment',
+            createdAt: Date.now(),
+            timeLeft: 900 // 15 minutes in seconds
+        };
+
+        state.orders.unshift(order);
+        startOrderTimer(order.id);
+        updateOrderBadge();
+        closeBuyModal();
+        showToast('Order dibuat, silakan transfer');
+        switchMainTab('orders');
+    }
+
+    // ==================== ORDER MANAGEMENT ====================
+    function startOrderTimer(orderId) {
+        state.activeOrderTimers[orderId] = setInterval(() => {
+            const order = state.orders.find(o => o.id === orderId);
+            if (!order) {
+                clearInterval(state.activeOrderTimers[orderId]);
+                return;
+            }
+            order.timeLeft--;
+            if (order.timeLeft <= 0) {
+                order.status = 'cancelled';
+                clearInterval(state.activeOrderTimers[orderId]);
+                delete state.activeOrderTimers[orderId];
+                showToast('Order dibatalkan karena timeout');
+            }
+            if (document.getElementById('ordersContent') && !document.getElementById('ordersContent').classList.contains('hidden')) {
+                renderOrders();
+            }
+        }, 1000);
+    }
+
+    function markAsPaid(orderId) {
+        const order = state.orders.find(o => o.id === orderId);
+        if (order) {
+            order.status = 'waiting_release';
+            showToast('Penjual akan melepas crypto Anda');
+            // Simulate seller release after 3 seconds
+            setTimeout(() => {
+                order.status = 'completed';
+                clearInterval(state.activeOrderTimers[orderId]);
+                delete state.activeOrderTimers[orderId];
+                showToast('Order selesai! Crypto telah dilepas');
+                updateOrderBadge();
+                renderOrders();
+            }, 3000);
+            renderOrders();
+        }
+    }
+
+    function cancelOrder(orderId) {
+        const order = state.orders.find(o => o.id === orderId);
+        if (order) {
+            order.status = 'cancelled';
+            clearInterval(state.activeOrderTimers[orderId]);
+            delete state.activeOrderTimers[orderId];
+            showToast('Order dibatalkan');
+            updateOrderBadge();
+            renderOrders();
+        }
+    }
+
+    function updateOrderBadge() {
+        const activeOrders = state.orders.filter(o => o.status === 'waiting_payment' || o.status === 'waiting_release').length;
+        const badge = document.getElementById('orderBadge');
+        badge.textContent = activeOrders;
+        badge.classList.toggle('hidden', activeOrders === 0);
+    }
+
+    function renderOrders() {
+        const container = document.getElementById('ordersList');
+        
+        if (state.orders.length === 0) {
+            container.innerHTML = `
+                <div class="text-center py-12 text-gray-400">
+                    <i class="fa-regular fa-receipt text-5xl mb-4"></i>
+                    <p class="text-sm">Belum ada pesanan</p>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = state.orders.map(order => {
+            const statusColors = {
+                waiting_payment: 'bg-yellow-100 text-yellow-800',
+                waiting_release: 'bg-blue-100 text-blue-800',
+                completed: 'bg-green-100 text-green-800',
+                cancelled: 'bg-red-100 text-red-800'
+            };
+            const statusTexts = {
+                waiting_payment: 'Menunggu Pembayaran',
+                waiting_release: 'Menunggu Pelepasan',
+                completed: 'Selesai',
+                cancelled: 'Dibatalkan'
+            };
+
+            return `
+                <div class="bg-white border border-gray-200 rounded-xl p-4 sm:p-5 card-hover">
+                    <div class="flex items-start justify-between mb-4">
+                        <div>
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="font-bold text-gray-900">Beli ${order.coin}</span>
+                                <span class="badge ${statusColors[order.status]}">${statusTexts[order.status]}</span>
+                            </div>
+                            <div class="text-sm text-gray-600">Order ID: #${order.id}</div>
+                        </div>
+                        ${order.status === 'waiting_payment' ? `
+                            <div class="text-right">
+                                <div class="text-xs text-gray-500">Sisa waktu</div>
+                                <div class="font-bold text-red-600 text-lg">${formatTime(order.timeLeft)}</div>
+                            </div>
+                        ` : ''}
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 mb-4 text-sm">
+                        <div>
+                            <div class="text-gray-500 mb-1">Penjual</div>
+                            <div class="font-semibold text-gray-900">${order.seller}</div>
+                        </div>
+                        <div>
+                            <div class="text-gray-500 mb-1">Metode Bayar</div>
+                            <div class="font-semibold text-gray-900">${order.paymentMethod}</div>
+                        </div>
+                        <div>
+                            <div class="text-gray-500 mb-1">Total Bayar</div>
+                            <div class="font-bold text-gray-900">IDR ${formatIDR(order.payAmount)}</div>
+                        </div>
+                        <div>
+                            <div class="text-gray-500 mb-1">Terima</div>
+                            <div class="font-bold text-gray-900">${order.receiveAmount} ${order.coin}</div>
+                        </div>
+                    </div>
+
+                    ${order.status === 'waiting_payment' ? `
+                        <div class="flex gap-2">
+                            <button onclick="markAsPaid(${order.id})" class="flex-1 btn-buy text-white py-2.5 rounded-lg text-sm font-semibold">
+                                <i class="fa-solid fa-check mr-1"></i>Saya Sudah Bayar
+                            </button>
+                            <button onclick="cancelOrder(${order.id})" class="px-4 bg-gray-200 text-gray-700 py-2.5 rounded-lg text-sm font-semibold hover:bg-gray-300 transition">
+                                Batalkan
+                            </button>
+                            <button onclick="openChatModal('${order.seller}')" class="px-4 bg-blue-100 text-[#0d47a1] py-2.5 rounded-lg text-sm font-semibold hover:bg-blue-200 transition">
+                                <i class="fa-solid fa-message"></i>
+                            </button>
+                        </div>
+                    ` : order.status === 'waiting_release' ? `
+                        <div class="flex gap-2">
+                            <button onclick="openChatModal('${order.seller}')" class="flex-1 bg-blue-100 text-[#0d47a1] py-2.5 rounded-lg text-sm font-semibold hover:bg-blue-200 transition">
+                                <i class="fa-solid fa-message mr-1"></i>Chat Penjual
+                            </button>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }).join('');
+    }
+
+    // ==================== CHAT SIMULATION ====================
+    let currentChatSeller = '';
+    
+    function openChatModal(sellerName) {
+        currentChatSeller = sellerName;
+        document.getElementById('chatSellerName').textContent = sellerName;
+        document.getElementById('chatSellerInitial').textContent = sellerName[0];
+        
+        const chatMessages = document.getElementById('chatMessages');
+        chatMessages.innerHTML = `
+            <div class="flex justify-start">
+                <div class="chat-bubble-bot px-4 py-2 max-w-[75%] text-sm">
+                    Halo! Silakan transfer ke BCA 123456 a/n ${sellerName}. Setelah transfer, klik "Saya Sudah Bayar" ya.
+                </div>
+            </div>
+        `;
+        
+        document.getElementById('chatModal').classList.remove('hidden');
+    }
+
+    function closeChatModal() {
+        document.getElementById('chatModal').classList.add('hidden');
+        currentChatSeller = '';
+    }
+
+    function sendChatMessage() {
+        const input = document.getElementById('chatInput');
+        const message = input.value.trim();
+        if (!message) return;
+
+        const chatMessages = document.getElementById('chatMessages');
+        chatMessages.innerHTML += `
+            <div class="flex justify-end">
+                <div class="chat-bubble-user px-4 py-2 max-w-[75%] text-sm">
+                    ${message}
+                </div>
+            </div>
+        `;
+        input.value = '';
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        // Bot auto reply
+        setTimeout(() => {
+            const replies = [
+                'Baik, saya tunggu konfirmasinya ya',
+                'Sudah diterima, saya proses segera',
+                'Terima kasih, sedang dicek',
+                'Oke, tunggu sebentar ya'
+            ];
+            const randomReply = replies[Math.floor(Math.random() * replies.length)];
+            chatMessages.innerHTML += `
+                <div class="flex justify-start">
+                    <div class="chat-bubble-bot px-4 py-2 max-w-[75%] text-sm">
+                        ${randomReply}
+                    </div>
+                </div>
+            `;
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }, 1000);
+    }
+
+    function handleChatEnter(e) {
+        if (e.key === 'Enter') sendChatMessage();
+    }
+
+    // ==================== POST AD MODAL ====================
+    function openPostAdModal() {
+        document.getElementById('postAdModal').classList.remove('hidden');
+    }
+
+    function closePostAdModal() {
+        document.getElementById('postAdModal').classList.add('hidden');
+    }
+
+    function setAdType(type) {
+        state.adType = type;
+        document.getElementById('adTypeSell').classList.toggle('toggle-active', type === 'sell');
+        document.getElementById('adTypeBuy').classList.toggle('toggle-active', type === 'buy');
+    }
+
+    function submitAd() {
+        const coin = document.getElementById('adCoin').value;
+        const price = parseFloat(document.getElementById('adPrice').value);
+        const min = parseFloat(document.getElementById('adMin').value);
+        const max = parseFloat(document.getElementById('adMax').value);
+        const paymentCheckboxes = document.querySelectorAll('.ad-payment-checkbox:checked');
+        const payments = Array.from(paymentCheckboxes).map(cb => cb.value);
+
+        if (!price || !min || !max || payments.length === 0) {
+            showToast('Lengkapi semua field', 'error');
+            return;
+        }
+
+        if (min >= max) {
+            showToast('Limit min harus lebih kecil dari max', 'error');
+            return;
+        }
+
+        const newAd = {
+            id: Date.now(),
+            seller: 'Anda',
+            rating: 5.0,
+            trades: 0,
+            price: price,
+            minLimit: min,
+            maxLimit: max,
+            payments: payments,
+            coin: coin,
+            type: state.adType
+        };
+
+        state.ads.unshift(newAd);
+        renderAds();
+        closePostAdModal();
+        showToast('Iklan berhasil diposting');
+
+        // Reset form
+        document.getElementById('adPrice').value = '';
+        document.getElementById('adMin').value = '';
+        document.getElementById('adMax').value = '';
+        paymentCheckboxes.forEach(cb => cb.checked = false);
+    }
+
+    // ==================== START APP ====================
+    init();
+</script>
+
+<script>(function(){document.addEventListener("click",function(e){var a=e.target.closest("[data-product-id]");if(!a)return;e.preventDefault();var pid=a.getAttribute("data-product-id");if(pid)parent.postMessage({type:"ecto-artifact-link-click",productId:pid},"*")})})();</script>
+</body>
+</html>

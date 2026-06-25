@@ -1,0 +1,1522 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>John Anderson | Leader Bisnis MLM & Entrepreneur</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
+<style>
+    * {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    html {
+        scroll-behavior: smooth;
+    }
+    .heading-font {
+        font-family: 'Outfit', sans-serif;
+    }
+    .hero-gradient {
+        background: linear-gradient(135deg, #061426 0%, #0A2342 35%, #0F4C75 70%, #1B3B6F 100%);
+        position: relative;
+    }
+    .hero-gradient::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at 20% 50%, rgba(212, 175, 55, 0.15) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+    }
+    .gold-gradient {
+        background: linear-gradient(135deg, #D4AF37 0%, #F2D96B 40%, #C5A028 100%);
+    }
+    .gold-gradient-hover:hover {
+        background: linear-gradient(135deg, #C5A028 0%, #D4AF37 40%, #F2D96B 100%);
+    }
+    .glass-effect {
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+    .glass-card {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        box-shadow: 0 8px 32px rgba(10, 35, 66, 0.12);
+    }
+    .card-hover {
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .card-hover:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 50px rgba(10, 35, 66, 0.18);
+    }
+    .btn-gold {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 4px 20px rgba(212, 175, 55, 0.35);
+    }
+    .btn-gold:hover {
+        transform: translateY(-2px) scale(1.02);
+        box-shadow: 0 8px 30px rgba(212, 175, 55, 0.5);
+    }
+    .nav-link {
+        position: relative;
+        transition: color 0.3s ease;
+    }
+    .nav-link::after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: -4px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #D4AF37;
+        transition: width 0.3s ease;
+    }
+    .nav-link:hover::after, .nav-link.active::after {
+        width: 100%;
+    }
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+    }
+    .animate-fade-in {
+        animation: fadeInUp 0.8s ease-out forwards;
+    }
+    .animate-float {
+        animation: float 3s ease-in-out infinite;
+    }
+    .testimonial-dot {
+        transition: all 0.3s ease;
+    }
+    .testimonial-dot.active {
+        background: #D4AF37;
+        width: 32px;
+    }
+    .whatsapp-float {
+        position: fixed;
+        width: 64px;
+        height: 64px;
+        bottom: 24px;
+        right: 24px;
+        background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+        color: #FFF;
+        border-radius: 50%;
+        text-align: center;
+        font-size: 32px;
+        box-shadow: 0 10px 30px rgba(37, 211, 102, 0.45);
+        z-index: 100;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .whatsapp-float:hover {
+        transform: scale(1.1) rotate(5deg);
+        box-shadow: 0 15px 40px rgba(37, 211, 102, 0.6);
+    }
+    .dashboard-card {
+        background: white;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 4px 20px rgba(10, 35, 66, 0.08);
+        transition: all 0.3s ease;
+    }
+    .dashboard-card:hover {
+        box-shadow: 0 8px 30px rgba(10, 35, 66, 0.12);
+        transform: translateY(-4px);
+    }
+    .stat-gradient-1 { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    .stat-gradient-2 { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+    .stat-gradient-3 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+    .stat-gradient-4 { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+    .badge-level {
+        background: linear-gradient(135deg, #D4AF37 0%, #F2D96B 100%);
+        color: #0A2342;
+    }
+    .page-section {
+        display: none;
+    }
+    .page-section.active {
+        display: block;
+    }
+    .table-row-hover:hover {
+        background: rgba(212, 175, 55, 0.05);
+    }
+    .about-frame {
+        position: relative;
+        z-index: 1;
+    }
+    .about-frame::before {
+        content: '';
+        position: absolute;
+        top: -12px;
+        left: -12px;
+        right: -12px;
+        bottom: -12px;
+        background: linear-gradient(135deg, #D4AF37 0%, #F2D96B 50%, #C5A028 100%);
+        border-radius: 32px;
+        z-index: -1;
+        opacity: 0.3;
+    }
+    @media (max-width: 1024px) {
+        .about-frame::before {
+            top: -8px;
+            left: -8px;
+            right: -8px;
+            bottom: -8px;
+        }
+    }
+</style>
+</head>
+<body class="bg-slate-50 text-gray-800">
+
+<!-- WhatsApp Floating Button -->
+<a href="https://wa.me/1234567890?text=Halo%20John%2C%20saya%20tertarik%20dengan%20peluang%20bisnis%20Anda" class="whatsapp-float" target="_blank" aria-label="Hubungi via WhatsApp">
+    <i class="fab fa-whatsapp"></i>
+</a>
+
+<!-- Navigation -->
+<header class="fixed w-full top-0 z-50 bg-white/90 backdrop-blur-xl shadow-sm border-b border-gray-100">
+    <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center py-4">
+            <div class="flex items-center space-x-3">
+                <div class="w-11 h-11 rounded-xl gold-gradient flex items-center justify-center shadow-lg">
+                    <span class="text-white font-bold text-xl heading-font">JA</span>
+                </div>
+                <div>
+                    <span class="text-xl font-bold text-[#0A2342] heading-font block leading-tight">John Anderson</span>
+                    <span class="text-xs text-gray-500">Diamond Director</span>
+                </div>
+            </div>
+            
+            <div class="hidden lg:flex items-center space-x-8">
+                <a href="#home" class="nav-link text-gray-700 hover:text-[#0A2342] font-medium" data-page="landing">Beranda</a>
+                <a href="#about" class="nav-link text-gray-700 hover:text-[#0A2342] font-medium" data-page="landing">Tentang</a>
+                <a href="#opportunity" class="nav-link text-gray-700 hover:text-[#0A2342] font-medium" data-page="landing">Peluang</a>
+                <a href="#products" class="nav-link text-gray-700 hover:text-[#0A2342] font-medium" data-page="landing">Produk</a>
+                <a href="#testimonials" class="nav-link text-gray-700 hover:text-[#0A2342] font-medium" data-page="landing">Testimoni</a>
+                <a href="#dashboard" class="nav-link text-gray-700 hover:text-[#0A2342] font-medium" data-page="dashboard">Dashboard Member</a>
+                <a href="#contact" class="nav-link text-gray-700 hover:text-[#0A2342] font-medium" data-page="landing">Kontak</a>
+            </div>
+
+            <a href="#contact" class="hidden lg:block btn-gold gold-gradient text-[#0A2342] px-6 py-2.5 rounded-full font-bold" data-page="landing">
+                Gabung Tim Saya
+            </a>
+
+            <button id="mobile-menu-btn" class="lg:hidden text-[#0A2342]">
+                <i class="fas fa-bars text-2xl"></i>
+            </button>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden lg:hidden pb-4">
+            <a href="#home" class="block py-3 text-gray-700 hover:text-[#0A2342] font-medium border-b border-gray-100" data-page="landing">Beranda</a>
+            <a href="#about" class="block py-3 text-gray-700 hover:text-[#0A2342] font-medium border-b border-gray-100" data-page="landing">Tentang</a>
+            <a href="#opportunity" class="block py-3 text-gray-700 hover:text-[#0A2342] font-medium border-b border-gray-100" data-page="landing">Peluang</a>
+            <a href="#products" class="block py-3 text-gray-700 hover:text-[#0A2342] font-medium border-b border-gray-100" data-page="landing">Produk</a>
+            <a href="#testimonials" class="block py-3 text-gray-700 hover:text-[#0A2342] font-medium border-b border-gray-100" data-page="landing">Testimoni</a>
+            <a href="#dashboard" class="block py-3 text-gray-700 hover:text-[#0A2342] font-medium border-b border-gray-100" data-page="dashboard">Dashboard Member</a>
+            <a href="#contact" class="block py-3 text-gray-700 hover:text-[#0A2342] font-medium" data-page="landing">Kontak</a>
+            <a href="#contact" class="block mt-4 btn-gold gold-gradient text-[#0A2342] px-6 py-3 rounded-full font-bold text-center" data-page="landing">
+                Gabung Tim Saya
+            </a>
+        </div>
+    </nav>
+</header>
+
+<!-- Landing Page Content -->
+<div id="landing-page" class="page-section active">
+
+<!-- Hero Section -->
+<section id="home" class="hero-gradient pt-32 pb-24 lg:pt-44 lg:pb-32 relative overflow-hidden">
+    <div class="absolute top-20 right-0 w-96 h-96 bg-[#D4AF37] rounded-full filter blur-[120px] opacity-10 animate-float"></div>
+    <div class="absolute bottom-0 left-0 w-80 h-80 bg-white rounded-full filter blur-[100px] opacity-5"></div>
+    
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+            <div class="text-white animate-fade-in">
+                <div class="inline-flex items-center gap-2 glass-effect px-4 py-2 rounded-full mb-6">
+                    <i data-lucide="crown" class="w-4 h-4 text-[#D4AF37]"></i>
+                    <p class="text-[#D4AF37] font-semibold tracking-wider uppercase text-xs">Diamond Director • [Nama Perusahaan]</p>
+                </div>
+                <h1 class="heading-font text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-extrabold leading-tight mb-6">
+                    Bangun Hidup Impian Lewat <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#D4AF37] to-[#F2D96B]">Network Marketing</span>
+                </h1>
+                <p class="text-lg sm:text-xl text-gray-300 mb-8 leading-relaxed">
+                    Saya John Anderson, mentor 10 tahun yang telah membantu ratusan orang mencapai kebebasan finansial dengan sistem MLM terbukti dan produk wellness kelas dunia.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <a href="#contact" class="btn-gold gold-gradient text-[#0A2342] px-8 py-4 rounded-full font-bold text-center text-lg inline-flex items-center justify-center gap-2">
+                        Mulai Perjalanan Anda <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                    </a>
+                    <a href="#dashboard" class="glass-effect text-white px-8 py-4 rounded-full font-bold text-center text-lg hover:bg-white/20 transition-all inline-flex items-center justify-center gap-2" data-page="dashboard">
+                        Lihat Dashboard <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+                    </a>
+                </div>
+                <div class="mt-12 grid grid-cols-3 gap-6">
+                    <div class="glass-effect rounded-2xl p-4 text-center">
+                        <p class="text-3xl lg:text-4xl font-extrabold text-[#D4AF37] heading-font">500+</p>
+                        <p class="text-gray-300 text-sm mt-1">Member Tim</p>
+                    </div>
+                    <div class="glass-effect rounded-2xl p-4 text-center">
+                        <p class="text-3xl lg:text-4xl font-extrabold text-[#D4AF37] heading-font">10 Tahun</p>
+                        <p class="text-gray-300 text-sm mt-1">Pengalaman</p>
+                    </div>
+                    <div class="glass-effect rounded-2xl p-4 text-center">
+                        <p class="text-3xl lg:text-4xl font-extrabold text-[#D4AF37] heading-font">30+</p>
+                        <p class="text-gray-300 text-sm mt-1">Negara</p>
+                    </div>
+                </div>
+            </div>
+            <div class="relative">
+                <div class="absolute -top-6 -right-6 w-72 h-72 gold-gradient rounded-full filter blur-[100px] opacity-20 -z-0"></div>
+                <div class="relative z-10 rounded-3xl overflow-hidden shadow-2xl border-4 border-white/10">
+                    <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=600&h=700&fit=crop" alt="John Anderson - Pemimpin Bisnis" class="w-full h-auto object-cover">
+                    <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#0A2342] via-[#0A2342]/80 to-transparent p-6">
+                        <p class="text-white font-bold text-xl heading-font">John Anderson</p>
+                        <p class="text-[#D4AF37] text-sm font-medium">Top Earner • Global Mentor • Diamond Director</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- About Section -->
+<section id="about" class="py-20 lg:py-28 bg-white">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-2xl mx-auto mb-16">
+            <div class="inline-flex items-center gap-2 bg-[#D4AF37]/10 px-4 py-2 rounded-full mb-4">
+                <span class="text-[#D4AF37] font-bold uppercase tracking-wider text-xs">Tentang Saya</span>
+            </div>
+            <h2 class="heading-font text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#0A2342] mb-4">
+                Perjalanan Dari Nol Menjadi Diamond Director
+            </h2>
+        </div>
+
+        <div class="grid lg:grid-cols-2 gap-10 lg:gap-16 items-start">
+            <!-- Left: Photo with Frame -->
+            <div class="about-frame order-2 lg:order-1">
+                <div class="relative rounded-3xl overflow-hidden shadow-2xl bg-white">
+                    <img src="https://images.unsplash.com/photo-1556157382-97eda2d62296?w=600&h=700&fit=crop" alt="John Anderson Profile" class="w-full h-auto object-cover">
+                    
+                    <!-- Achievement Badge -->
+                    <div class="absolute top-6 right-6 gold-gradient px-5 py-3 rounded-2xl shadow-xl">
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="award" class="w-6 h-6 text-[#0A2342]"></i>
+                            <div>
+                                <p class="text-[#0A2342] font-extrabold text-2xl heading-font leading-none">10+</p>
+                                <p class="text-[#0A2342] font-semibold text-xs">Tahun Sukses</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Rank Badge Bottom -->
+                    <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#0A2342] via-[#0A2342]/95 to-transparent p-6">
+                        <p class="text-[#D4AF37] font-bold text-sm mb-1">RANK TERTINGGI</p>
+                        <p class="text-white font-extrabold text-2xl heading-font">Diamond Director</p>
+                        <p class="text-gray-300 text-sm mt-1">Global Leader • Top 1% Worldwide</p>
+                    </div>
+                </div>
+
+                <!-- Stats Cards Below Photo -->
+                <div class="grid grid-cols-3 gap-4 mt-6">
+                    <div class="bg-gradient-to-br from-slate-50 to-white rounded-2xl p-5 text-center border border-gray-100 shadow-lg">
+                        <i data-lucide="users" class="w-7 h-7 text-[#D4AF37] mx-auto mb-2"></i>
+                        <p class="text-2xl font-extrabold text-[#0A2342] heading-font">500+</p>
+                        <p class="text-xs text-gray-600 mt-1">Tim Global</p>
+                    </div>
+                    <div class="bg-gradient-to-br from-slate-50 to-white rounded-2xl p-5 text-center border border-gray-100 shadow-lg">
+                        <i data-lucide="globe" class="w-7 h-7 text-[#D4AF37] mx-auto mb-2"></i>
+                        <p class="text-2xl font-extrabold text-[#0A2342] heading-font">30+</p>
+                        <p class="text-xs text-gray-600 mt-1">Negara</p>
+                    </div>
+                    <div class="bg-gradient-to-br from-slate-50 to-white rounded-2xl p-5 text-center border border-gray-100 shadow-lg">
+                        <i data-lucide="trending-up" class="w-7 h-7 text-[#D4AF37] mx-auto mb-2"></i>
+                        <p class="text-2xl font-extrabold text-[#0A2342] heading-font">8-Fig</p>
+                        <p class="text-xs text-gray-600 mt-1">Income/Tahun</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Content -->
+            <div class="order-1 lg:order-2">
+                <div class="bg-gradient-to-br from-slate-50 to-white rounded-3xl p-8 lg:p-10 shadow-xl border border-gray-100">
+                    <!-- Section 1: Siapa Saya -->
+                    <div class="mb-8 pb-8 border-b border-gray-200">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-10 h-10 rounded-xl gold-gradient flex items-center justify-center flex-shrink-0">
+                                <i data-lucide="user" class="w-5 h-5 text-[#0A2342]"></i>
+                            </div>
+                            <h3 class="heading-font text-2xl font-extrabold text-[#0A2342]">Siapa Saya</h3>
+                        </div>
+                        <p class="text-gray-600 leading-relaxed mb-4">
+                            Nama saya <span class="font-bold text-[#0A2342]">John Anderson</span> dan 10 tahun lalu saya hanyalah karyawan biasa dengan gaji UMR, terlilit cicilan, dan tanpa masa depan finansial yang jelas.
+                        </p>
+                        <p class="text-gray-600 leading-relaxed">
+                            Setelah menemukan <span class="font-bold text-[#0A2342]">[Nama Perusahaan]</span> dan kekuatan network marketing, hidup saya berubah total. Hari ini saya memimpin tim 500+ entrepreneur sukses di 30 negara dengan sistem duplikasi yang terbukti.
+                        </p>
+                    </div>
+
+                    <!-- Section 2: Visi Misi -->
+                    <div class="mb-8 pb-8 border-b border-gray-200">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-10 h-10 rounded-xl gold-gradient flex items-center justify-center flex-shrink-0">
+                                <i data-lucide="target" class="w-5 h-5 text-[#0A2342]"></i>
+                            </div>
+                            <h3 class="heading-font text-2xl font-extrabold text-[#0A2342]">Visi & Misi</h3>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="flex items-start gap-3">
+                                <i data-lucide="check-circle-2" class="w-5 h-5 text-[#D4AF37] flex-shrink-0 mt-0.5"></i>
+                                <p class="text-gray-600"><span class="font-semibold text-[#0A2342]">Visi:</span> Menciptakan 1000+ jutawan muda Indonesia melalui sistem bisnis digital yang mudah diduplikasi.</p>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <i data-lucide="check-circle-2" class="w-5 h-5 text-[#D4AF37] flex-shrink-0 mt-0.5"></i>
+                                <p class="text-gray-600"><span class="font-semibold text-[#0A2342]">Misi:</span> Memberikan training, mentoring, dan tools terbaik agar setiap orang bisa mencapai kebebasan finansial tanpa harus punya modal besar.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 3: Pencapaian -->
+                    <div>
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="w-10 h-10 rounded-xl gold-gradient flex items-center justify-center flex-shrink-0">
+                                <i data-lucide="trophy" class="w-5 h-5 text-[#0A2342]"></i>
+                            </div>
+                            <h3 class="heading-font text-2xl font-extrabold text-[#0A2342]">Pencapaian</h3>
+                        </div>
+                        <div class="grid sm:grid-cols-2 gap-4">
+                            <div class="flex items-start gap-3 bg-white rounded-xl p-4 border border-gray-100 hover:border-[#D4AF37] hover:shadow-md transition-all">
+                                <div class="w-10 h-10 rounded-lg bg-[#D4AF37]/10 flex items-center justify-center flex-shrink-0">
+                                    <i data-lucide="crown" class="w-5 h-5 text-[#D4AF37]"></i>
+                                </div>
+                                <div>
+                                    <p class="font-bold text-[#0A2342] text-sm">Top Earner 2023</p>
+                                    <p class="text-xs text-gray-600 mt-0.5">Asia Region</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3 bg-white rounded-xl p-4 border border-gray-100 hover:border-[#D4AF37] hover:shadow-md transition-all">
+                                <div class="w-10 h-10 rounded-lg bg-[#D4AF37]/10 flex items-center justify-center flex-shrink-0">
+                                    <i data-lucide="star" class="w-5 h-5 text-[#D4AF37]"></i>
+                                </div>
+                                <div>
+                                    <p class="font-bold text-[#0A2342] text-sm">Speaker Global</p>
+                                    <p class="text-xs text-gray-600 mt-0.5">20+ Konferensi</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3 bg-white rounded-xl p-4 border border-gray-100 hover:border-[#D4AF37] hover:shadow-md transition-all">
+                                <div class="w-10 h-10 rounded-lg bg-[#D4AF37]/10 flex items-center justify-center flex-shrink-0">
+                                    <i data-lucide="users" class="w-5 h-5 text-[#D4AF37]"></i>
+                                </div>
+                                <div>
+                                    <p class="font-bold text-[#0A2342] text-sm">100+ Leader</p>
+                                    <p class="text-xs text-gray-600 mt-0.5">Diamond ke Atas</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3 bg-white rounded-xl p-4 border border-gray-100 hover:border-[#D4AF37] hover:shadow-md transition-all">
+                                <div class="w-10 h-10 rounded-lg bg-[#D4AF37]/10 flex items-center justify-center flex-shrink-0">
+                                    <i data-lucide="book-open" class="w-5 h-5 text-[#D4AF37]"></i>
+                                </div>
+                                <div>
+                                    <p class="font-bold text-[#0A2342] text-sm">Author Buku</p>
+                                    <p class="text-xs text-gray-600 mt-0.5">"Millionaire Blueprint"</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CTA Button -->
+                <div class="mt-6">
+                    <a href="#contact" class="btn-gold gold-gradient text-[#0A2342] px-8 py-4 rounded-full font-bold text-lg inline-flex items-center justify-center gap-2 w-full sm:w-auto" data-page="landing">
+                        Mulai Mentoring Dengan Saya <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Business Opportunity Section -->
+<section id="opportunity" class="py-20 lg:py-28 bg-gradient-to-b from-slate-50 to-white">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-3xl mx-auto mb-16">
+            <div class="inline-flex items-center gap-2 bg-[#D4AF37]/10 px-4 py-2 rounded-full mb-4">
+                <span class="text-[#D4AF37] font-bold uppercase tracking-wider text-xs">Peluang Bisnis</span>
+            </div>
+            <h2 class="heading-font text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#0A2342] mb-6">
+                Kenapa Bermitra Dengan [Nama Perusahaan]?
+            </h2>
+            <p class="text-gray-600 text-lg">
+                Kami bukan MLM biasa. Produk wellness premium yang dicintai pasar, rencana kompensasi terbaik di industri, dan support kelas dunia untuk membangun bisnis impian Anda.
+            </p>
+        </div>
+
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="card-hover glass-card p-8 rounded-3xl">
+                <div class="gold-gradient w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+                    <i data-lucide="leaf" class="w-8 h-8 text-[#0A2342]"></i>
+                </div>
+                <h3 class="heading-font text-2xl font-bold text-[#0A2342] mb-4">Produk Premium</h3>
+                <p class="text-gray-600 leading-relaxed mb-5">
+                    Produk kesehatan revolusioner dengan bahan paten dan studi klinis. Produk habis pakai = repeat order = residual income.
+                </p>
+                <ul class="space-y-3 text-gray-600">
+                    <li class="flex items-start gap-2"><i data-lucide="check-circle" class="w-5 h-5 text-[#D4AF37] flex-shrink-0 mt-0.5"></i><span>Fasilitas Bersertifikat FDA</span></li>
+                    <li class="flex items-start gap-2"><i data-lucide="check-circle" class="w-5 h-5 text-[#D4AF37] flex-shrink-0 mt-0.5"></i><span>Garansi Uang Kembali 60 Hari</span></li>
+                    <li class="flex items-start gap-2"><i data-lucide="check-circle" class="w-5 h-5 text-[#D4AF37] flex-shrink-0 mt-0.5"></i><span>Retensi Pelanggan Tinggi</span></li>
+                </ul>
+            </div>
+
+            <div class="card-hover glass-card p-8 rounded-3xl">
+                <div class="gold-gradient w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+                    <i data-lucide="trending-up" class="w-8 h-8 text-[#0A2342]"></i>
+                </div>
+                <h3 class="heading-font text-2xl font-bold text-[#0A2342] mb-4">Marketing Plan Menguntungkan</h3>
+                <p class="text-gray-600 leading-relaxed mb-5">
+                    Dapatkan hingga 7 jenis income: profit retail, bonus tim, bonus kepemimpinan, bonus mobil, liburan mewah. Dibayar mingguan!
+                </p>
+                <ul class="space-y-3 text-gray-600">
+                    <li class="flex items-start gap-2"><i data-lucide="check-circle" class="w-5 h-5 text-[#D4AF37] flex-shrink-0 mt-0.5"></i><span>Hingga 50% Profit Retail</span></li>
+                    <li class="flex items-start gap-2"><i data-lucide="check-circle" class="w-5 h-5 text-[#D4AF37] flex-shrink-0 mt-0.5"></i><span>Bonus Kedalaman Unlimited</span></li>
+                    <li class="flex items-start gap-2"><i data-lucide="check-circle" class="w-5 h-5 text-[#D4AF37] flex-shrink-0 mt-0.5"></i><span>Payout Mingguan & Bulanan</span></li>
+                </ul>
+            </div>
+
+            <div class="card-hover glass-card p-8 rounded-3xl">
+                <div class="gold-gradient w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+                    <i data-lucide="graduation-cap" class="w-8 h-8 text-[#0A2342]"></i>
+                </div>
+                <h3 class="heading-font text-2xl font-bold text-[#0A2342] mb-4">Sistem Training Gratis</h3>
+                <p class="text-gray-600 leading-relaxed mb-5">
+                    Akses blueprint lengkap: marketing medsos, script prospek, teknik closing, dan coaching call tim mingguan.
+                </p>
+                <ul class="space-y-3 text-gray-600">
+                    <li class="flex items-start gap-2"><i data-lucide="check-circle" class="w-5 h-5 text-[#D4AF37] flex-shrink-0 mt-0.5"></i><span>Marketing Done-For-You</span></li>
+                    <li class="flex items-start gap-2"><i data-lucide="check-circle" class="w-5 h-5 text-[#D4AF37] flex-shrink-0 mt-0.5"></i><span>Mentoring 1-on-1</span></li>
+                    <li class="flex items-start gap-2"><i data-lucide="check-circle" class="w-5 h-5 text-[#D4AF37] flex-shrink-0 mt-0.5"></i><span>Live Training Mingguan</span></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="mt-16 hero-gradient rounded-3xl p-8 lg:p-12 text-white text-center relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-64 h-64 bg-[#D4AF37] rounded-full filter blur-[100px] opacity-20"></div>
+            <div class="relative z-10">
+                <h3 class="heading-font text-2xl sm:text-3xl lg:text-4xl font-extrabold mb-4">Siap Mengubah Hidup Anda?</h3>
+                <p class="text-lg text-gray-200 mb-8 max-w-2xl mx-auto">
+                    Bergabung dengan tim saya hari ini dan dapatkan akses instan ke semua materi training, tools marketing, dan mentoring langsung dari saya.
+                </p>
+                <a href="#contact" class="btn-gold gold-gradient text-[#0A2342] px-8 py-4 rounded-full font-bold text-lg inline-flex items-center gap-2">
+                    Klaim Spot Anda Sekarang <i data-lucide="rocket" class="w-5 h-5"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Products/Income Gallery -->
+<section id="products" class="py-20 lg:py-28 bg-white">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-3xl mx-auto mb-16">
+            <div class="inline-flex items-center gap-2 bg-[#D4AF37]/10 px-4 py-2 rounded-full mb-4">
+                <span class="text-[#D4AF37] font-bold uppercase tracking-wider text-xs">Produk & Hasil</span>
+            </div>
+            <h2 class="heading-font text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#0A2342] mb-6">
+                Produk Yang Mengubah Hidup & Menjual Sendiri
+            </h2>
+            <p class="text-gray-600 text-lg">
+                Lini wellness kami yang didukung sains memberikan hasil nyata. Saat orang cinta produknya, membangun bisnis menjadi mudah.
+            </p>
+        </div>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+            <div class="card-hover bg-white rounded-3xl overflow-hidden shadow-xl border border-gray-100">
+                <div class="relative h-56 overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1556228720-195a672e8a03?w=400&h=300&fit=crop" alt="Produk 1" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                    <span class="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold">Best Seller</span>
+                </div>
+                <div class="p-6">
+                    <h3 class="font-bold text-xl text-[#0A2342] mb-2 heading-font">Vitality Boost+</h3>
+                    <p class="text-gray-600 text-sm mb-4">Suplemen energi alami dengan hasil klinis</p>
+                    <div class="flex justify-between items-center">
+                        <span class="text-[#D4AF37] font-extrabold text-2xl">Rp 1.2jt</span>
+                        <button class="text-[#0A2342] hover:text-[#D4AF37] transition-colors">
+                            <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-hover bg-white rounded-3xl overflow-hidden shadow-xl border border-gray-100">
+                <div class="relative h-56 overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1607619056574-7b8d3ee536b2?w=400&h=300&fit=crop" alt="Produk 2" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                    <span class="absolute top-4 right-4 bg-blue-500 text-white px-3 py-1 rounded-full text-xs font-bold">Baru</span>
+                </div>
+                <div class="p-6">
+                    <h3 class="font-bold text-xl text-[#0A2342] mb-2 heading-font">Detox Cleanse</h3>
+                    <p class="text-gray-600 text-sm mb-4">Sistem reset tubuh total 30 hari</p>
+                    <div class="flex justify-between items-center">
+                        <span class="text-[#D4AF37] font-extrabold text-2xl">Rp 1.9jt</span>
+                        <button class="text-[#0A2342] hover:text-[#D4AF37] transition-colors">
+                            <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-hover bg-white rounded-3xl overflow-hidden shadow-xl border border-gray-100">
+                <div class="relative h-56 overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1471864190281-a93a3070b6de?w=400&h=300&fit=crop" alt="Produk 3" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                    <span class="absolute top-4 right-4 bg-purple-500 text-white px-3 py-1 rounded-full text-xs font-bold">Trending</span>
+                </div>
+                <div class="p-6">
+                    <h3 class="font-bold text-xl text-[#0A2342] mb-2 heading-font">Collagen Glow</h3>
+                    <p class="text-gray-600 text-sm mb-4">Anti-aging kecantikan dari dalam</p>
+                    <div class="flex justify-between items-center">
+                        <span class="text-[#D4AF37] font-extrabold text-2xl">Rp 1.3jt</span>
+                        <button class="text-[#0A2342] hover:text-[#D4AF37] transition-colors">
+                            <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-hover bg-white rounded-3xl overflow-hidden shadow-xl border border-gray-100">
+                <div class="relative h-56 overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop" alt="Produk 4" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                    <span class="absolute top-4 right-4 bg-orange-500 text-white px-3 py-1 rounded-full text-xs font-bold">Esensial</span>
+                </div>
+                <div class="p-6">
+                    <h3 class="font-bold text-xl text-[#0A2342] mb-2 heading-font">Immune Shield</h3>
+                    <p class="text-gray-600 text-sm mb-4">Kompleks dukungan imun harian</p>
+                    <div class="flex justify-between items-center">
+                        <span class="text-[#D4AF37] font-extrabold text-2xl">Rp 950rb</span>
+                        <button class="text-[#0A2342] hover:text-[#D4AF37] transition-colors">
+                            <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-12 text-center">
+            <p class="text-gray-500 text-sm mb-4">*Hasil dapat bervariasi. Testimoni income dan produk tidak mencerminkan hasil umum.</p>
+            <a href="#contact" class="text-[#0A2342] font-bold hover:text-[#D4AF37] transition-colors inline-flex items-center gap-2">
+                Lihat Katalog Produk Lengkap <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials -->
+<section id="testimonials" class="py-20 lg:py-28 bg-gradient-to-b from-slate-50 to-white">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-3xl mx-auto mb-16">
+            <div class="inline-flex items-center gap-2 bg-[#D4AF37]/10 px-4 py-2 rounded-full mb-4">
+                <span class="text-[#D4AF37] font-bold uppercase tracking-wider text-xs">Kisah Sukses</span>
+            </div>
+            <h2 class="heading-font text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#0A2342] mb-6">
+                Orang Nyata, Hasil Nyata
+            </h2>
+            <p class="text-gray-600 text-lg">
+                Lihat bagaimana orang biasa menciptakan hidup luar biasa dengan sistem bisnis kami.
+            </p>
+        </div>
+
+        <div class="max-w-4xl mx-auto">
+            <div id="testimonial-container" class="relative">
+                <!-- Testimonial 1 -->
+                <div class="testimonial-item glass-card rounded-3xl p-8 lg:p-12">
+                    <div class="flex items-center mb-6">
+                        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop" alt="Sarah" class="w-16 h-16 rounded-2xl object-cover mr-4 border-2 border-[#D4AF37]">
+                        <div>
+                            <h4 class="font-bold text-[#0A2342] text-lg heading-font">Sarah Mitchell</h4>
+                            <p class="text-gray-600 text-sm">Mantan Guru • Diamond Director</p>
+                            <div class="text-[#D4AF37] mt-1 text-sm">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                            </div>
+                        </div>
+                    <p class="text-gray-700 text-lg leading-relaxed italic">
+                        "Awalnya skeptis dengan MLM sampai ketemu John. Mentoringnya dan produk perusahaan ini mengubah segalanya. Saya menggantikan gaji guru dalam 8 bulan dan sekarang income 5 digit per bulan dari rumah. Keputusan terbaik dalam hidup!"
+                    </p>
+                </div>
+
+                <!-- Testimonial 2 -->
+                <div class="testimonial-item glass-card rounded-3xl p-8 lg:p-12 hidden">
+                    <div class="flex items-center mb-6">
+                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop" alt="Michael" class="w-16 h-16 rounded-2xl object-cover mr-4 border-2 border-[#D4AF37]">
+                        <div>
+                            <h4 class="font-bold text-[#0A2342] text-lg heading-font">Michael Chen</h4>
+                            <p class="text-gray-600 text-sm">Software Engineer • Emerald Director</p>
+                            <div class="text-[#D4AF37] mt-1 text-sm">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-gray-700 text-lg leading-relaxed italic">
+                        "Sebagai engineer, saya selalu tentang angka. Comp plan dan margin produk masuk akal banget. Mulai part-time 2 tahun lalu dan sekarang ini full-time income saya. Sistem training John bisa diduplikasi dan BENAR-BENAR BERHASIL."
+                    </p>
+                </div>
+
+                <!-- Testimonial 3 -->
+                <div class="testimonial-item glass-card rounded-3xl p-8 lg:p-12 hidden">
+                    <div class="flex items-center mb-6">
+                        <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop" alt="Jessica" class="w-16 h-16 rounded-2xl object-cover mr-4 border-2 border-[#D4AF37]">
+                        <div>
+                            <h4 class="font-bold text-[#0A2342] text-lg heading-font">Jessica Rodriguez</h4>
+                            <p class="text-gray-600 text-sm">Ibu Rumah Tangga • Ruby Director</p>
+                            <div class="text-[#D4AF37] mt-1 text-sm">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-gray-700 text-lg leading-relaxed italic">
+                        "Ingin bantu keuangan tanpa miss momen anak-anak. Bisnis ini kasih saya income DAN kebebasan waktu. Dalam 14 bulan saya dapat Rp 120jt+ per bulan. Produknya juga bantu kesehatan seluruh keluarga!"
+                    </p>
+                </div>
+            </div>
+
+            <!-- Dots -->
+            <div class="flex justify-center gap-3 mt-8">
+                <button class="testimonial-dot w-3 h-3 rounded-full bg-gray-300 active" data-index="0"></button>
+                <button class="testimonial-dot w-3 h-3 rounded-full bg-gray-300" data-index="1"></button>
+                <button class="testimonial-dot w-3 h-3 rounded-full bg-gray-300" data-index="2"></button>
+            </div>
+        </div>
+
+        <p class="text-center text-gray-500 text-xs mt-8 max-w-2xl mx-auto">
+            *Testimoni ini mencerminkan pengalaman individu. Hasil individu akan bervariasi berdasarkan usaha, skill, dan kondisi pasar. Tidak ada jaminan income.
+        </p>
+    </div>
+</section>
+
+<!-- Team Section -->
+<section id="team" class="py-20 lg:py-28 bg-white">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-3xl mx-auto mb-16">
+            <div class="inline-flex items-center gap-2 bg-[#D4AF37]/10 px-4 py-2 rounded-full mb-4">
+                <span class="text-[#D4AF37] font-bold uppercase tracking-wider text-xs">Tim Kami</span>
+            </div>
+            <h2 class="heading-font text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#0A2342] mb-6">
+                Bertemu Para Leader Unggulan
+            </h2>
+            <p class="text-gray-600 text-lg">
+                Anda tidak bergabung sendirian. Anda akan menjadi bagian dari tim award-winning dengan leader terbukti yang siap support perjalanan Anda.
+            </p>
+        </div>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div class="card-hover bg-white rounded-3xl overflow-hidden shadow-xl border border-gray-100 text-center">
+                <div class="h-72 overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&h=400&fit=crop" alt="Team Member 1" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                </div>
+                <div class="p-6">
+                    <h3 class="font-bold text-xl text-[#0A2342] mb-1 heading-font">Amanda Foster</h3>
+                    <p class="text-[#D4AF37] font-semibold text-sm mb-3">Diamond Director</p>
+                    <p class="text-gray-600 text-sm mb-4">Mantan perawat bangun income 6 digit dalam 18 bulan</p>
+                    <div class="flex justify-center gap-3">
+                        <a href="#" class="w-9 h-9 rounded-full bg-[#0A2342] text-white flex items-center justify-center hover:bg-[#D4AF37] hover:text-[#0A2342] transition-all"><i class="fab fa-instagram text-sm"></i></a>
+                        <a href="#" class="w-9 h-9 rounded-full bg-[#0A2342] text-white flex items-center justify-center hover:bg-[#D4AF37] hover:text-[#0A2342] transition-all"><i class="fab fa-facebook text-sm"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-hover bg-white rounded-3xl overflow-hidden shadow-xl border border-gray-100 text-center">
+                <div class="h-72 overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop" alt="Team Member 2" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                </div>
+                <div class="p-6">
+                    <h3 class="font-bold text-xl text-[#0A2342] mb-1 heading-font">David Park</h3>
+                    <p class="text-[#D4AF37] font-semibold text-sm mb-3">Emerald Director</p>
+                    <p class="text-gray-600 text-sm mb-4">Eksekutif korporat jadi entrepreneur full-time</p>
+                    <div class="flex justify-center gap-3">
+                        <a href="#" class="w-9 h-9 rounded-full bg-[#0A2342] text-white flex items-center justify-center hover:bg-[#D4AF37] hover:text-[#0A2342] transition-all"><i class="fab fa-instagram text-sm"></i></a>
+                        <a href="#" class="w-9 h-9 rounded-full bg-[#0A2342] text-white flex items-center justify-center hover:bg-[#D4AF37] hover:text-[#0A2342] transition-all"><i class="fab fa-linkedin text-sm"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-hover bg-white rounded-3xl overflow-hidden shadow-xl border border-gray-100 text-center">
+                <div class="h-72 overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=400&fit=crop" alt="Team Member 3" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                </div>
+                <div class="p-6">
+                    <h3 class="font-bold text-xl text-[#0A2342] mb-1 heading-font">Rachel Thompson</h3>
+                    <p class="text-[#D4AF37] font-semibold text-sm mb-3">Ruby Director</p>
+                    <p class="text-gray-600 text-sm mb-4">Single mom dengan income full-time dari rumah</p>
+                    <div class="flex justify-center gap-3">
+                        <a href="#" class="w-9 h-9 rounded-full bg-[#0A2342] text-white flex items-center justify-center hover:bg-[#D4AF37] hover:text-[#0A2342] transition-all"><i class="fab fa-instagram text-sm"></i></a>
+                        <a href="#" class="w-9 h-9 rounded-full bg-[#0A2342] text-white flex items-center justify-center hover:bg-[#D4AF37] hover:text-[#0A2342] transition-all"><i class="fab fa-tiktok text-sm"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-hover bg-white rounded-3xl overflow-hidden shadow-xl border border-gray-100 text-center">
+                <div class="h-72 overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400&h=400&fit=crop" alt="Team Member 4" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                </div>
+                <div class="p-6">
+                    <h3 class="font-bold text-xl text-[#0A2342] mb-1 heading-font">James Wilson</h3>
+                    <p class="text-[#D4AF37] font-semibold text-sm mb-3">Sapphire Director</p>
+                    <p class="text-gray-600 text-sm mb-4">Pensiun di usia 35 dengan model bisnis kami</p>
+                    <div class="flex justify-center gap-3">
+                        <a href="#" class="w-9 h-9 rounded-full bg-[#0A2342] text-white flex items-center justify-center hover:bg-[#D4AF37] hover:text-[#0A2342] transition-all"><i class="fab fa-instagram text-sm"></i></a>
+                        <a href="#" class="w-9 h-9 rounded-full bg-[#0A2342] text-white flex items-center justify-center hover:bg-[#D4AF37] hover:text-[#0A2342] transition-all"><i class="fab fa-youtube text-sm"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-12">
+            <a href="#contact" class="btn-gold gold-gradient text-[#0A2342] px-8 py-4 rounded-full font-bold text-lg inline-flex items-center gap-2">
+                Gabung Tim Pemenang Kami
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Section -->
+<section id="contact" class="py-20 lg:py-28 hero-gradient relative overflow-hidden">
+    <div class="absolute top-0 right-0 w-96 h-96 bg-[#D4AF37] rounded-full filter blur-[120px] opacity-10"></div>
+    <div class="absolute bottom-0 left-0 w-80 h-80 bg-white rounded-full filter blur-[100px] opacity-5"></div>
+
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="grid lg:grid-cols-2 gap-12 items-center">
+            <div class="text-white">
+                <div class="inline-flex items-center gap-2 glass-effect px-4 py-2 rounded-full mb-6">
+                    <i data-lucide="message-circle" class="w-4 h-4 text-[#D4AF37]"></i>
+                    <span class="text-[#D4AF37] font-bold uppercase tracking-wider text-xs">Mari Terhubung</span>
+                </div>
+                <h2 class="heading-font text-3xl sm:text-4xl lg:text-5xl font-extrabold mb-6">
+                    Siap Memulai Kisah Sukses Anda?
+                </h2>
+                <p class="text-lg text-gray-300 mb-8 leading-relaxed">
+                    Ambil langkah pertama menuju kebebasan finansial. Isi form atau chat saya langsung di WhatsApp. Saya pribadi balas setiap inquiry dalam 24 jam.
+                </p>
+
+                <div class="space-y-6 mb-8">
+                    <div class="flex items-start gap-4">
+                        <div class="gold-gradient w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg">
+                            <i data-lucide="mail" class="w-6 h-6 text-[#0A2342]"></i>
+                        </div>
+                        <div>
+                            <p class="font-semibold text-lg">Email</p>
+                            <p class="text-gray-300">john@johnanderson.com</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <div class="gold-gradient w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg">
+                            <i class="fab fa-whatsapp text-[#0A2342] text-2xl"></i>
+                        </div>
+                        <div>
+                            <p class="font-semibold text-lg">WhatsApp</p>
+                            <p class="text-gray-300">+62 812-3456-7890</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <div class="gold-gradient w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg">
+                            <i data-lucide="map-pin" class="w-6 h-6 text-[#0A2342]"></i>
+                        </div>
+                        <div>
+                            <p class="font-semibold text-lg">Lokasi</p>
+                            <p class="text-gray-300">Jakarta, Indonesia • Tim Global</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex gap-4">
+                    <a href="#" class="w-12 h-12 glass-effect rounded-2xl flex items-center justify-center hover:bg-[#D4AF37] hover:text-[#0A2342] transition-all">
+                        <i class="fab fa-instagram text-xl"></i>
+                    </a>
+                    <a href="#" class="w-12 h-12 glass-effect rounded-2xl flex items-center justify-center hover:bg-[#D4AF37] hover:text-[#0A2342] transition-all">
+                        <i class="fab fa-facebook text-xl"></i>
+                    </a>
+                    <a href="#" class="w-12 h-12 glass-effect rounded-2xl flex items-center justify-center hover:bg-[#D4AF37] hover:text-[#0A2342] transition-all">
+                        <i class="fab fa-youtube text-xl"></i>
+                    </a>
+                    <a href="#" class="w-12 h-12 glass-effect rounded-2xl flex items-center justify-center hover:bg-[#D4AF37] hover:text-[#0A2342] transition-all">
+                        <i class="fab fa-linkedin text-xl"></i>
+                    </a>
+                    <a href="#" class="w-12 h-12 glass-effect rounded-2xl flex items-center justify-center hover:bg-[#D4AF37] hover:text-[#0A2342] transition-all">
+                        <i class="fab fa-tiktok text-xl"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="glass-card rounded-3xl p-8 lg:p-10">
+                <h3 class="heading-font text-2xl font-bold text-[#0A2342] mb-6">Mulai Hari Ini</h3>
+                <form id="contact-form" class="space-y-5">
+                    <div>
+                        <label class="block text-gray-700 font-semibold mb-2 text-sm">Nama Lengkap *</label>
+                        <input type="text" required class="w-full px-4 py-3.5 rounded-xl border-2 border-gray-200 focus:border-[#D4AF37] focus:ring-4 focus:ring-[#D4AF37]/20 outline-none transition-all" placeholder="Budi Santoso">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-semibold mb-2 text-sm">Email *</label>
+                        <input type="email" required class="w-full px-4 py-3.5 rounded-xl border-2 border-gray-200 focus:border-[#D4AF37] focus:ring-4 focus:ring-[#D4AF37]/20 outline-none transition-all" placeholder="budi@email.com">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-semibold mb-2 text-sm">Nomor WhatsApp *</label>
+                        <input type="tel" required class="w-full px-4 py-3.5 rounded-xl border-2 border-gray-200 focus:border-[#D4AF37] focus:ring-4 focus:ring-[#D4AF37]/20 outline-none transition-all" placeholder="081234567890">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-semibold mb-2 text-sm">Saya Tertarik *</label>
+                        <select required class="w-full px-4 py-3.5 rounded-xl border-2 border-gray-200 focus:border-[#D4AF37] focus:ring-4 focus:ring-[#D4AF37]/20 outline-none transition-all">
+                            <option value="">Pilih opsi</option>
+                            <option value="products">Mencoba Produk</option>
+                            <option value="business">Memulai Bisnis</option>
+                            <option value="both">Produk & Bisnis</option>
+                            <option value="info">Info Lebih Lanjut Dulu</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-semibold mb-2 text-sm">Pesan Anda</label>
+                        <textarea rows="4" class="w-full px-4 py-3.5 rounded-xl border-2 border-gray-200 focus:border-[#D4AF37] focus:ring-4 focus:ring-[#D4AF37]/20 outline-none transition-all resize-none" placeholder="Ceritakan tujuan Anda..."></textarea>
+                    </div>
+                    <button type="submit" class="btn-gold gold-gradient text-[#0A2342] w-full py-4 rounded-full font-bold text-lg inline-flex items-center justify-center gap-2">
+                        <span>Kirim Pesan</span> <i data-lucide="send" class="w-5 h-5"></i>
+                    </button>
+                    <p class="text-gray-500 text-xs text-center">
+                        Dengan mengirim form, Anda setuju dihubungi terkait peluang bisnis ini.
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+</div>
+
+<!-- Dashboard Page -->
+<div id="dashboard-page" class="page-section">
+    <section class="pt-32 pb-20 bg-gradient-to-b from-slate-50 to-white min-h-screen">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Dashboard Header -->
+            <div class="mb-8">
+                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                    <div>
+                        <h1 class="heading-font text-3xl lg:text-4xl font-extrabold text-[#0A2342] mb-2">Dashboard Member</h1>
+                        <p class="text-gray-600">Selamat datang kembali, <span class="font-semibold text-[#0A2342]">Budi Santoso</span></p>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <div class="badge-level px-5 py-2 rounded-full font-bold text-sm shadow-lg">
+                            <i class="fas fa-crown mr-2"></i> Ruby Director
+                        </div>
+                        <button class="btn-gold gold-gradient text-[#0A2342] px-6 py-2.5 rounded-full font-bold text-sm inline-flex items-center gap-2">
+                            <i data-lucide="download" class="w-4 h-4"></i> Withdraw
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="dashboard-card text-white stat-gradient-1">
+                    <div class="flex items-start justify-between mb-4">
+                        <div>
+                            <p class="text-white/80 text-sm font-medium mb-1">Bonus Hari Ini</p>
+                            <p class="text-3xl font-extrabold heading-font">Rp 1.8jt</p>
+                        </div>
+                        <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                            <i data-lucide="calendar" class="w-6 h-6"></i>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 text-sm">
+                        <i data-lucide="trending-up" class="w-4 h-4"></i>
+                        <span>+12% dari kemarin</span>
+                    </div>
+                </div>
+
+                <div class="dashboard-card text-white stat-gradient-2">
+                    <div class="flex items-start justify-between mb-4">
+                        <div>
+                            <p class="text-white/80 text-sm font-medium mb-1">Bonus Bulan Ini</p>
+                            <p class="text-3xl font-extrabold heading-font">Rp 42.5jt</p>
+                        </div>
+                        <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                            <i data-lucide="coins" class="w-6 h-6"></i>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 text-sm">
+                        <i data-lucide="trending-up" class="w-4 h-4"></i>
+                        <span>+28% dari bulan lalu</span>
+                    </div>
+                </div>
+
+                <div class="dashboard-card text-white stat-gradient-3">
+                    <div class="flex items-start justify-between mb-4">
+                        <div>
+                            <p class="text-white/80 text-sm font-medium mb-1">Total Downline</p>
+                            <p class="text-3xl font-extrabold heading-font">187</p>
+                        </div>
+                        <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                            <i data-lucide="users" class="w-6 h-6"></i>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 text-sm">
+                        <i data-lucide="user-plus" class="w-4 h-4"></i>
+                        <span>+8 member baru minggu ini</span>
+                    </div>
+                </div>
+
+                <div class="dashboard-card text-white stat-gradient-4">
+                    <div class="flex items-start justify-between mb-4">
+                        <div>
+                            <p class="text-white/80 text-sm font-medium mb-1">Poin Level</p>
+                            <p class="text-3xl font-extrabold heading-font">8,540</p>
+                        </div>
+                        <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                            <i data-lucide="award" class="w-6 h-6"></i>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 text-sm">
+                        <i data-lucide="zap" class="w-4 h-4"></i>
+                        <span>1,460 poin lagi ke Emerald</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Dashboard Content -->
+            <div class="grid lg:grid-cols-3 gap-6 mb-8">
+                <!-- Network Growth Chart -->
+                <div class="dashboard-card lg:col-span-2">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="heading-font text-xl font-bold text-[#0A2342]">Perkembangan Jaringan</h3>
+                        <select class="text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#D4AF37]">
+                            <option>6 Bulan Terakhir</option>
+                            <option>1 Tahun</option>
+                            <option>Semua Waktu</option>
+                        </select>
+                    </div>
+                    <div class="h-[300px]">
+                        <canvas id="networkChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Referral Link Card -->
+                <div class="dashboard-card">
+                    <h3 class="heading-font text-xl font-bold text-[#0A2342] mb-4">Link Referral Pribadi</h3>
+                    <p class="text-gray-600 text-sm mb-4">Bagikan link ini untuk merekrut member baru dan dapatkan bonus!</p>
+                    <div class="bg-gray-50 rounded-xl p-4 mb-4 border-2 border-dashed border-gray-200">
+                        <p class="text-sm text-gray-500 mb-2">Link Anda:</p>
+                        <p class="text-[#0A2342] font-semibold text-sm break-all">https://join.company.com/ref/budi88</p>
+                    </div>
+                    <button id="copy-link-btn" class="w-full gold-gradient text-[#0A2342] py-3 rounded-xl font-bold text-sm inline-flex items-center justify-center gap-2 btn-gold">
+                        <i data-lucide="copy" class="w-4 h-4"></i> Salin Link
+                    </button>
+                    <div class="mt-6 pt-6 border-t border-gray-100">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-gray-600 text-sm">Klik Link</span>
+                            <span class="font-bold text-[#0A2342]">1,247</span>
+                        </div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-gray-600 text-sm">Sign Up</span>
+                            <span class="font-bold text-[#0A2342]">187</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-600 text-sm">Konversi</span>
+                            <span class="font-bold text-green-600">15%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Downline & Commission Tables -->
+            <div class="grid lg:grid-cols-2 gap-6">
+                <!-- Latest Downline -->
+                <div class="dashboard-card">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="heading-font text-xl font-bold text-[#0A2342]">Downline Terbaru</h3>
+                        <a href="#" class="text-[#D4AF37] text-sm font-semibold hover:text-[#C5A028]">Lihat Semua</a>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="border-b-2 border-gray-100">
+                                    <th class="text-left py-3 text-sm font-semibold text-gray-600">Nama</th>
+                                    <th class="text-left py-3 text-sm font-semibold text-gray-600">Level</th>
+                                    <th class="text-left py-3 text-sm font-semibold text-gray-600">Tanggal</th>
+                                    <th class="text-right py-3 text-sm font-semibold text-gray-600">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="table-row-hover border-b border-gray-50">
+                                    <td class="py-4">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white font-bold text-sm">AS</div>
+                                            <div>
+                                                <p class="font-semibold text-[#0A2342] text-sm">Andi Saputra</p>
+                                                <p class="text-xs text-gray-500">Level 1</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="py-4"><span class="badge-level px-3 py-1 rounded-full text-xs font-semibold">Member</span></td>
+                                    <td class="py-4 text-sm text-gray-600">2 jam lalu</td>
+                                    <td class="py-4 text-right"><span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-semibold">Aktif</span></td>
+                                </tr>
+                                <tr class="table-row-hover border-b border-gray-50">
+                                    <td class="py-4">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-cyan-400 flex items-center justify-center text-white font-bold text-sm">DW</div>
+                                            <div>
+                                                <p class="font-semibold text-[#0A2342] text-sm">Dewi Wulandari</p>
+                                                <p class="text-xs text-gray-500">Level 1</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="py-4"><span class="badge-level px-3 py-1 rounded-full text-xs font-semibold">Silver</span></td>
+                                    <td class="py-4 text-sm text-gray-600">1 hari lalu</td>
+                                    <td class="py-4 text-right"><span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-semibold">Aktif</span></td>
+                                </tr>
+                                <tr class="table-row-hover border-b border-gray-50">
+                                    <td class="py-4">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-red-400 flex items-center justify-center text-white font-bold text-sm">RH</div>
+                                            <div>
+                                                <p class="font-semibold text-[#0A2342] text-sm">Rudi Hartono</p>
+                                                <p class="text-xs text-gray-500">Level 2</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="py-4"><span class="badge-level px-3 py-1 rounded-full text-xs font-semibold">Gold</span></td>
+                                    <td class="py-4 text-sm text-gray-600">3 hari lalu</td>
+                                    <td class="py-4 text-right"><span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-semibold">Aktif</span></td>
+                                </tr>
+                                <tr class="table-row-hover">
+                                    <td class="py-4">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-teal-400 to-green-400 flex items-center justify-center text-white font-bold text-sm">SA</div>
+                                            <div>
+                                                <p class="font-semibold text-[#0A2342] text-sm">Siti Aminah</p>
+                                                <p class="text-xs text-gray-500">Level 1</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="py-4"><span class="badge-level px-3 py-1 rounded-full text-xs font-semibold">Member</span></td>
+                                    <td class="py-4 text-sm text-gray-600">5 hari lalu</td>
+                                    <td class="py-4 text-right"><span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs font-semibold">Pending</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Commission History -->
+                <div class="dashboard-card">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="heading-font text-xl font-bold text-[#0A2342]">Riwayat Komisi</h3>
+                        <a href="#" class="text-[#D4AF37] text-sm font-semibold hover:text-[#C5A028]">Lihat Semua</a>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="border-b-2 border-gray-100">
+                                    <th class="text-left py-3 text-sm font-semibold text-gray-600">Tanggal</th>
+                                    <th class="text-left py-3 text-sm font-semibold text-gray-600">Jenis</th>
+                                    <th class="text-right py-3 text-sm font-semibold text-gray-600">Jumlah</th>
+                                    <th class="text-right py-3 text-sm font-semibold text-gray-600">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="table-row-hover border-b border-gray-50">
+                                    <td class="py-4 text-sm text-gray-600">22 Okt 2024</td>
+                                    <td class="py-4">
+                                        <div class="flex items-center gap-2">
+                                            <i data-lucide="package" class="w-4 h-4 text-[#D4AF37]"></i>
+                                            <span class="text-sm font-medium text-[#0A2342]">Bonus Retail</span>
+                                        </div>
+                                    </td>
+                                    <td class="py-4 text-right font-bold text-[#0A2342]">Rp 1.250.000</td>
+                                    <td class="py-4 text-right"><span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-semibold">Dibayar</span></td>
+                                </tr>
+                                <tr class="table-row-hover border-b border-gray-50">
+                                    <td class="py-4 text-sm text-gray-600">21 Okt 2024</td>
+                                    <td class="py-4">
+                                        <div class="flex items-center gap-2">
+                                            <i data-lucide="users" class="w-4 h-4 text-[#D4AF37]"></i>
+                                            <span class="text-sm font-medium text-[#0A2342]">Bonus Tim</span>
+                                        </div>
+                                    </td>
+                                    <td class="py-4 text-right font-bold text-[#0A2342]">Rp 850.000</td>
+                                    <td class="py-4 text-right"><span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-semibold">Dibayar</span></td>
+                                </tr>
+                                <tr class="table-row-hover border-b border-gray-50">
+                                    <td class="py-4 text-sm text-gray-600">20 Okt 2024</td>
+                                    <td class="py-4">
+                                        <div class="flex items-center gap-2">
+                                            <i data-lucide="award" class="w-4 h-4 text-[#D4AF37]"></i>
+                                            <span class="text-sm font-medium text-[#0A2342]">Bonus Lead</span>
+                                        </div>
+                                    </td>
+                                    <td class="py-4 text-right font-bold text-[#0A2342]">Rp 2.100.000</td>
+                                    <td class="py-4 text-right"><span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-semibold">Dibayar</span></td>
+                                </tr>
+                                <tr class="table-row-hover">
+                                    <td class="py-4 text-sm text-gray-600">19 Okt 2024</td>
+                                    <td class="py-4">
+                                        <div class="flex items-center gap-2">
+                                            <i data-lucide="package" class="w-4 h-4 text-[#D4AF37]"></i>
+                                            <span class="text-sm font-medium text-[#0A2342]">Bonus Retail</span>
+                                        </div>
+                                    </td>
+                                    <td class="py-4 text-right font-bold text-[#0A2342]">Rp 1.500.000</td>
+                                    <td class="py-4 text-right"><span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-semibold">Proses</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Achievement Progress -->
+            <div class="dashboard-card mt-6">
+                <h3 class="heading-font text-xl font-bold text-[#0A2342] mb-6">Progress Pencapaian Level</h3>
+                <div class="mb-6">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-sm font-semibold text-gray-700">Emerald Director</span>
+                        <span class="text-sm font-bold text-[#D4AF37]">8,540 / 10,000 Poin</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
+                        <div class="gold-gradient h-full rounded-full transition-all duration-500" style="width: 85.4%"></div>
+                    </div>
+                    <p class="text-sm text-gray-600 mt-2">Butuh 1,460 poin lagi untuk naik ke Emerald Director dan dapatkan bonus mobil!</p>
+                </div>
+                <div class="grid sm:grid-cols-3 gap-4">
+                    <div class="bg-gradient-to-br from-[#0A2342] to-[#0F4C75] text-white rounded-xl p-4 text-center">
+                        <i data-lucide="trophy" class="w-8 h-8 mx-auto mb-2 text-[#D4AF37]"></i>
+                        <p class="text-xs text-gray-300 mb-1">Next Bonus</p>
+                        <p class="font-bold">Rp 5jt</p>
+                    </div>
+                    <div class="bg-gradient-to-br from-[#D4AF37] to-[#F2D96B] text-[#0A2342] rounded-xl p-4 text-center">
+                        <i data-lucide="car" class="w-8 h-8 mx-auto mb-2"></i>
+                        <p class="text-xs opacity-80 mb-1">Bonus Mobil</p>
+                        <p class="font-bold">Rp 10jt/bln</p>
+                    </div>
+                    <div class="bg-gradient-to-br from-purple-500 to-pink-500 text-white rounded-xl p-4 text-center">
+                        <i data-lucide="plane" class="w-8 h-8 mx-auto mb-2"></i>
+                        <p class="text-xs text-white/80 mb-1">Trip Mewah</p>
+                        <p class="font-bold">Dubai 2025</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- Footer -->
+<footer class="bg-[#061426] text-white py-12">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid md:grid-cols-4 gap-8 mb-8">
+            <div class="md:col-span-2">
+                <div class="flex items-center space-x-3 mb-4">
+                    <div class="w-11 h-11 rounded-xl gold-gradient flex items-center justify-center shadow-lg">
+                        <span class="text-[#0A2342] font-bold text-xl heading-font">JA</span>
+                    </div>
+                    <div>
+                        <span class="text-xl font-bold heading-font">John Anderson</span>
+                        <p class="text-xs text-gray-400">Diamond Director</p>
+                    </div>
+                </div>
+                <p class="text-gray-400 mb-4 max-w-md leading-relaxed">
+                    Membantu individu ambisius membangun legacy income melalui network marketing. Diamond Director dengan [Nama Perusahaan].
+                </p>
+                <p class="text-gray-500 text-sm">
+                    Distributor Independen [Nama Perusahaan] #12345
+                </p>
+            </div>
+            <div>
+                <h4 class="font-bold text-lg mb-4 text-[#D4AF37] heading-font">Link Cepat</h4>
+                <ul class="space-y-3 text-gray-400">
+                    <li><a href="#about" class="hover:text-[#D4AF37] transition-colors flex items-center gap-2" data-page="landing"><i data-lucide="chevron-right" class="w-4 h-4"></i>Tentang</a></li>
+                    <li><a href="#opportunity" class="hover:text-[#D4AF37] transition-colors flex items-center gap-2" data-page="landing"><i data-lucide="chevron-right" class="w-4 h-4"></i>Peluang</a></li>
+                    <li><a href="#products" class="hover:text-[#D4AF37] transition-colors flex items-center gap-2" data-page="landing"><i data-lucide="chevron-right" class="w-4 h-4"></i>Produk</a></li>
+                    <li><a href="#testimonials" class="hover:text-[#D4AF37] transition-colors flex items-center gap-2" data-page="landing"><i data-lucide="chevron-right" class="w-4 h-4"></i>Testimoni</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-bold text-lg mb-4 text-[#D4AF37] heading-font">Resources</h4>
+                <ul class="space-y-3 text-gray-400">
+                    <li><a href="#" class="hover:text-[#D4AF37] transition-colors flex items-center gap-2"><i data-lucide="chevron-right" class="w-4 h-4"></i>Comp Plan PDF</a></li>
+                    <li><a href="#" class="hover:text-[#D4AF37] transition-colors flex items-center gap-2"><i data-lucide="chevron-right" class="w-4 h-4"></i>Katalog Produk</a></li>
+                    <li><a href="#" class="hover:text-[#D4AF37] transition-colors flex items-center gap-2"><i data-lucide="chevron-right" class="w-4 h-4"></i>Disclosure Income</a></li>
+                    <li><a href="#contact" class="hover:text-[#D4AF37] transition-colors flex items-center gap-2" data-page="landing"><i data-lucide="chevron-right" class="w-4 h-4"></i>Hubungi Kami</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="border-t border-gray-800 pt-8 text-center text-gray-500 text-sm">
+            <p class="mb-3">&copy; 2024 John Anderson. Hak Cipta Dilindungi.</p>
+            <p class="text-xs max-w-4xl mx-auto leading-relaxed">
+                *Disclaimer Income: Penghasilan distributor [Nama Perusahaan] tidak menjamin income yang sama untuk distributor lain. Income distributor tergantung pada dedikasi, usaha kerja, dan kondisi pasar. [Nama Perusahaan] tidak menjamin level income tertentu. Untuk income disclosure statement lengkap, silakan hubungi kami.
+            </p>
+        </div>
+    </div>
+</footer>
+
+<script>
+    lucide.createIcons();
+
+    // Page Navigation System
+    const landingPage = document.getElementById('landing-page');
+    const dashboardPage = document.getElementById('dashboard-page');
+    let currentPage = 'landing';
+
+    function showPage(page) {
+        if (page === 'dashboard') {
+            landingPage.classList.remove('active');
+            dashboardPage.classList.add('active');
+            currentPage = 'dashboard';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+            dashboardPage.classList.remove('active');
+            landingPage.classList.add('active');
+            currentPage = 'landing';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        updateActiveNav();
+    }
+
+    function updateActiveNav() {
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.classList.remove('active');
+            if ((currentPage === 'dashboard' && link.getAttribute('data-page') === 'dashboard') ||
+                (currentPage === 'landing' && link.getAttribute('data-page') === 'landing')) {
+                if (link.getAttribute('data-page') === 'dashboard' && currentPage === 'dashboard') {
+                    link.classList.add('active');
+                }
+            }
+        });
+    }
+
+    // Handle navigation clicks
+    document.querySelectorAll('a[data-page]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            const targetPage = this.getAttribute('data-page');
+            const href = this.getAttribute('href');
+            
+            if (targetPage === 'dashboard') {
+                e.preventDefault();
+                showPage('dashboard');
+                mobileMenu.classList.add('hidden');
+                mobileMenuBtn.querySelector('i').classList.add('fa-bars');
+                mobileMenuBtn.querySelector('i').classList.remove('fa-times');
+            } else if (targetPage === 'landing' && href.startsWith('#')) {
+                e.preventDefault();
+                showPage('landing');
+                setTimeout(() => {
+                    const target = document.querySelector(href);
+                    if (target) {
+                        const headerOffset = 80;
+                        const elementPosition = target.getBoundingClientRect().top;
+                        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+                        window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+                    }
+                }, 100);
+                mobileMenu.classList.add('hidden');
+                mobileMenuBtn.querySelector('i').classList.add('fa-bars');
+                mobileMenuBtn.querySelector('i').classList.remove('fa-times');
+            }
+        });
+    });
+
+    // Mobile Menu Toggle
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    
+    mobileMenuBtn.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+        const icon = mobileMenuBtn.querySelector('i');
+        icon.classList.toggle('fa-bars');
+        icon.classList.toggle('fa-times');
+    });
+
+    // Testimonial Slider
+    const testimonials = document.querySelectorAll('.testimonial-item');
+    const dots = document.querySelectorAll('.testimonial-dot');
+    let currentTestimonial = 0;
+
+    function showTestimonial(index) {
+        testimonials.forEach((item, i) => {
+            item.classList.toggle('hidden', i !== index);
+        });
+        dots.forEach((dot, i) => {
+            dot.classList.toggle('active', i === index);
+        });
+        currentTestimonial = index;
+    }
+
+    dots.forEach((dot, index) => {
+        dot.addEventListener('click', () => {
+            showTestimonial(index);
+            resetAutoRotate();
+        });
+    });
+
+    // Auto-rotate testimonials
+    let autoRotateInterval = setInterval(() => {
+        currentTestimonial = (currentTestimonial + 1) % testimonials.length;
+        showTestimonial(currentTestimonial);
+    }, 6000);
+
+    function resetAutoRotate() {
+        clearInterval(autoRotateInterval);
+        autoRotateInterval = setInterval(() => {
+            currentTestimonial = (currentTestimonial + 1) % testimonials.length;
+            showTestimonial(currentTestimonial);
+        }, 6000);
+    }
+
+    // Form Submission
+    document.getElementById('contact-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        alert('Terima kasih atas minat Anda! Saya akan menghubungi Anda dalam 24 jam untuk membahas langkah selanjutnya.');
+        e.target.reset();
+    });
+
+    // Copy Referral Link
+    document.getElementById('copy-link-btn')?.addEventListener('click', function() {
+        const link = 'https://join.company.com/ref/budi88';
+        navigator.clipboard.writeText(link).then(() => {
+            const originalHTML = this.innerHTML;
+            this.innerHTML = '<i data-lucide="check" class="w-4 h-4"></i> Tersalin!';
+            lucide.createIcons();
+            setTimeout(() => {
+                this.innerHTML = originalHTML;
+                lucide.createIcons();
+            }, 2000);
+        });
+    });
+
+    // Network Growth Chart
+    const ctx = document.getElementById('networkChart');
+    if (ctx) {
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt'],
+                datasets: [{
+                    label: 'Total Downline',
+                    data: [45, 68, 95, 128, 162, 187],
+                    borderColor: '#D4AF37',
+                    backgroundColor: 'rgba(212, 175, 55, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#0A2342',
+                    pointBorderColor: '#D4AF37',
+                    pointBorderWidth: 2,
+                    pointRadius: 5,
+                    pointHoverRadius: 7
+                }, {
+                    label: 'Member Aktif',
+                    data: [38, 58, 82, 110, 145, 168],
+                    borderColor: '#0A2342',
+                    backgroundColor: 'rgba(10, 35, 66, 0.05)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#D4AF37',
+                    pointBorderColor: '#0A2342',
+                    pointBorderWidth: 2,
+                    pointRadius: 5,
+                    pointHoverRadius: 7
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'bottom',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 20,
+                            font: {
+                                family: 'Plus Jakarta Sans',
+                                size: 12
+                            }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: '#0A2342',
+                        titleFont: {
+                            family: 'Plus Jakarta Sans',
+                            size: 13
+                        },
+                        bodyFont: {
+                            family: 'Plus Jakarta Sans',
+                            size: 12
+                        },
+                        padding: 12,
+                        displayColors: true,
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + context.parsed.y + ' member';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        },
+                        ticks: {
+                            font: {
+                                family: 'Plus Jakarta Sans'
+                            }
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            font: {
+                                family: 'Plus Jakarta Sans'
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Scroll Animation
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('animate-fade-in');
+            }
+        });
+    }, observerOptions);
+
+    document.querySelectorAll('.card-hover, .dashboard-card').forEach(el => {
+        observer.observe(el);
+    });
+</script>
+
+<script>(function(){document.addEventListener("click",function(e){var a=e.target.closest("[data-product-id]");if(!a)return;e.preventDefault();var pid=a.getAttribute("data-product-id");if(pid)parent.postMessage({type:"ecto-artifact-link-click",productId:pid},"*")})})();</script>
+</body>
+</html>

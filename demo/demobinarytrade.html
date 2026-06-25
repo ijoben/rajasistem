@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BinaryPro Demo - Portfolio Trading Platform</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    
+    * {
+        font-family: 'Inter', sans-serif;
+    }
+    
+    body {
+        background: #0a0e1a;
+        color: #e6e6e6;
+        overflow-x: hidden;
+    }
+    
+    .gradient-orange {
+        background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+    }
+    
+    .gradient-green {
+        background: linear-gradient(135deg, #00c853 0%, #00e676 100%);
+    }
+    
+    .gradient-red {
+        background: linear-gradient(135deg, #ff3d00 0%, #ff6e40 100%);
+    }
+    
+    .glass {
+        background: rgba(20, 26, 41, 0.6);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    
+    .trading-room {
+        max-width: 100vw;
+        overflow-x: hidden;
+    }
+    
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: 20% 60% 20%;
+        width: 100%;
+        height: calc(100vh - 60px);
+        box-sizing: border-box;
+    }
+    
+    .panel-left, .panel-right {
+        box-sizing: border-box;
+        padding: 16px;
+        width: 100%;
+        overflow-y: auto;
+        min-width: 0;
+    }
+    
+    .panel-main {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+    }
+    
+    .chart-container {
+        position: relative;
+        width: 100%;
+        height: 400px;
+        overflow: hidden;
+    }
+    
+    .chart-container canvas {
+        width: 100% !important;
+        height: 100% !important;
+    }
+    
+    .transaction-history-section {
+        min-height: 300px !important;
+        background: #1e1e1e !important;
+        padding: 20px !important;
+        display: block !important;
+        overflow: visible !important;
+    }
+    
+    .table-wrapper {
+        overflow-x: auto;
+        width: 100%;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .table-wrapper table {
+        width: 100%;
+        min-width: 600px;
+        border-collapse: collapse;
+    }
+    
+    .table-wrapper td, .table-wrapper th {
+        padding: 8px !important;
+        white-space: nowrap !important;
+    }
+    
+    .table-wrapper th.col-invest,
+    .table-wrapper td.col-invest {
+        width: 80px;
+        max-width: 100px;
+    }
+    
+    #investAmount {
+        max-width: 100% !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    
+    @media (max-width: 768px) {
+        .dashboard-grid {
+            grid-template-columns: 1fr;
+            height: auto;
+        }
+        
+        .panel-left {
+            order: 3;
+            max-height: 300px;
+        }
+        
+        .panel-main {
+            order: 1;
+        }
+        
+        .panel-right {
+            order: 2;
+        }
+        
+        .chart-container {
+            height: 380px;
+        }
+        
+        .transaction-history-section {
+            min-height: 320px !important;
+        }
+    }
+    
+    .scrollbar-thin::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+    
+    .scrollbar-thin::-webkit-scrollbar-track {
+        background: #141a29;
+    }
+    
+    .scrollbar-thin::-webkit-scrollbar-thumb {
+        background: #2d3748;
+        border-radius: 3px;
+    }
+    
+    .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+        background: #4a5568;
+    }
+    
+    .btn-pulse {
+        animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: .7; }
+    }
+    
+    .fade-in {
+        animation: fadeIn 0.3s ease-in;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .modal-backdrop {
+        backdrop-filter: blur(8px);
+    }
+</style>
+</head>
+<body class="min-h-screen">
+    <!-- Disclaimer Banner -->
+    <div class="bg-amber-500/10 border-b border-amber-500/30 px-4 py-2 text-center">
+        <p class="text-xs md:text-sm text-amber-400">
+            <i class="fas fa-exclamation-triangle mr-2"></i>
+            PERHATIAN: Ini adalah DEMO untuk portfolio saja, bukan platform trading beneran. Semua data adalah simulasi.
+        </p>
+    </div>
+
+    <!-- Landing Page -->
+    <div id="landingPage">
+        <!-- Navbar -->
+        <nav class="glass sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <div class="flex items-center gap-2">
+                        <div class="w-8 h-8 gradient-orange rounded-lg flex items-center justify-center">
+                            <i class="fas fa-chart-line text-white"></i>
+                        </div>
+                        <span class="text-xl font-bold">BinaryPro<span class="text-orange-500">Demo</span></span>
+                    </div>
+                    <div class="hidden md:flex items-center gap-6">
+                        <a href="#keunggulan" class="text-gray-300 hover:text-white transition">Keunggulan</a>
+                        <a href="#cara-kerja" class="text-gray-300 hover:text-white transition">Cara Kerja</a>
+                        <a href="#testimoni" class="text-gray-300 hover:text-white transition">Testimoni</a>
+                        <button onclick="showTradingRoom()" class="px-4 py-2 rounded-lg bg-gray-700 hover:bg-gray-600 transition">
+                            <i class="fas fa-sign-in-alt mr-2"></i>Masuk
+                        </button>
+                        <button onclick="showTradingRoom()" class="px-5 py-2 rounded-lg gradient-orange text-white font-semibold hover:opacity-90 transition shadow-lg shadow-orange-500/20">
+                            Akun Demo
+                        </button>
+                    </div>
+                    <button onclick="toggleMobileMenu()" class="md:hidden text-xl">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+                <div id="mobileMenu" class="hidden md:hidden pb-4 space-y-2">
+                    <a href="#keunggulan" class="block py-2 text-gray-300">Keunggulan</a>
+                    <a href="#cara-kerja" class="block py-2 text-gray-300">Cara Kerja</a>
+                    <a href="#testimoni" class="block py-2 text-gray-300">Testimoni</a>
+                    <button onclick="showTradingRoom()" class="w-full px-4 py-2 rounded-lg gradient-orange text-white font-semibold">
+                        Masuk Trading Room
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <section class="relative overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-br from-orange-500/10 via-transparent to-green-500/10"></div>
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+                <div class="grid md:grid-cols-2 gap-12 items-center">
+                    <div class="space-y-6 fade-in">
+                        <div class="inline-block px-4 py-1 rounded-full bg-orange-500/10 border border-orange-500/30 text-orange-400 text-sm font-medium">
+                            <i class="fas fa-star mr-1"></i> Platform #1 Demo Trading
+                        </div>
+                        <h1 class="text-4xl md:text-6xl font-extrabold leading-tight">
+                            Trading Binary Options <span class="bg-clip-text text-transparent gradient-orange">Mudah</span> & Profit
+                        </h1>
+                        <p class="text-lg text-gray-400">
+                            Platform trading modern dengan UI intuitif. Latih strategi Anda dengan akun demo gratis tanpa resiko. Deposit minim, withdraw cepat, profit hingga 90%.
+                        </p>
+                        <div class="flex flex-col sm:flex-row gap-4">
+                            <button onclick="showTradingRoom()" class="px-8 py-4 rounded-xl gradient-orange text-white font-bold text-lg hover:opacity-90 transition shadow-xl shadow-orange-500/30 btn-pulse">
+                                <i class="fas fa-play-circle mr-2"></i>Mulai Trading
+                            </button>
+                            <button onclick="showTradingRoom()" class="px-8 py-4 rounded-xl bg-gray-800 border border-gray-700 text-white font-bold text-lg hover:bg-gray-700 transition">
+                                <i class="fas fa-wallet mr-2"></i>Akun Demo Gratis
+                            </button>
+                        </div>
+                        <div class="grid grid-cols-3 gap-4 pt-6">
+                            <div>
+                                <div class="text-2xl md:text-3xl font-bold text-white">150K+</div>
+                                <div class="text-sm text-gray-400">Trader Aktif</div>
+                            </div>
+                            <div>
+                                <div class="text-2xl md:text-3xl font-bold text-green-400">$2.5M+</div>
+                                <div class="text-sm text-gray-400">Profit Hari Ini</div>
+                            </div>
+                            <div>
+                                <div class="text-2xl md:text-3xl font-bold text-orange-400">90%</div>
+                                <div class="text-sm text-gray-400">Profit Rate</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="relative">
+                        <div class="glass rounded-2xl p-4 md:p-6 shadow-2xl">
+                            <img src="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&auto=format&fit=crop" alt="Trading Chart" class="rounded-lg w-full">
+                            <div class="absolute -bottom-4 -right-4 glass rounded-xl p-4 shadow-xl">
+                                <div class="text-xs text-gray-400">Profit Live</div>
+                                <div class="text-2xl font-bold text-green-400">+$1,247</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Keunggulan -->
+        <section id="keunggulan" class="py-16 md:py-24 bg-[#0d1321]">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold mb-4">Kenapa Pilih BinaryPro?</h2>
+                    <p class="text-gray-400 max-w-2xl mx-auto">Fitur terbaik untuk pengalaman trading yang aman dan menguntungkan</p>
+                </div>
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="glass rounded-2xl p-6 hover:border-orange-500/50 transition group">
+                        <div class="w-12 h-12 gradient-orange rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition">
+                            <i class="fas fa-dollar-sign text-white text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">Deposit Minim</h3>
+                        <p class="text-gray-400 text-sm">Mulai trading hanya dengan $10. Tidak perlu modal besar untuk profit besar.</p>
+                    </div>
+                    <div class="glass rounded-2xl p-6 hover:border-green-500/50 transition group">
+                        <div class="w-12 h-12 gradient-green rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition">
+                            <i class="fas fa-bolt text-white text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">Withdraw Cepat</h3>
+                        <p class="text-gray-400 text-sm">Proses penarikan dana dalam 24 jam. Langsung ke rekening bank Anda.</p>
+                    </div>
+                    <div class="glass rounded-2xl p-6 hover:border-blue-500/50 transition group">
+                        <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition">
+                            <i class="fas fa-graduation-cap text-white text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">Edukasi Gratis</h3>
+                        <p class="text-gray-400 text-sm">Akses webinar, tutorial, dan strategi trading dari trader profesional.</p>
+                    </div>
+                    <div class="glass rounded-2xl p-6 hover:border-purple-500/50 transition group">
+                        <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition">
+                            <i class="fas fa-headset text-white text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">Support 24/7</h3>
+                        <p class="text-gray-400 text-sm">Tim CS siap membantu Anda kapan saja melalui live chat & WhatsApp.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Cara Kerja -->
+        <section id="cara-kerja" class="py-16 md:py-24">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold mb-4">Cukup 3 Langkah Mudah</h2>
+                    <p class="text-gray-400 max-w-2xl mx-auto">Mulai trading dalam hitungan menit</p>
+                </div>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="relative">
+                        <div class="glass rounded-2xl p-8 text-center">
+                            <div class="w-16 h-16 gradient-orange rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold">1</div>
+                            <h3 class="text-xl font-bold mb-3">Pilih Aset</h3>
+                            <p class="text-gray-400">Pilih dari 100+ aset: Forex, Crypto, Saham, Komoditas. EUR/USD, BTC, GOLD, dan lainnya.</p>
+                        </div>
+                        <div class="hidden md:block absolute top-1/2 -right-4 text-orange-500 text-3xl">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </div>
+                    <div class="relative">
+                        <div class="glass rounded-2xl p-8 text-center">
+                            <div class="w-16 h-16 gradient-green rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold">2</div>
+                            <h3 class="text-xl font-bold mb-3">Prediksi Naik/Turun</h3>
+                            <p class="text-gray-400">Analisa chart, tentukan arah harga. Klik NAIK jika harga naik, TURUN jika turun.</p>
+                        </div>
+                        <div class="hidden md:block absolute top-1/2 -right-4 text-green-500 text-3xl">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </div>
+                    <div class="glass rounded-2xl p-8 text-center">
+                        <div class="w-16 h-16 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold">3</div>
+                        <h3 class="text-xl font-bold mb-3">Profit</h3>
+                        <p class="text-gray-400">Jika prediksi benar, dapatkan profit hingga 90% dalam 1 menit. Withdraw kapan saja!</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimoni -->
+        <section id="testimoni" class="py-16 md:py-24 bg-[#0d1321]">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold mb-4">Testimoni Trader Sukses</h2>
+                    <p class="text-gray-400">Apa kata mereka yang sudah profit bersama kami</p>
+                </div>
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div class="glass rounded-2xl p-6">
+                        <div class="flex items-center gap-3 mb-4">
+                            <img src="https://i.pravatar.cc/100?img=12" alt="User" class="w-12 h-12 rounded-full">
+                            <div>
+                                <div class="font-bold">Andi Pratama</div>
+                                <div class="text-xs text-gray-400">Jakarta • Trader 2 Tahun</div>
+                            </div>
+                        </div>
+                        <div class="flex text-yellow-500 mb-3 text-sm">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                        </div>
+                        <p class="text-gray-300 text-sm">"Platform paling gampang dipake. Deposit 100rb udah bisa WD 2 juta di bulan pertama. Withdraw juga cepet!"</p>
+                    </div>
+                    <div class="glass rounded-2xl p-6">
+                        <div class="flex items-center gap-3 mb-4">
+                            <img src="https://i.pravatar.cc/100?img=5" alt="User" class="w-12 h-12 rounded-full">
+                            <div>
+                                <div class="font-bold">Siti Nurhaliza</div>
+                                <div class="text-xs text-gray-400">Bandung • Ibu Rumah Tangga</div>
+                            </div>
+                        </div>
+                        <div class="flex text-yellow-500 mb-3 text-sm">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                        </div>
+                        <p class="text-gray-300 text-sm">"Awalnya coba akun demo doang, eh ternyata gampang. Sekarang bisa bantu ekonomi keluarga dari rumah aja."</p>
+                    </div>
+                    <div class="glass rounded-2xl p-6">
+                        <div class="flex items-center gap-3 mb-4">
+                            <img src="https://i.pravatar.cc/100?img=33" alt="User" class="w-12 h-12 rounded-full">
+                            <div>
+                                <div class="font-bold">Budi Santoso</div>
+                                <div class="text-xs text-gray-400">Surabaya • Mahasiswa</div>
+                            </div>
+                        </div>
+                        <div class="flex text-yellow-500 mb-3 text-sm">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                        </div>
+                        <p class="text-gray-300 text-sm">"Edukasi gratisnya ngebantu banget. Dari ga ngerti apa-apa sampe bisa konsisten profit 500rb per hari."</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA -->
+        <section class="py-16 md:py-24">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="glass rounded-3xl p-8 md:p-12 text-center relative overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-green-500/10"></div>
+                    <div class="relative z-10">
+                        <h2 class="text-3xl md:text-4xl font-bold mb-4">Siap Mulai Trading?</h2>
+                        <p class="text-gray-400 mb-8">Daftar sekarang dan dapatkan bonus deposit 50% + akun demo $10,000</p>
+                        <button onclick="showTradingRoom()" class="px-10 py-4 rounded-xl gradient-orange text-white font-bold text-lg hover:opacity-90 transition shadow-xl shadow-orange-500/30">
+                            <i class="fas fa-rocket mr-2"></i>Buka Akun Demo Gratis
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="bg-[#0d1321] border-t border-gray-800 py-12">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid md:grid-cols-4 gap-8 mb-8">
+                    <div>
+                        <div class="flex items-center gap-2 mb-4">
+                            <div class="w-8 h-8 gradient-orange rounded-lg flex items-center justify-center">
+                                <i class="fas fa-chart-line text-white"></i>
+                            </div>
+                            <span class="text-xl font-bold">BinaryPro</span>
+                        </div>
+                        <p class="text-gray-400 text-sm">Platform demo trading untuk edukasi dan portfolio. Bukan broker resmi.</p>
+                    </div>
+                    <div>
+                        <h4 class="font-bold mb-4">Produk</h4>
+                        <ul class="space-y-2 text-sm text-gray-400">
+                            <li><a href="#" class="hover:text-white">Trading Room</a></li>
+                            <li><a href="#" class="hover:text-white">Akun Demo</a></li>
+                            <li><a href="#" class="hover:text-white">Mobile App</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-bold mb-4">Bantuan</h4>
+                        <ul class="space-y-2 text-sm text-gray-400">
+                            <li><a href="#" class="hover:text-white">Pusat Bantuan</a></li>
+                            <li><a href="#" class="hover:text-white">Tutorial</a></li>
+                            <li><a href="#" class="hover:text-white">Kontak CS</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-bold mb-4">Legal</h4>
+                        <ul class="space-y-2 text-sm text-gray-400">
+                            <li><a href="#" class="hover:text-white">Syarat & Ketentuan</a></li>
+                            <li><a href="#" class="hover:text-white">Kebijakan Privasi</a></li>
+                            <li><a href="#" class="hover:text-white">Disclaimer</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="border-t border-gray-800 pt-8 text-center text-sm text-gray-500">
+                    <p>© 2024 BinaryPro Demo. Ini adalah website demo untuk portfolio saja. Bukan platform trading beneran.</p>
+                    <p class="mt-2 text-xs">Trading memiliki resiko. Pastikan Anda memahami resiko sebelum trading dengan uang sungguhan.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Trading Room Dashboard -->
+    <div id="tradingRoom" class="hidden trading-room">
+        <!-- Header -->
+        <header class="glass border-b border-gray-800 sticky top-0 z-40">
+            <div class="px-4 py-3">
+                <div class="flex items-center justify-between gap-4">
+                    <div class="flex items-center gap-3">
+                        <button onclick="showLandingPage()" class="w-8 h-8 rounded-lg bg-gray-800 hover:bg-gray-700 flex items-center justify-center">
+                            <i class="fas fa-arrow-left text-sm"></i>
+                        </button>
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 gradient-orange rounded-lg flex items-center justify-center">
+                                <i class="fas fa-chart-line text-white text-sm"></i>
+                            </div>
+                            <span class="text-lg font-bold hidden sm:inline">BinaryPro</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 md:gap-4">
+                        <div class="glass px-3 md:px-4 py-2 rounded-lg">
+                            <div class="text-xs text-gray-400">Saldo Demo</div>
+                            <div class="text-sm md:text-base font-bold text-green-400">$<span id="balance">10,000.00</span></div>
+                        </div>
+                        <button onclick="openModal('depositModal')" class="px-3 md:px-5 py-2 rounded-lg gradient-orange text-white text-sm font-semibold hover:opacity-90">
+                            <i class="fas fa-plus mr-1 md:mr-2"></i><span class="hidden sm:inline">Deposit</span>
+                        </button>
+                        <button onclick="openModal('profileModal')" class="w-9 h-9 rounded-lg bg-gray-800 hover:bg-gray-700 flex items-center justify-center">
+                            <i class="fas fa-user text-sm"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="dashboard-grid">
+            <!-- Left Panel - Asset List -->
+            <aside class="panel-left glass border-r border-gray-800 scrollbar-thin">
+                <h3 class="font-bold mb-3 text-sm">Aset Populer</h3>
+                <div id="assetList" class="space-y-2"></div>
+            </aside>
+
+            <!-- Main Chart Area -->
+            <main class="panel-main">
+                <!-- Chart Controls -->
+                <div class="glass border-b border-gray-800 p-3 md:p-4">
+                    <div class="flex flex-wrap items-center justify-between gap-3">
+                        <div class="flex items-center gap-3">
+                            <select id="assetSelect" onchange="changeAsset()" class="bg-gray-800 border border-gray-700 rounded-lg px-3 md:px-4 py-2 text-sm md:text-base font-semibold focus:outline-none focus:border-orange-500">
+                                <option value="EURUSD">EUR/USD</option>
+                                <option value="BTCUSD">BTC/USD</option>
+                                <option value="GOLD">XAU/USD</option>
+                                <option value="USDJPY">USD/JPY</option>
+                                <option value="GBPUSD">GBP/USD</option>
+                            </select>
+                            <div id="assetChange" class="text-sm">
+                                <span class="text-green-400">+0.15%</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="changeTimeframe('1m')" class="timeframe-btn px-3 py-1.5 rounded-lg bg-orange-500 text-white text-sm font-medium">1m</button>
+                            <button onclick="changeTimeframe('5m')" class="timeframe-btn px-3 py-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 text-sm font-medium">5m</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chart -->
+                <div class="flex-1 glass p-3 md:p-4">
+                    <div class="chart-container">
+                        <canvas id="tradingChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Transaction History -->
+                <div class="transaction-history-section glass border-t border-gray-800 scrollbar-thin">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-bold text-base md:text-lg text-white">Riwayat Transaksi</h3>
+                        <div class="flex gap-2">
+                            <button onclick="filterTransactions('all')" class="filter-btn px-3 py-1 rounded bg-orange-500 text-white text-xs">Semua</button>
+                            <button onclick="filterTransactions('open')" class="filter-btn px-3 py-1 rounded bg-gray-800 text-xs">Open</button>
+                            <button onclick="filterTransactions('closed')" class="filter-btn px-3 py-1 rounded bg-gray-800 text-xs">Closed</button>
+                        </div>
+                    </div>
+                    <div class="table-wrapper" style="overflow-x:auto; width:100%;">
+                        <table class="w-full text-xs md:text-sm">
+                            <thead class="text-gray-400 border-b border-gray-800">
+                                <tr>
+                                    <th class="text-left">Aset</th>
+                                    <th class="text-left">Waktu</th>
+                                    <th class="text-left">Arah</th>
+                                    <th class="text-right col-invest">Invest</th>
+                                    <th class="text-right">Profit</th>
+                                    <th class="text-center">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="transactionTable" class="text-gray-300"></tbody>
+                        </table>
+                        <div id="emptyTransactions" class="text-center py-8 text-gray-500 text-sm">
+                            Belum ada transaksi. Mulai trading sekarang!
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Right Panel - Trading Controls -->
+            <aside class="panel-right glass border-l border-gray-800 scrollbar-thin">
+                <div class="space-y-4">
+                    <!-- Investment Amount -->
+                    <div>
+                        <label class="text-xs text-gray-400 mb-2 block">Jumlah Investasi</label>
+                        <div class="flex gap-2 mb-2">
+                            <input type="number" id="investAmount" value="10" min="1" class="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-lg font-bold focus:outline-none focus:border-orange-500">
+                            <button onclick="adjustAmount(-10)" class="px-4 py-3 bg-gray-800 hover:bg-gray-700 rounded-lg">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <button onclick="adjustAmount(10)" class="px-4 py-3 bg-gray-800 hover:bg-gray-700 rounded-lg">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                        <div class="grid grid-cols-4 gap-2">
+                            <button onclick="setAmount(10)" class="py-2 bg-gray-800 hover:bg-gray-700 rounded text-xs">$10</button>
+                            <button onclick="setAmount(50)" class="py-2 bg-gray-800 hover:bg-gray-700 rounded text-xs">$50</button>
+                            <button onclick="setAmount(100)" class="py-2 bg-gray-800 hover:bg-gray-700 rounded text-xs">$100</button>
+                            <button onclick="setAmount(500)" class="py-2 bg-gray-800 hover:bg-gray-700 rounded text-xs">$500</button>
+                        </div>
+                    </div>
+
+                    <!-- Expiration Time -->
+                    <div>
+                        <label class="text-xs text-gray-400 mb-2 block">Waktu Expiration</label>
+                        <select id="expirationTime" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-lg font-bold focus:outline-none focus:border-orange-500">
+                            <option value="1">1 Menit</option>
+                            <option value="2">2 Menit</option>
+                            <option value="5">5 Menit</option>
+                        </select>
+                    </div>
+
+                    <!-- Profit Info -->
+                    <div class="glass rounded-lg p-4 bg-gradient-to-br from-orange-500/10 to-transparent border border-orange-500/30">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-xs text-gray-400">Potensi Profit</span>
+                            <span class="text-xl font-bold text-orange-400" id="profitPercent">80%</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-gray-400">Jika Menang</span>
+                            <span class="text-lg font-bold text-green-400">+$<span id="potentialProfit">8.00</span></span>
+                        </div>
+                    </div>
+
+                    <!-- Trade Buttons -->
+                    <div class="space-y-3">
+                        <button onclick="placeTrade('up')" class="w-full py-5 rounded-xl gradient-green text-white font-bold text-lg hover:opacity-90 transition shadow-lg shadow-green-500/30 flex items-center justify-center gap-2">
+                            <i class="fas fa-arrow-up text-xl"></i>
+                            NAIK
+                        </button>
+                        <button onclick="placeTrade('down')" class="w-full py-5 rounded-xl gradient-red text-white font-bold text-lg hover:opacity-90 transition shadow-lg shadow-red-500/30 flex items-center justify-center gap-2">
+                            <i class="fas fa-arrow-down text-xl"></i>
+                            TURUN
+                        </button>
+                    </div>
+
+                    <!-- Market Info -->
+                    <div class="glass rounded-lg p-4 space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Spread</span>
+                            <span class="font-semibold">0.2 pips</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Market</span>
+                            <span class="text-green-400 font-semibold">Buka</span>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <!-- Deposit Modal -->
+    <div id="depositModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop bg-black/60">
+        <div class="glass rounded-2xl p-6 max-w-md w-full">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold">Deposit Dana</h3>
+                <button onclick="closeModal('depositModal')" class="text-gray-400 hover:text-white">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="space-y-4">
+                <p class="text-sm text-amber-400 bg-amber-500/10 border border-amber-500/30 rounded-lg p-3">
+                    <i class="fas fa-info-circle mr-2"></i>Ini adalah akun DEMO. Deposit tidak akan memotong uang sungguhan.
+                </p>
+                <div>
+                    <label class="text-sm text-gray-400 mb-2 block">Jumlah Deposit</label>
+                    <input type="number" value="1000" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-orange-500">
+                </div>
+                <button onclick="closeModal('depositModal'); showToast('Deposit berhasil! Saldo ditambahkan (DEMO)', 'success')" class="w-full py-3 rounded-lg gradient-orange text-white font-bold">
+                    Deposit Sekarang
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div id="profileModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop bg-black/60">
+        <div class="glass rounded-2xl p-6 max-w-md w-full">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold">Profil</h3>
+                <button onclick="closeModal('profileModal')" class="text-gray-400 hover:text-white">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="space-y-4">
+                <div class="flex items-center gap-4">
+                    <img src="https://i.pravatar.cc/100?img=8" alt="User" class="w-16 h-16 rounded-full">
+                    <div>
+                        <div class="font-bold">Demo Trader</div>
+                        <div class="text-sm text-gray-400">demo@binarypro.com</div>
+                        <div class="text-xs text-green-400 mt-1">Akun Demo Aktif</div>
+                    </div>
+                </div>
+                <div class="border-t border-gray-700 pt-4 space-y-2">
+                    <button onclick="openModal('withdrawModal'); closeModal('profileModal')" class="w-full py-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-sm">
+                        <i class="fas fa-money-bill-wave mr-2"></i>Withdraw
+                    </button>
+                    <button onclick="showToast('Fitur segera hadir', 'info')" class="w-full py-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-sm">
+                        <i class="fas fa-cog mr-2"></i>Pengaturan
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Withdraw Modal -->
+    <div id="withdrawModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop bg-black/60">
+        <div class="glass rounded-2xl p-6 max-w-md w-full">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold">Withdraw Dana</h3>
+                <button onclick="closeModal('withdrawModal')" class="text-gray-400 hover:text-white">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <p class="text-sm text-amber-400 bg-amber-500/10 border border-amber-500/30 rounded-lg p-3 mb-4">
+                <i class="fas fa-info-circle mr-2"></i>Ini adalah akun DEMO. Tidak ada penarikan uang sungguhan.
+            </p>
+            <button onclick="closeModal('withdrawModal'); showToast('Akun demo tidak bisa withdraw', 'error')" class="w-full py-3 rounded-lg bg-gray-800 text-white font-bold">
+                Tutup
+            </button>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="hidden fixed top-20 right-4 z-50 glass rounded-lg p-4 shadow-xl max-w-sm fade-in">
+        <div class="flex items-center gap-3">
+            <i id="toastIcon" class="text-xl"></i>
+            <span id="toastMessage" class="text-sm"></span>
+        </div>
+    </div>
+
+<script>
+    // Global State
+    let currentView = 'landing';
+    let balance = 10000;
+    let transactions = [];
+    let chart = null;
+    let currentAsset = 'EURUSD';
+    let chartData = [];
+    let priceUpdateInterval = null;
+
+    // Asset Data
+    const assets = [
+        { symbol: 'EURUSD', name: 'EUR/USD', price: 1.0850, change: 0.15, profit: 80 },
+        { symbol: 'BTCUSD', name: 'BTC/USD', price: 43250, change: -1.23, profit: 85 },
+        { symbol: 'GOLD', name: 'XAU/USD', price: 2032.50, change: 0.45, profit: 82 },
+        { symbol: 'USDJPY', name: 'USD/JPY', price: 149.82, change: -0.08, profit: 78 },
+        { symbol: 'GBPUSD', name: 'GBP/USD', price: 1.2634, change: 0.22, profit: 80 }
+    ];
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+        updateBalance();
+        renderAssetList();
+        setupInvestAmountListener();
+    });
+
+    // View Management
+    function showTradingRoom() {
+        document.getElementById('landingPage').classList.add('hidden');
+        document.getElementById('tradingRoom').classList.remove('hidden');
+        currentView = 'trading';
+        if (!chart) {
+            setTimeout(initChart, 100);
+            startPriceUpdates();
+        }
+        window.scrollTo(0, 0);
+    }
+
+    function showLandingPage() {
+        document.getElementById('tradingRoom').classList.add('hidden');
+        document.getElementById('landingPage').classList.remove('hidden');
+        currentView = 'landing';
+        window.scrollTo(0, 0);
+    }
+
+    function toggleMobileMenu() {
+        document.getElementById('mobileMenu').classList.toggle('hidden');
+    }
+
+    // Modal Management
+    function openModal(id) {
+        document.getElementById(id).classList.remove('hidden');
+    }
+
+    function closeModal(id) {
+        document.getElementById(id).classList.add('hidden');
+    }
+
+    // Toast Notification
+    function showToast(message, type = 'info') {
+        const toast = document.getElementById('toast');
+        const icon = document.getElementById('toastIcon');
+        const msg = document.getElementById('toastMessage');
+        
+        msg.textContent = message;
+        
+        if (type === 'success') {
+            icon.className = 'fas fa-check-circle text-xl text-green-400';
+        } else if (type === 'error') {
+            icon.className = 'fas fa-times-circle text-xl text-red-400';
+        } else {
+            icon.className = 'fas fa-info-circle text-xl text-blue-400';
+        }
+        
+        toast.classList.remove('hidden');
+        setTimeout(() => toast.classList.add('hidden'), 3000);
+    }
+
+    // Asset Management
+    function renderAssetList() {
+        const list = document.getElementById('assetList');
+        list.innerHTML = assets.map(asset => `
+            <div onclick="selectAssetFromList('${asset.symbol}')" class="glass rounded-lg p-3 hover:bg-gray-800/50 cursor-pointer transition ${currentAsset === asset.symbol ? 'border-orange-500 border' : ''}">
+                <div class="flex justify-between items-center mb-1">
+                    <span class="font-semibold text-sm">${asset.name}</span>
+                    <span class="text-xs px-2 py-0.5 rounded ${asset.profit >= 80 ? 'bg-green-500/20 text-green-400' : 'bg-orange-500/20 text-orange-400'}">${asset.profit}%</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-xs text-gray-400">${asset.price.toFixed(asset.symbol === 'BTCUSD' ? 0 : 4)}</span>
+                    <span class="text-xs ${asset.change >= 0 ? 'text-green-400' : 'text-red-400'}">
+                        ${asset.change >= 0 ? '+' : ''}${asset.change.toFixed(2)}%
+                    </span>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function selectAssetFromList(symbol) {
+        document.getElementById('assetSelect').value = symbol;
+        changeAsset();
+    }
+
+    function changeAsset() {
+        currentAsset = document.getElementById('assetSelect').value;
+        const asset = assets.find(a => a.symbol === currentAsset);
+        document.getElementById('profitPercent').textContent = asset.profit + '%';
+        document.getElementById('assetChange').innerHTML = `
+            <span class="${asset.change >= 0 ? 'text-green-400' : 'text-red-400'}">
+                ${asset.change >= 0 ? '+' : ''}${asset.change.toFixed(2)}%
+            </span>
+        `;
+        updatePotentialProfit();
+        renderAssetList();
+        if (chart) {
+            generateChartData();
+            chart.update();
+        }
+    }
+
+    // Chart Management
+    function initChart() {
+        const ctx = document.getElementById('tradingChart');
+        generateChartData();
+        
+        chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                datasets: [{
+                    label: 'Price',
+                    data: chartData,
+                    borderColor: '#f7931e',
+                    backgroundColor: 'rgba(247, 147, 30, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 0,
+                    pointHoverRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(20, 26, 41, 0.9)',
+                        titleColor: '#fff',
+                        bodyColor: '#e6e6e6',
+                        borderColor: 'rgba(255, 255, 255, 0.1)',
+                        borderWidth: 1,
+                        padding: 12,
+                        displayColors: false,
+                        callbacks: {
+                            label: function(context) {
+                                return 'Price: ' + context.parsed.y.toFixed(4);
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        type: 'time',
+                        time: {
+                            unit: 'minute',
+                            displayFormats: {
+                                minute: 'HH:mm'
+                            }
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.05)',
+                            drawBorder: false
+                        },
+                        ticks: {
+                            color: '#6b7280',
+                            maxTicksLimit: 6
+                        }
+                    },
+                    y: {
+                        position: 'right',
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.05)',
+                            drawBorder: false
+                        },
+                        ticks: {
+                            color: '#6b7280',
+                            callback: function(value) {
+                                return value.toFixed(4);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function generateChartData() {
+        const asset = assets.find(a => a.symbol === currentAsset);
+        let basePrice = asset.price;
+        chartData = [];
+        const now = Date.now();
+        const points = 50;
+        
+        for (let i = points; i >= 0; i--) {
+            const time = now - (i * 60000);
+            const volatility = basePrice * 0.0005;
+            basePrice += (Math.random() - 0.5) * volatility;
+            chartData.push({
+                x: time,
+                y: basePrice
+            });
+        }
+        
+        if (chart) {
+            chart.data.datasets[0].data = chartData;
+        }
+    }
+
+    function startPriceUpdates() {
+        setInterval(() => {
+            if (!chart) return;
+            
+            const asset = assets.find(a => a.symbol === currentAsset);
+            const lastPrice = chartData[chartData.length - 1].y;
+            const volatility = lastPrice * 0.0002;
+            const newPrice = lastPrice + (Math.random() - 0.5) * volatility;
+            
+            chartData.push({
+                x: Date.now(),
+                y: newPrice
+            });
+            
+            if (chartData.length > 50) {
+                chartData.shift();
+            }
+            
+            chart.update('none');
+            
+            // Update asset change
+            const change = ((newPrice - asset.price) / asset.price * 100);
+            asset.change = change;
+            document.getElementById('assetChange').innerHTML = `
+                <span class="${change >= 0 ? 'text-green-400' : 'text-red-400'}">
+                    ${change >= 0 ? '+' : ''}${change.toFixed(2)}%
+                </span>
+            `;
+            
+            checkOpenTransactions();
+        }, 2000);
+    }
+
+    // Trading Functions
+    function setupInvestAmountListener() {
+        document.getElementById('investAmount').addEventListener('input', updatePotentialProfit);
+        document.getElementById('expirationTime').addEventListener('change', updatePotentialProfit);
+    }
+
+    function adjustAmount(delta) {
+        const input = document.getElementById('investAmount');
+        const newValue = Math.max(1, parseInt(input.value) + delta);
+        input.value = newValue;
+        updatePotentialProfit();
+    }
+
+    function setAmount(value) {
+        document.getElementById('investAmount').value = value;
+        updatePotentialProfit();
+    }
+
+    function updatePotentialProfit() {
+        const amount = parseFloat(document.getElementById('investAmount').value) || 0;
+        const asset = assets.find(a => a.symbol === currentAsset);
+        const profit = (amount * asset.profit / 100).toFixed(2);
+        document.getElementById('potentialProfit').textContent = profit;
+    }
+
+    function placeTrade(direction) {
+        const amount = parseFloat(document.getElementById('investAmount').value);
+        const expiration = parseInt(document.getElementById('expirationTime').value);
+        const asset = assets.find(a => a.symbol === currentAsset);
+        
+        if (amount > balance) {
+            showToast('Saldo tidak mencukupi!', 'error');
+            return;
+        }
+        
+        if (amount < 1) {
+            showToast('Minimal investasi $1', 'error');
+            return;
+        }
+        
+        balance -= amount;
+        updateBalance();
+        
+        const transaction = {
+            id: Date.now(),
+            asset: asset.name,
+            time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+            direction: direction,
+            amount: amount,
+            profit: amount * asset.profit / 100,
+            expiration: Date.now() + (expiration * 60000),
+            status: 'open',
+            result: null
+        };
+        
+        transactions.unshift(transaction);
+        renderTransactions();
+        showToast(`Order ${direction.toUpperCase()} berhasil dibuat!`, 'success');
+    }
+
+    function checkOpenTransactions() {
+        const now = Date.now();
+        transactions.forEach(tx => {
+            if (tx.status === 'open' && now >= tx.expiration) {
+                // Simulate win/lose 60% win rate
+                const win = Math.random() > 0.4;
+                tx.status = 'closed';
+                tx.result = win ? 'win' : 'lose';
+                
+                if (win) {
+                    balance += tx.amount + tx.profit;
+                    updateBalance();
+                    showToast(`Profit! +$${(tx.amount + tx.profit).toFixed(2)}`, 'success');
+                } else {
+                    showToast(`Loss -$${tx.amount.toFixed(2)}`, 'error');
+                }
+            }
+        });
+        renderTransactions();
+    }
+
+    function renderTransactions(filter = 'all') {
+        const table = document.getElementById('transactionTable');
+        const empty = document.getElementById('emptyTransactions');
+        
+        let filtered = transactions;
+        if (filter === 'open') {
+            filtered = transactions.filter(tx => tx.status === 'open');
+        } else if (filter === 'closed') {
+            filtered = transactions.filter(tx => tx.status === 'closed');
+        }
+        
+        if (filtered.length === 0) {
+            table.innerHTML = '';
+            empty.classList.remove('hidden');
+            return;
+        }
+        
+        empty.classList.add('hidden');
+        table.innerHTML = filtered.map(tx => {
+            const statusColor = tx.status === 'open' ? 'yellow' : tx.result === 'win' ? 'green' : 'red';
+            const statusText = tx.status === 'open' ? 'Open' : tx.result === 'win' ? 'Win' : 'Loss';
+            const directionIcon = tx.direction === 'up' ? 'fa-arrow-up text-green-400' : 'fa-arrow-down text-red-400';
+            
+            return `
+                <tr class="border-b border-gray-800 hover:bg-gray-800/30">
+                    <td class="font-medium">${tx.asset}</td>
+                    <td class="text-gray-400">${tx.time}</td>
+                    <td><i class="fas ${directionIcon}"></i></td>
+                    <td class="text-right col-invest">$${tx.amount.toFixed(2)}</td>
+                    <td class="text-right ${tx.result === 'win' ? 'text-green-400' : tx.result === 'lose' ? 'text-red-400' : 'text-gray-400'}">
+                        ${tx.result === 'win' ? '+' : tx.result === 'lose' ? '-' : ''}$${(tx.result === 'win' ? tx.profit : 0).toFixed(2)}
+                    </td>
+                    <td class="text-center">
+                        <span class="px-2 py-1 rounded text-xs bg-${statusColor}-500/20 text-${statusColor}-400">${statusText}</span>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    function filterTransactions(type) {
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.classList.remove('bg-orange-500', 'text-white');
+            btn.classList.add('bg-gray-800');
+        });
+        event.target.classList.remove('bg-gray-800');
+        event.target.classList.add('bg-orange-500', 'text-white');
+        renderTransactions(type);
+    }
+
+    function updateBalance() {
+        document.getElementById('balance').textContent = balance.toFixed(2);
+    }
+
+    function changeTimeframe(tf) {
+        document.querySelectorAll('.timeframe-btn').forEach(btn => {
+            btn.classList.remove('bg-orange-500', 'text-white');
+            btn.classList.add('bg-gray-800');
+        });
+        event.target.classList.remove('bg-gray-800');
+        event.target.classList.add('bg-orange-500', 'text-white');
+        generateChartData();
+        if (chart) chart.update();
+    }
+
+    // Smooth scroll
+    document.addEventListener('click', function(e) {
+        if (e.target.tagName === 'A' && e.target.getAttribute('href').startsWith('#')) {
+            e.preventDefault();
+            const target = document.querySelector(e.target.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+    });
+</script>
+<script>(function(){document.addEventListener("click",function(e){var a=e.target.closest("[data-product-id]");if(!a)return;e.preventDefault();var pid=a.getAttribute("data-product-id");if(pid)parent.postMessage({type:"ecto-artifact-link-click",productId:pid},"*")})})();</script>
+</body>
+</html>

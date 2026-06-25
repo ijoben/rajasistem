@@ -1,0 +1,1554 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Amanah Investa - Platform Manajemen Investasi Profesional</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+    
+    :root {
+        --primary-start: #667eea;
+        --primary-end: #764ba2;
+        --emerald: #10b981;
+        --emerald-dark: #059669;
+        --gold: #fbbf24;
+        --gold-light: #fde68a;
+        --bg-gradient: linear-gradient(135deg, #f5f7ff 0%, #eef2ff 50%, #faf5ff 100%);
+    }
+    
+    * {
+        scroll-behavior: smooth;
+    }
+    
+    body {
+        font-family: 'Inter', sans-serif;
+        color: #1e293b;
+        background: var(--bg-gradient);
+        overflow-x: hidden;
+    }
+    
+    h1, h2, h3, h4, h5 {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    
+    .gradient-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    .gradient-animated {
+        background: linear-gradient(-45deg, #667eea, #764ba2, #8b5cf6, #667eea);
+        background-size: 400% 400%;
+        animation: gradientShift 15s ease infinite;
+    }
+    
+    @keyframes gradientShift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+    
+    .gradient-emerald {
+        background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+    }
+    
+    .gradient-gold {
+        background: linear-gradient(135deg, #fbbf24 0%, #fde68a 100%);
+    }
+    
+    .text-gradient {
+        background: linear-gradient(135deg, #fbbf24 0%, #fde68a 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .glass-effect {
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        box-shadow: 0 8px 32px 0 rgba(118, 75, 162, 0.15);
+    }
+    
+    .glass-card {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        box-shadow: 0 4px 24px rgba(102, 126, 234, 0.08);
+    }
+    
+    .card-hover {
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .card-hover:hover {
+        transform: translateY(-8px) scale(1.01);
+        box-shadow: 0 20px 50px rgba(118, 75, 162, 0.2);
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 20px rgba(16, 185, 129, 0.35);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .btn-primary::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+        transition: left 0.5s;
+    }
+    
+    .btn-primary:hover::before {
+        left: 100%;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px rgba(16, 185, 129, 0.45);
+    }
+    
+    .btn-secondary {
+        background: transparent;
+        border: 2px solid #fbbf24;
+        color: #fbbf24;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-secondary:hover {
+        background: #fbbf24;
+        color: #764ba2;
+        transform: translateY(-2px);
+    }
+    
+    .nav-link {
+        position: relative;
+    }
+    
+    .nav-link::after {
+        content: '';
+        position: absolute;
+        bottom: -4px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: #fbbf24;
+        transition: width 0.3s ease;
+    }
+    
+    .nav-link:hover::after, .nav-link.active::after {
+        width: 100%;
+    }
+    
+    .fade-in {
+        animation: fadeIn 0.8s ease-in;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .sidebar-link {
+        transition: all 0.3s ease;
+    }
+    
+    .sidebar-link.active {
+        background: rgba(255, 255, 255, 0.15);
+        border-left: 3px solid #fbbf24;
+        color: #fbbf24;
+    }
+    
+    .sidebar-link:hover {
+        background: rgba(255, 255, 255, 0.1);
+        padding-left: 1.5rem;
+    }
+    
+    .icon-modern {
+        filter: drop-shadow(0 2px 8px rgba(102, 126, 234, 0.3));
+    }
+    
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(12, minmax(0, 1fr));
+        gap: 1.5rem;
+    }
+    
+    @media (max-width: 1024px) {
+        .dashboard-grid {
+            grid-template-columns: repeat(6, minmax(0, 1fr));
+            gap: 1rem;
+        }
+    }
+    
+    @media (max-width: 640px) {
+        .dashboard-grid {
+            grid-template-columns: repeat(1, minmax(0, 1fr));
+            gap: 1rem;
+        }
+    }
+    
+    .chart-container {
+        position: relative;
+        width: 100%;
+        height: 300px;
+    }
+    
+    @media (max-width: 768px) {
+        .chart-container {
+            height: 260px !important;
+        }
+        
+        #sidebar {
+            transform: translateX(-100%);
+        }
+        
+        #sidebar.open {
+            transform: translateX(0);
+        }
+    }
+    
+    .table-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    table {
+        min-width: 100%;
+    }
+    
+    .risk-bar {
+        height: 6px;
+        border-radius: 9999px;
+        background: #e2e8f0;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .risk-fill {
+        height: 100%;
+        border-radius: 9999px;
+        transition: width 0.6s ease;
+    }
+    
+    ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+        background: rgba(102, 126, 234, 0.1);
+    }
+    
+    ::-webkit-scrollbar-thumb {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border-radius: 4px;
+    }
+</style>
+</head>
+<body>
+    <!-- Disclaimer Banner -->
+    <div class="bg-gradient-to-r from-amber-50 to-yellow-50 border-b border-amber-200 text-amber-900 text-center py-2.5 px-4 text-xs md:text-sm font-medium">
+        <i class="fas fa-info-circle mr-1.5"></i>
+        Demo Portfolio Website - Bukan Platform Investasi Real & Bukan Nasihat Keuangan
+    </div>
+
+    <!-- Navigation -->
+    <nav id="mainNav" class="gradient-primary sticky top-0 z-50 shadow-xl backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16 md:h-20">
+                <div class="flex items-center space-x-3">
+                    <div class="w-11 h-11 md:w-12 md:h-12 rounded-xl gradient-gold flex items-center justify-center shadow-lg">
+                        <i class="fas fa-chart-line text-white text-lg md:text-xl icon-modern"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-white font-bold text-lg md:text-xl tracking-tight">Amanah Investa</h1>
+                        <p class="text-yellow-100 text-[10px] md:text-xs font-medium">Wealth Management Excellence</p>
+                    </div>
+                </div>
+                
+                <div class="hidden lg:flex items-center space-x-8">
+                    <a href="#hero" class="nav-link text-white text-sm font-medium">Beranda</a>
+                    <a href="#tentang" class="nav-link text-white text-sm font-medium">Tentang</a>
+                    <a href="#produk" class="nav-link text-white text-sm font-medium">Produk</a>
+                    <a href="#kinerja" class="nav-link text-white text-sm font-medium">Kinerja</a>
+                    <a href="#contact" class="nav-link text-white text-sm font-medium">Kontak</a>
+                    <button id="dashboardBtn" class="btn-primary px-6 py-2.5 rounded-xl text-white text-sm font-semibold">
+                        <i class="fas fa-user-circle mr-2"></i>Dashboard Investor
+                    </button>
+                </div>
+                
+                <button id="mobileMenuBtn" class="lg:hidden text-white text-2xl">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="hidden lg:hidden bg-gradient-to-br from-[#667eea] to-[#764ba2] border-t border-white/20">
+            <div class="px-4 py-4 space-y-3">
+                <a href="#hero" class="block text-white py-2.5 font-medium">Beranda</a>
+                <a href="#tentang" class="block text-white py-2.5 font-medium">Tentang</a>
+                <a href="#produk" class="block text-white py-2.5 font-medium">Produk</a>
+                <a href="#kinerja" class="block text-white py-2.5 font-medium">Kinerja</a>
+                <a href="#contact" class="block text-white py-2.5 font-medium">Kontak</a>
+                <button id="dashboardBtnMobile" class="btn-primary w-full px-6 py-3 rounded-xl text-white text-sm font-semibold">
+                    <i class="fas fa-user-circle mr-2"></i>Dashboard Investor
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MAIN WEBSITE CONTENT -->
+    <div id="websiteContent">
+        <!-- Hero Section -->
+        <section id="hero" class="gradient-animated relative overflow-hidden">
+            <div class="absolute inset-0 opacity-20">
+                <div class="absolute top-20 left-10 w-72 h-72 bg-emerald-400 rounded-full blur-3xl animate-pulse"></div>
+                <div class="absolute bottom-20 right-10 w-96 h-96 bg-yellow-300 rounded-full blur-3xl animate-pulse" style="animation-delay: 1s;"></div>
+            </div>
+            
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-28 relative z-10">
+                <div class="grid md:grid-cols-2 gap-12 items-center">
+                    <div class="text-white fade-in">
+                        <div class="inline-block px-5 py-2.5 rounded-full glass-effect mb-6 shadow-lg">
+                            <span class="text-yellow-100 text-sm font-semibold">
+                                <i class="fas fa-shield-halved mr-2"></i>Terdaftar & Diawasi OJK
+                            </span>
+                        </div>
+                        <h2 class="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 leading-tight tracking-tight">
+                            Kembangkan Dana Anda <span class="text-gradient">Bersama Kami</span>
+                        </h2>
+                        <p class="text-purple-100 text-base md:text-lg mb-8 leading-relaxed">
+                            Platform manajemen investasi profesional dengan track record 15+ tahun. Kelola portfolio Anda dengan strategi teruji, transparan, dan diawasi OJK.
+                        </p>
+                        <div class="flex flex-col sm:flex-row gap-4">
+                            <button class="btn-primary px-8 py-4 rounded-xl text-white font-semibold text-base">
+                                <i class="fas fa-rocket mr-2"></i>Mulai Investasi
+                            </button>
+                            <button id="lihatKinerjaBtn" class="btn-secondary px-8 py-4 rounded-xl font-semibold text-base">
+                                <i class="fas fa-chart-bar mr-2"></i>Lihat Kinerja
+                            </button>
+                        </div>
+                        <div class="grid grid-cols-3 gap-6 mt-12 pt-8 border-t border-white/20">
+                            <div class="text-center sm:text-left">
+                                <p class="text-3xl md:text-4xl font-bold text-gradient">2.5T+</p>
+                                <p class="text-purple-200 text-sm mt-1 font-medium">Dana Dikelola</p>
+                            </div>
+                            <div class="text-center sm:text-left">
+                                <p class="text-3xl md:text-4xl font-bold text-gradient">15.8%</p>
+                                <p class="text-purple-200 text-sm mt-1 font-medium">Avg Return/Tahun</p>
+                            </div>
+                            <div class="text-center sm:text-left">
+                                <p class="text-3xl md:text-4xl font-bold text-gradient">12K+</p>
+                                <p class="text-purple-200 text-sm mt-1 font-medium">Investor Aktif</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="relative fade-in">
+                        <div class="glass-effect rounded-3xl p-6 md:p-8 shadow-2xl">
+                            <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80" alt="Investment Dashboard" class="rounded-2xl w-full shadow-xl">
+                            <div class="absolute -bottom-6 -left-6 bg-white rounded-2xl p-5 shadow-2xl border border-purple-100">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-12 h-12 gradient-emerald rounded-xl flex items-center justify-center icon-modern">
+                                        <i class="fas fa-arrow-trend-up text-white text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs text-slate-500 font-medium">Profit Bulan Ini</p>
+                                        <p class="text-2xl font-bold text-emerald-600">+18.4%</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tentang Kami -->
+        <section id="tentang" class="py-16 md:py-24">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto mb-16">
+                    <span class="inline-block text-purple-600 font-semibold text-sm uppercase tracking-wider bg-purple-50 px-4 py-1.5 rounded-full">Tentang Kami</span>
+                    <h3 class="text-3xl md:text-4xl font-extrabold text-slate-900 mt-4 mb-4 tracking-tight">Manajer Investasi Terpercaya Sejak 2009</h3>
+                    <p class="text-slate-600 text-base md:text-lg leading-relaxed">PT Amanah Investa Sekuritas adalah perusahaan efek yang terdaftar dan diawasi OJK dengan izin KEP-11/PM/2009</p>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-12 items-center mb-16">
+                    <div>
+                        <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=800&q=80" alt="Office" class="rounded-3xl shadow-2xl w-full card-hover">
+                    </div>
+                    <div class="space-y-6">
+                        <div class="glass-card rounded-2xl p-6 card-hover">
+                            <h4 class="text-2xl font-bold text-slate-900 mb-3 flex items-center">
+                                <div class="w-10 h-10 gradient-emerald rounded-lg flex items-center justify-center mr-3">
+                                    <i class="fas fa-bullseye text-white"></i>
+                                </div>
+                                Visi
+                            </h4>
+                            <p class="text-slate-600 leading-relaxed">Menjadi manajer investasi terdepan di Indonesia yang memberikan solusi keuangan terintegrasi untuk mencapai kemandirian finansial setiap nasabah.</p>
+                        </div>
+                        <div class="glass-card rounded-2xl p-6 card-hover">
+                            <h4 class="text-2xl font-bold text-slate-900 mb-4 flex items-center">
+                                <div class="w-10 h-10 gradient-primary rounded-lg flex items-center justify-center mr-3">
+                                    <i class="fas fa-flag text-white"></i>
+                                </div>
+                                Misi
+                            </h4>
+                            <ul class="space-y-3 text-slate-600">
+                                <li class="flex items-start"><i class="fas fa-check-circle text-emerald-600 mt-1 mr-3"></i>Mengelola dana dengan prinsip kehati-hatian dan transparansi</li>
+                                <li class="flex items-start"><i class="fas fa-check-circle text-emerald-600 mt-1 mr-3"></i>Memberikan edukasi keuangan berkelanjutan</li>
+                                <li class="flex items-start"><i class="fas fa-check-circle text-emerald-600 mt-1 mr-3"></i>Mengutamakan kepentingan nasabah di setiap keputusan</li>
+                            </ul>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-4 pt-2">
+                            <div class="px-5 py-3 bg-emerald-50 rounded-xl border-2 border-emerald-200 card-hover">
+                                <p class="text-xs text-emerald-700 font-semibold">Izin OJK</p>
+                                <p class="text-sm font-bold text-slate-900">KEP-11/PM/2009</p>
+                            </div>
+                            <div class="px-5 py-3 bg-purple-50 rounded-xl border-2 border-purple-200 card-hover">
+                                <p class="text-xs text-purple-700 font-semibold">ISO Certified</p>
+                                <p class="text-sm font-bold text-slate-900">27001:2013</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tim Ahli -->
+                <div>
+                    <h4 class="text-2xl font-bold text-slate-900 text-center mb-10 tracking-tight">Tim Fund Manager Berpengalaman</h4>
+                    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div class="card-hover glass-card rounded-2xl p-6 text-center">
+                            <div class="w-24 h-24 mx-auto mb-4 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 p-1">
+                                <img src="https://i.pravatar.cc/300?img=11" alt="CEO" class="w-full h-full rounded-full object-cover border-2 border-white">
+                            </div>
+                            <h5 class="font-bold text-slate-900">Budi Santoso, CFA</h5>
+                            <p class="text-sm text-purple-600 font-semibold mb-2">Chief Investment Officer</p>
+                            <p class="text-xs text-slate-500">20+ tahun di Capital Market</p>
+                        </div>
+                        <div class="card-hover glass-card rounded-2xl p-6 text-center">
+                            <div class="w-24 h-24 mx-auto mb-4 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 p-1">
+                                <img src="https://i.pravatar.cc/300?img=5" alt="CFO" class="w-full h-full rounded-full object-cover border-2 border-white">
+                            </div>
+                            <h5 class="font-bold text-slate-900">Sarah Wijaya, MBA</h5>
+                            <p class="text-sm text-emerald-600 font-semibold mb-2">Head of Research</p>
+                            <p class="text-xs text-slate-500">Ex-JP Morgan Analyst</p>
+                        </div>
+                        <div class="card-hover glass-card rounded-2xl p-6 text-center">
+                            <div class="w-24 h-24 mx-auto mb-4 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 p-1">
+                                <img src="https://i.pravatar.cc/300?img=12" alt="CTO" class="w-full h-full rounded-full object-cover border-2 border-white">
+                            </div>
+                            <h5 class="font-bold text-slate-900">Ahmad Rahman, CFP</h5>
+                            <p class="text-sm text-amber-600 font-semibold mb-2">Senior Fund Manager</p>
+                            <p class="text-xs text-slate-500">Spesialis Equity Fund</p>
+                        </div>
+                        <div class="card-hover glass-card rounded-2xl p-6 text-center">
+                            <div class="w-24 h-24 mx-auto mb-4 rounded-full bg-gradient-to-br from-pink-400 to-pink-600 p-1">
+                                <img src="https://i.pravatar.cc/300?img=9" alt="CMO" class="w-full h-full rounded-full object-cover border-2 border-white">
+                            </div>
+                            <h5 class="font-bold text-slate-900">Dewi Lestari, M.Fin</h5>
+                            <p class="text-sm text-pink-600 font-semibold mb-2">Risk Management Head</p>
+                            <p class="text-xs text-slate-500">FRM Certified</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Produk Investasi -->
+        <section id="produk" class="py-16 md:py-24">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto mb-16">
+                    <span class="inline-block text-purple-600 font-semibold text-sm uppercase tracking-wider bg-purple-50 px-4 py-1.5 rounded-full">Produk Kami</span>
+                    <h3 class="text-3xl md:text-4xl font-extrabold text-slate-900 mt-4 mb-4 tracking-tight">Pilihan Investasi Sesuai Profil Risiko Anda</h3>
+                    <p class="text-slate-600 text-base md:text-lg leading-relaxed">Dari konservatif hingga agresif, kami punya produk yang tepat untuk tujuan keuangan Anda</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+                    <!-- Reksadana Saham -->
+                    <div class="glass-card rounded-3xl p-7 flex flex-col card-hover h-full border-2 border-purple-200/50 relative">
+                        <div class="absolute -top-3 right-6">
+                            <span class="gradient-gold px-4 py-1.5 rounded-full text-xs font-bold text-slate-900 shadow-lg">TERPOPULER</span>
+                        </div>
+                        <div class="w-16 h-16 gradient-primary rounded-2xl flex items-center justify-center mb-5 shadow-lg icon-modern mt-2">
+                            <i class="fas fa-chart-line text-white text-2xl"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-slate-900 mb-2">Reksadana Saham</h4>
+                        <p class="text-sm text-slate-600 mb-4 leading-relaxed flex-grow">Investasi di saham blue-chip pilihan untuk pertumbuhan optimal jangka panjang.</p>
+                        
+                        <div class="space-y-4 mb-6">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-semibold text-slate-500">Return Historis</span>
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700">
+                                    <i class="fas fa-arrow-up mr-1"></i>18.2%/tahun
+                                </span>
+                            </div>
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs font-semibold text-slate-500">Level Risiko</span>
+                                    <span class="text-xs font-bold text-red-600">Tinggi</span>
+                                </div>
+                                <div class="risk-bar">
+                                    <div class="risk-fill bg-gradient-to-r from-amber-500 to-red-500" style="width: 85%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button class="w-full btn-primary py-3 rounded-xl font-semibold text-white mt-auto">
+                            <i class="fas fa-shopping-cart mr-2"></i>Pilih Produk
+                        </button>
+                    </div>
+
+                    <!-- Reksadana Obligasi -->
+                    <div class="glass-card rounded-3xl p-7 flex flex-col card-hover h-full">
+                        <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mb-5 shadow-lg icon-modern">
+                            <i class="fas fa-file-invoice-dollar text-white text-2xl"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-slate-900 mb-2">Reksadana Obligasi</h4>
+                        <p class="text-sm text-slate-600 mb-4 leading-relaxed flex-grow">Pendapatan tetap stabil dari obligasi korporasi dan pemerintah berkualitas tinggi.</p>
+                        
+                        <div class="space-y-4 mb-6">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-semibold text-slate-500">Return Historis</span>
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-700">
+                                    <i class="fas fa-arrow-up mr-1"></i>8.4%/tahun
+                                </span>
+                            </div>
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs font-semibold text-slate-500">Level Risiko</span>
+                                    <span class="text-xs font-bold text-amber-600">Menengah</span>
+                                </div>
+                                <div class="risk-bar">
+                                    <div class="risk-fill bg-gradient-to-r from-blue-400 to-amber-500" style="width: 50%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button class="w-full border-2 border-blue-600 text-blue-600 py-3 rounded-xl font-semibold hover:bg-blue-50 transition mt-auto">
+                            <i class="fas fa-shopping-cart mr-2"></i>Pilih Produk
+                        </button>
+                    </div>
+
+                    <!-- Pasar Uang -->
+                    <div class="glass-card rounded-3xl p-7 flex flex-col card-hover h-full">
+                        <div class="w-16 h-16 gradient-emerald rounded-2xl flex items-center justify-center mb-5 shadow-lg icon-modern">
+                            <i class="fas fa-piggy-bank text-white text-2xl"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-slate-900 mb-2">Pasar Uang</h4>
+                        <p class="text-sm text-slate-600 mb-4 leading-relaxed flex-grow">Likuiditas tinggi dengan risiko minimal, cocok untuk dana darurat dan jangka pendek.</p>
+                        
+                        <div class="space-y-4 mb-6">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-semibold text-slate-500">Return Historis</span>
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700">
+                                    <i class="fas fa-arrow-up mr-1"></i>5.8%/tahun
+                                </span>
+                            </div>
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs font-semibold text-slate-500">Level Risiko</span>
+                                    <span class="text-xs font-bold text-emerald-600">Rendah</span>
+                                </div>
+                                <div class="risk-bar">
+                                    <div class="risk-fill bg-gradient-to-r from-emerald-400 to-emerald-500" style="width: 20%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button class="w-full border-2 border-emerald-600 text-emerald-600 py-3 rounded-xl font-semibold hover:bg-emerald-50 transition mt-auto">
+                            <i class="fas fa-shopping-cart mr-2"></i>Pilih Produk
+                        </button>
+                    </div>
+
+                    <!-- Crypto Fund -->
+                    <div class="glass-card rounded-3xl p-7 flex flex-col card-hover h-full">
+                        <div class="w-16 h-16 bg-gradient-to-br from-purple-600 to-pink-600 rounded-2xl flex items-center justify-center mb-5 shadow-lg icon-modern">
+                            <i class="fab fa-bitcoin text-white text-2xl"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-slate-900 mb-2">Crypto Fund</h4>
+                        <p class="text-sm text-slate-600 mb-4 leading-relaxed flex-grow">Eksposur ke aset digital premium seperti Bitcoin & Ethereum dengan manajemen risiko profesional.</p>
+                        
+                        <div class="space-y-4 mb-6">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-semibold text-slate-500">Return Historis</span>
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-pink-100 text-pink-700">
+                                    <i class="fas fa-arrow-up mr-1"></i>42.5%/tahun
+                                </span>
+                            </div>
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs font-semibold text-slate-500">Level Risiko</span>
+                                    <span class="text-xs font-bold text-red-600">Sangat Tinggi</span>
+                                </div>
+                                <div class="risk-bar">
+                                    <div class="risk-fill bg-gradient-to-r from-red-500 to-red-600" style="width: 95%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button class="w-full border-2 border-purple-600 text-purple-600 py-3 rounded-xl font-semibold hover:bg-purple-50 transition mt-auto">
+                            <i class="fas fa-shopping-cart mr-2"></i>Pilih Produk
+                        </button>
+                    </div>
+
+                    <!-- Emas Digital -->
+                    <div class="glass-card rounded-3xl p-7 flex flex-col card-hover h-full">
+                        <div class="w-16 h-16 bg-gradient-to-br from-amber-500 to-yellow-500 rounded-2xl flex items-center justify-center mb-5 shadow-lg icon-modern">
+                            <i class="fas fa-coins text-white text-2xl"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-slate-900 mb-2">Emas Digital</h4>
+                        <p class="text-sm text-slate-600 mb-4 leading-relaxed flex-grow">Investasi emas fisik 24K berbasis digital, aman disimpan dan mudah dijual kapan saja.</p>
+                        
+                        <div class="space-y-4 mb-6">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-semibold text-slate-500">Return Historis</span>
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-700">
+                                    <i class="fas fa-arrow-up mr-1"></i>12.1%/tahun
+                                </span>
+                            </div>
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs font-semibold text-slate-500">Level Risiko</span>
+                                    <span class="text-xs font-bold text-blue-600">Rendah-Menengah</span>
+                                </div>
+                                <div class="risk-bar">
+                                    <div class="risk-fill bg-gradient-to-r from-amber-400 to-amber-500" style="width: 35%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button class="w-full border-2 border-amber-600 text-amber-600 py-3 rounded-xl font-semibold hover:bg-amber-50 transition mt-auto">
+                            <i class="fas fa-shopping-cart mr-2"></i>Pilih Produk
+                        </button>
+                    </div>
+
+                    <!-- Campuran -->
+                    <div class="glass-card rounded-3xl p-7 flex flex-col card-hover h-full">
+                        <div class="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center mb-5 shadow-lg icon-modern">
+                            <i class="fas fa-layer-group text-white text-2xl"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-slate-900 mb-2">Reksadana Campuran</h4>
+                        <p class="text-sm text-slate-600 mb-4 leading-relaxed flex-grow">Diversifikasi optimal saham & obligasi dalam satu portofolio untuk risiko terkontrol.</p>
+                        
+                        <div class="space-y-4 mb-6">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-semibold text-slate-500">Return Historis</span>
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-indigo-100 text-indigo-700">
+                                    <i class="fas fa-arrow-up mr-1"></i>13.5%/tahun
+                                </span>
+                            </div>
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs font-semibold text-slate-500">Level Risiko</span>
+                                    <span class="text-xs font-bold text-amber-600">Menengah-Tinggi</span>
+                                </div>
+                                <div class="risk-bar">
+                                    <div class="risk-fill bg-gradient-to-r from-amber-500 to-orange-500" style="width: 65%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button class="w-full border-2 border-indigo-600 text-indigo-600 py-3 rounded-xl font-semibold hover:bg-indigo-50 transition mt-auto">
+                            <i class="fas fa-shopping-cart mr-2"></i>Pilih Produk
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Kinerja Portfolio -->
+        <section id="kinerja" class="py-16 md:py-24">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto mb-16">
+                    <span class="inline-block text-purple-600 font-semibold text-sm uppercase tracking-wider bg-purple-50 px-4 py-1.5 rounded-full">Track Record</span>
+                    <h3 class="text-3xl md:text-4xl font-extrabold text-slate-900 mt-4 mb-4 tracking-tight">Kinerja Konsisten Selama 5 Tahun Terakhir</h3>
+                    <p class="text-slate-600 text-base md:text-lg leading-relaxed">Transparansi adalah prioritas kami. Lihat pertumbuhan dana kelolaan historically</p>
+                </div>
+                
+                <div class="grid lg:grid-cols-2 gap-8 mb-12">
+                    <div class="glass-card rounded-3xl p-6 md:p-8 card-hover">
+                        <h4 class="text-xl font-bold text-slate-900 mb-6">Pertumbuhan Dana Kelolaan</h4>
+                        <div class="chart-container">
+                            <canvas id="growthChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="glass-card rounded-3xl p-6 md:p-8 card-hover">
+                        <h4 class="text-xl font-bold text-slate-900 mb-6">Alokasi Aset Saat Ini</h4>
+                        <div class="chart-container">
+                            <canvas id="allocationChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl p-6 text-white card-hover shadow-xl">
+                        <i class="fas fa-calendar-check text-3xl mb-3 opacity-90"></i>
+                        <p class="text-3xl font-bold mb-1">15.8%</p>
+                        <p class="text-emerald-100 text-sm font-medium">CAGR 5 Tahun</p>
+                    </div>
+                    <div class="bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl p-6 text-white card-hover shadow-xl">
+                        <i class="fas fa-trophy text-3xl mb-3 opacity-90"></i>
+                        <p class="text-3xl font-bold mb-1">Top 3</p>
+                        <p class="text-blue-100 text-sm font-medium">Best Performing Fund</p>
+                    </div>
+                    <div class="bg-gradient-to-br from-purple-600 to-purple-700 rounded-2xl p-6 text-white card-hover shadow-xl">
+                        <i class="fas fa-shield-halved text-3xl mb-3 opacity-90"></i>
+                        <p class="text-3xl font-bold mb-1">0%</p>
+                        <p class="text-purple-100 text-sm font-medium">Kasus Gagal Bayar</p>
+                    </div>
+                    <div class="bg-gradient-to-br from-amber-500 to-amber-600 rounded-2xl p-6 text-white card-hover shadow-xl">
+                        <i class="fas fa-users text-3xl mb-3 opacity-90"></i>
+                        <p class="text-3xl font-bold mb-1">94%</p>
+                        <p class="text-amber-100 text-sm font-medium">Kepuasan Investor</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Keunggulan -->
+        <section class="py-16 md:py-24">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto mb-16">
+                    <span class="inline-block text-purple-600 font-semibold text-sm uppercase tracking-wider bg-purple-50 px-4 py-1.5 rounded-full">Mengapa Kami</span>
+                    <h3 class="text-3xl md:text-4xl font-extrabold text-slate-900 mt-4 mb-4 tracking-tight">Keunggulan Amanah Investa</h3>
+                </div>
+                
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="card-hover glass-card rounded-3xl p-8 text-center">
+                        <div class="w-16 h-16 gradient-emerald rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg icon-modern">
+                            <i class="fas fa-shield-alt text-white text-2xl"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-slate-900 mb-3">Aman & Diawasi OJK</h4>
+                        <p class="text-slate-600 leading-relaxed">Seluruh aktivitas investasi diawasi OJK dan dana nasabah dipisahkan dalam rekening custodian bank</p>
+                    </div>
+                    
+                    <div class="card-hover glass-card rounded-3xl p-8 text-center">
+                        <div class="w-16 h-16 gradient-primary rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg icon-modern">
+                            <i class="fas fa-eye text-white text-2xl"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-slate-900 mb-3">Transparan 100%</h4>
+                        <p class="text-slate-600 leading-relaxed">Laporan NAV harian, fund fact sheet bulanan, dan akses real-time ke portfolio Anda kapan saja</p>
+                    </div>
+                    
+                    <div class="card-hover glass-card rounded-3xl p-8 text-center">
+                        <div class="w-16 h-16 gradient-gold rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg icon-modern">
+                            <i class="fas fa-chart-line text-white text-2xl"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-slate-900 mb-3">Profit Konsisten</h4>
+                        <p class="text-slate-600 leading-relaxed">Track record 15+ tahun dengan strategi alokasi aset dinamis yang terbukti tahan krisis</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimoni -->
+        <section class="py-16 md:py-24">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto mb-16">
+                    <span class="inline-block text-purple-600 font-semibold text-sm uppercase tracking-wider bg-purple-50 px-4 py-1.5 rounded-full">Testimoni</span>
+                    <h3 class="text-3xl md:text-4xl font-extrabold text-slate-900 mt-4 mb-4 tracking-tight">Dipercaya 12,000+ Investor</h3>
+                    <p class="text-slate-600 text-base md:text-lg leading-relaxed">Total dana kelolaan mencapai Rp2.5 Triliun dari investor individu dan institusi</p>
+                </div>
+                
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div class="card-hover glass-card rounded-3xl p-8">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 p-0.5 mr-4">
+                                <img src="https://i.pravatar.cc/300?img=33" alt="Testi 1" class="w-full h-full rounded-full object-cover border-2 border-white">
+                            </div>
+                            <div>
+                                <h5 class="font-bold text-slate-900">Andi Pratama</h5>
+                                <p class="text-xs text-slate-500 font-medium">Pengusaha</p>
+                            </div>
+                        </div>
+                        <div class="flex text-amber-400 mb-3">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                        </div>
+                        <p class="text-slate-600 text-sm leading-relaxed mb-4">"Sudah 5 tahun invest di Amanah Investa. Dari modal 50jt sekarang sudah 180jt. Fund managernya responsif dan laporannya detail."</p>
+                        <div class="pt-4 border-t border-slate-200">
+                            <p class="text-xs text-slate-500 font-medium">Total Investasi</p>
+                            <p class="text-lg font-bold text-emerald-600">Rp180 Juta</p>
+                        </div>
+                    </div>
+                    
+                    <div class="card-hover glass-card rounded-3xl p-8">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 p-0.5 mr-4">
+                                <img src="https://i.pravatar.cc/300?img=47" alt="Testi 2" class="w-full h-full rounded-full object-cover border-2 border-white">
+                            </div>
+                            <div>
+                                <h5 class="font-bold text-slate-900">Maya Sari</h5>
+                                <p class="text-xs text-slate-500 font-medium">Dokter</p>
+                            </div>
+                        </div>
+                        <div class="flex text-amber-400 mb-3">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                        </div>
+                        <p class="text-slate-600 text-sm leading-relaxed mb-4">"Saya sibuk praktik, jadi butuh yang bisa dipercaya kelola dana. Amanah Investa sangat profesional dan return-nya diatas deposito."</p>
+                        <div class="pt-4 border-t border-slate-200">
+                            <p class="text-xs text-slate-500 font-medium">Total Investasi</p>
+                            <p class="text-lg font-bold text-emerald-600">Rp350 Juta</p>
+                        </div>
+                    </div>
+                    
+                    <div class="card-hover glass-card rounded-3xl p-8">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 p-0.5 mr-4">
+                                <img src="https://i.pravatar.cc/300?img=68" alt="Testi 3" class="w-full h-full rounded-full object-cover border-2 border-white">
+                            </div>
+                            <div>
+                                <h5 class="font-bold text-slate-900">Rudi Hermawan</h5>
+                                <p class="text-xs text-slate-500 font-medium">Direktur PT Maju</p>
+                            </div>
+                        </div>
+                        <div class="flex text-amber-400 mb-3">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                        </div>
+                        <p class="text-slate-600 text-sm leading-relaxed mb-4">"Perusahaan kami percayakan treasury 2M di Amanah. Sejauh ini aman dan profit konsisten. Recommended untuk corporate."</p>
+                        <div class="pt-4 border-t border-slate-200">
+                            <p class="text-xs text-slate-500 font-medium">Total Investasi</p>
+                            <p class="text-lg font-bold text-emerald-600">Rp2 Miliar</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Cara Bergabung -->
+        <section class="py-16 md:py-24 gradient-animated relative overflow-hidden">
+            <div class="absolute inset-0 opacity-20">
+                <div class="absolute top-0 right-0 w-96 h-96 bg-emerald-400 rounded-full blur-3xl"></div>
+            </div>
+            
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div class="text-center max-w-3xl mx-auto mb-16">
+                    <span class="text-yellow-100 font-semibold text-sm uppercase tracking-wider">Mulai Sekarang</span>
+                    <h3 class="text-3xl md:text-4xl font-extrabold text-white mt-3 mb-4 tracking-tight">3 Langkah Mudah Bergabung</h3>
+                    <p class="text-purple-100 text-base md:text-lg">Proses registrasi 100% online dan hanya butuh 5 menit</p>
+                </div>
+                
+                <div class="grid md:grid-cols-3 gap-8 mb-12">
+                    <div class="glass-effect rounded-3xl p-8 text-center card-hover">
+                        <div class="w-16 h-16 gradient-gold rounded-2xl flex items-center justify-center mx-auto mb-5 text-2xl font-extrabold text-slate-900 shadow-xl">1</div>
+                        <h4 class="text-xl font-bold text-white mb-3">Daftar & KYC</h4>
+                        <p class="text-purple-100 text-sm leading-relaxed">Isi form online dan upload KTP + NPWP. Verifikasi dalam 1x24 jam</p>
+                    </div>
+                    
+                    <div class="glass-effect rounded-3xl p-8 text-center card-hover">
+                        <div class="w-16 h-16 gradient-gold rounded-2xl flex items-center justify-center mx-auto mb-5 text-2xl font-extrabold text-slate-900 shadow-xl">2</div>
+                        <h4 class="text-xl font-bold text-white mb-3">Pilih Produk</h4>
+                        <p class="text-purple-100 text-sm leading-relaxed">Konsultasi gratis dengan advisor untuk tentukan produk sesuai profil risiko</p>
+                    </div>
+                    
+                    <div class="glass-effect rounded-3xl p-8 text-center card-hover">
+                        <div class="w-16 h-16 gradient-gold rounded-2xl flex items-center justify-center mx-auto mb-5 text-2xl font-extrabold text-slate-900 shadow-xl">3</div>
+                        <h4 class="text-xl font-bold text-white mb-3">Top Up Dana</h4>
+                        <p class="text-purple-100 text-sm leading-relaxed">Transfer ke rekening custodian dan dana langsung terinvestasi hari itu juga</p>
+                    </div>
+                </div>
+                
+                <div class="text-center">
+                    <button class="btn-primary px-10 py-4 rounded-xl text-white font-bold text-lg shadow-2xl">
+                        <i class="fas fa-rocket mr-2"></i>Daftar Sekarang Gratis
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact -->
+        <section id="contact" class="py-16 md:py-24">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid md:grid-cols-2 gap-12">
+                    <div>
+                        <span class="inline-block text-purple-600 font-semibold text-sm uppercase tracking-wider bg-purple-50 px-4 py-1.5 rounded-full">Hubungi Kami</span>
+                        <h3 class="text-3xl md:text-4xl font-extrabold text-slate-900 mt-4 mb-6 tracking-tight">Konsultasi Gratis dengan Advisor</h3>
+                        <p class="text-slate-600 mb-8 leading-relaxed">Tim kami siap membantu Anda merencanakan strategi investasi yang tepat</p>
+                        
+                        <div class="space-y-6">
+                            <div class="flex items-start glass-card rounded-2xl p-5 card-hover">
+                                <div class="w-12 h-12 gradient-emerald rounded-xl flex items-center justify-center mr-4 flex-shrink-0 icon-modern">
+                                    <i class="fas fa-map-marker-alt text-white"></i>
+                                </div>
+                                <div>
+                                    <h5 class="font-bold text-slate-900 mb-1">Kantor Pusat</h5>
+                                    <p class="text-slate-600 text-sm leading-relaxed">Menara Sudirman Lt. 25<br>Jl. Jend. Sudirman Kav. 60<br>Jakarta Selatan 12190</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start glass-card rounded-2xl p-5 card-hover">
+                                <div class="w-12 h-12 gradient-primary rounded-xl flex items-center justify-center mr-4 flex-shrink-0 icon-modern">
+                                    <i class="fas fa-phone text-white"></i>
+                                </div>
+                                <div>
+                                    <h5 class="font-bold text-slate-900 mb-1">Telepon & WhatsApp</h5>
+                                    <p class="text-slate-600 text-sm leading-relaxed">021-5088-1234<br>+62 812-3456-7890</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start glass-card rounded-2xl p-5 card-hover">
+                                <div class="w-12 h-12 gradient-gold rounded-xl flex items-center justify-center mr-4 flex-shrink-0 icon-modern">
+                                    <i class="fas fa-envelope text-white"></i>
+                                </div>
+                                <div>
+                                    <h5 class="font-bold text-slate-900 mb-1">Email</h5>
+                                    <p class="text-slate-600 text-sm leading-relaxed">invest@amanahinvesta.com<br>support@amanahinvesta.com</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start glass-card rounded-2xl p-5 card-hover">
+                                <div class="w-12 h-12 bg-gradient-to-br from-pink-600 to-pink-500 rounded-xl flex items-center justify-center mr-4 flex-shrink-0 icon-modern">
+                                    <i class="fas fa-clock text-white"></i>
+                                </div>
+                                <div>
+                                    <h5 class="font-bold text-slate-900 mb-1">Jam Operasional</h5>
+                                    <p class="text-slate-600 text-sm leading-relaxed">Senin - Jumat: 08:00 - 17:00 WIB<br>Sabtu: 09:00 - 14:00 WIB</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="glass-card rounded-3xl p-6 md:p-8">
+                        <h4 class="text-xl font-bold text-slate-900 mb-6">Kirim Pesan</h4>
+                        <form id="contactForm" class="space-y-5">
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-2">Nama Lengkap</label>
+                                <input type="text" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition bg-white/80" placeholder="Masukkan nama Anda">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-2">Email</label>
+                                <input type="email" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition bg-white/80" placeholder="nama@email.com">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-2">No. WhatsApp</label>
+                                <input type="tel" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition bg-white/80" placeholder="0812 xxx xxxx">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-2">Pesan</label>
+                                <textarea rows="4" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none resize-none transition bg-white/80" placeholder="Saya ingin konsultasi tentang..."></textarea>
+                            </div>
+                            <button type="submit" class="w-full btn-primary py-3.5 rounded-xl text-white font-semibold shadow-lg">
+                                <i class="fas fa-paper-plane mr-2"></i>Kirim Pesan
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="gradient-primary text-white py-12">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid md:grid-cols-4 gap-8 mb-8">
+                    <div>
+                        <div class="flex items-center space-x-3 mb-4">
+                            <div class="w-10 h-10 rounded-xl gradient-gold flex items-center justify-center shadow-lg">
+                                <i class="fas fa-chart-line text-white"></i>
+                            </div>
+                            <h5 class="font-bold text-lg">Amanah Investa</h5>
+                        </div>
+                        <p class="text-purple-100 text-sm leading-relaxed">Manajer investasi terpercaya dengan izin OJK KEP-11/PM/2009</p>
+                    </div>
+                    
+                    <div>
+                        <h6 class="font-bold mb-4 text-yellow-100">Perusahaan</h6>
+                        <ul class="space-y-2.5 text-sm text-purple-100">
+                            <li><a href="#" class="hover:text-yellow-200 transition">Tentang Kami</a></li>
+                            <li><a href="#" class="hover:text-yellow-200 transition">Karir</a></li>
+                            <li><a href="#" class="hover:text-yellow-200 transition">Press Release</a></li>
+                            <li><a href="#" class="hover:text-yellow-200 transition">Blog</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h6 class="font-bold mb-4 text-yellow-100">Produk</h6>
+                        <ul class="space-y-2.5 text-sm text-purple-100">
+                            <li><a href="#" class="hover:text-yellow-200 transition">Reksadana Saham</a></li>
+                            <li><a href="#" class="hover:text-yellow-200 transition">Reksadana Obligasi</a></li>
+                            <li><a href="#" class="hover:text-yellow-200 transition">Reksadana Pasar Uang</a></li>
+                            <li><a href="#" class="hover:text-yellow-200 transition">Crypto Fund</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h6 class="font-bold mb-4 text-yellow-100">Legalitas</h6>
+                        <ul class="space-y-2.5 text-sm text-purple-100">
+                            <li><a href="#" class="hover:text-yellow-200 transition">Syarat & Ketentuan</a></li>
+                            <li><a href="#" class="hover:text-yellow-200 transition">Kebijakan Privasi</a></li>
+                            <li><a href="#" class="hover:text-yellow-200 transition">Prospektus</a></li>
+                            <li><a href="#" class="hover:text-yellow-200 transition">Fund Fact Sheet</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="border-t border-white/20 pt-8 text-center">
+                    <p class="text-purple-200 text-sm mb-2">© 2024 PT Amanah Investa Sekuritas. Seluruh hak cipta dilindungi.</p>
+                    <p class="text-xs text-purple-300">DEMO WEBSITE - Bukan platform investasi sesungguhnya. Bukan merupakan nasihat keuangan.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- DASHBOARD INVESTOR -->
+    <div id="dashboardContent" class="hidden min-h-screen" style="background: var(--bg-gradient);">
+        <div class="flex relative">
+            <!-- Sidebar -->
+            <aside id="sidebar" class="w-64 gradient-primary min-h-screen fixed left-0 top-0 z-40 transition-all duration-300 shadow-2xl lg:translate-x-0">
+                <div class="p-6">
+                    <div class="flex items-center space-x-3 mb-10">
+                        <div class="w-11 h-11 rounded-xl gradient-gold flex items-center justify-center shadow-lg">
+                            <i class="fas fa-chart-line text-white"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-white font-bold text-lg">Amanah Investa</h1>
+                            <p class="text-yellow-200 text-[10px] font-medium">Investor Dashboard</p>
+                        </div>
+                    </div>
+                    
+                    <nav class="space-y-2">
+                        <a href="#" class="sidebar-link active flex items-center space-x-3 text-white px-4 py-3 rounded-xl transition" data-page="dashboard">
+                            <i class="fas fa-home w-5"></i>
+                            <span class="font-medium">Dashboard</span>
+                        </a>
+                        <a href="#" class="sidebar-link flex items-center space-x-3 text-purple-100 px-4 py-3 rounded-xl transition" data-page="portfolio">
+                            <i class="fas fa-briefcase w-5"></i>
+                            <span class="font-medium">Portfolio Saya</span>
+                        </a>
+                        <a href="#" class="sidebar-link flex items-center space-x-3 text-purple-100 px-4 py-3 rounded-xl transition" data-page="topup">
+                            <i class="fas fa-arrow-up w-5"></i>
+                            <span class="font-medium">Top Up</span>
+                        </a>
+                        <a href="#" class="sidebar-link flex items-center space-x-3 text-purple-100 px-4 py-3 rounded-xl transition" data-page="withdraw">
+                            <i class="fas fa-arrow-down w-5"></i>
+                            <span class="font-medium">Withdraw</span>
+                        </a>
+                        <a href="#" class="sidebar-link flex items-center space-x-3 text-purple-100 px-4 py-3 rounded-xl transition" data-page="laporan">
+                            <i class="fas fa-file-alt w-5"></i>
+                            <span class="font-medium">Laporan</span>
+                        </a>
+                        <a href="#" class="sidebar-link flex items-center space-x-3 text-purple-100 px-4 py-3 rounded-xl transition" data-page="referral">
+                            <i class="fas fa-gift w-5"></i>
+                            <span class="font-medium">Referral</span>
+                        </a>
+                    </nav>
+                </div>
+                
+                <div class="absolute bottom-0 left-0 right-0 p-6">
+                    <button id="backToWebsite" class="w-full glass-effect text-white py-3 rounded-xl text-sm hover:bg-white/20 transition font-semibold">
+                        <i class="fas fa-arrow-left mr-2"></i>Kembali ke Website
+                    </button>
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="flex-1 ml-0 lg:ml-64 w-full overflow-hidden">
+                <!-- Top Bar -->
+                <div class="glass-card border-b border-purple-100/50 sticky top-0 z-30 backdrop-blur-xl">
+                    <div class="px-4 md:px-8 py-4 flex justify-between items-center">
+                        <div class="flex items-center space-x-4">
+                            <button id="sidebarToggle" class="lg:hidden text-slate-600 hover:text-purple-600 transition">
+                                <i class="fas fa-bars text-xl"></i>
+                            </button>
+                            <div>
+                                <h2 class="text-xl md:text-2xl font-bold text-slate-900 tracking-tight">Dashboard</h2>
+                                <p class="text-sm text-slate-500 hidden md:block font-medium">Selamat datang kembali, Budi Santoso</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <button class="relative p-2.5 text-slate-600 hover:bg-purple-50 rounded-xl transition">
+                                <i class="fas fa-bell text-xl"></i>
+                                <span class="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+                            </button>
+                            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 p-0.5">
+                                <img src="https://i.pravatar.cc/300?img=11" alt="User" class="w-full h-full rounded-lg object-cover border-2 border-white">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dashboard Page -->
+                <div id="dashboardPage" class="p-4 md:p-8 w-full">
+                    <!-- Ringkasan Cards -->
+                    <div class="dashboard-grid mb-8">
+                        <div class="col-span-12 sm:col-span-6 lg:col-span-3 glass-card rounded-2xl p-6 card-hover">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="w-12 h-12 gradient-emerald rounded-xl flex items-center justify-center shadow-lg icon-modern">
+                                    <i class="fas fa-wallet text-white text-xl"></i>
+                                </div>
+                                <span class="text-xs text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-full font-bold">+12.4%</span>
+                            </div>
+                            <p class="text-slate-500 text-sm mb-2 font-medium">Total Aset</p>
+                            <p class="text-2xl font-bold text-slate-900 tracking-tight">Rp 285.450.000</p>
+                        </div>
+                        
+                        <div class="col-span-12 sm:col-span-6 lg:col-span-3 glass-card rounded-2xl p-6 card-hover">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="w-12 h-12 gradient-primary rounded-xl flex items-center justify-center shadow-lg icon-modern">
+                                    <i class="fas fa-arrow-trend-up text-white text-xl"></i>
+                                </div>
+                                <span class="text-xs text-purple-700 bg-purple-50 px-3 py-1.5 rounded-full font-bold">Hari Ini</span>
+                            </div>
+                            <p class="text-slate-500 text-sm mb-2 font-medium">Profit Hari Ini</p>
+                            <p class="text-2xl font-bold text-emerald-600 tracking-tight">+Rp 4.850.000</p>
+                        </div>
+                        
+                        <div class="col-span-12 sm:col-span-6 lg:col-span-3 glass-card rounded-2xl p-6 card-hover">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="w-12 h-12 gradient-gold rounded-xl flex items-center justify-center shadow-lg icon-modern">
+                                    <i class="fas fa-chart-line text-white text-xl"></i>
+                                </div>
+                                <span class="text-xs text-amber-700 bg-amber-50 px-3 py-1.5 rounded-full font-bold">Total</span>
+                            </div>
+                            <p class="text-slate-500 text-sm mb-2 font-medium">Total Profit</p>
+                            <p class="text-2xl font-bold text-emerald-600 tracking-tight">+Rp 85.450.000</p>
+                        </div>
+                        
+                        <div class="col-span-12 sm:col-span-6 lg:col-span-3 glass-card rounded-2xl p-6 card-hover">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="w-12 h-12 bg-gradient-to-br from-pink-600 to-pink-500 rounded-xl flex items-center justify-center shadow-lg icon-modern">
+                                    <i class="fas fa-percentage text-white text-xl"></i>
+                                </div>
+                                <span class="text-xs text-pink-700 bg-pink-50 px-3 py-1.5 rounded-full font-bold">ROI</span>
+                            </div>
+                            <p class="text-slate-500 text-sm mb-2 font-medium">ROI Keseluruhan</p>
+                            <p class="text-2xl font-bold text-slate-900 tracking-tight">+42.73%</p>
+                        </div>
+                    </div>
+
+                    <!-- Chart -->
+                    <div class="col-span-12 glass-card rounded-2xl p-6 card-hover mb-8">
+                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                            <h3 class="text-lg font-bold text-slate-900">Grafik Pertumbuhan Investasi</h3>
+                            <div class="flex flex-wrap gap-2">
+                                <button class="chart-filter px-4 py-2 rounded-lg text-sm font-semibold bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow-md" data-period="1B">1B</button>
+                                <button class="chart-filter px-4 py-2 rounded-lg text-sm font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition" data-period="3B">3B</button>
+                                <button class="chart-filter px-4 py-2 rounded-lg text-sm font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition" data-period="1T">1T</button>
+                                <button class="chart-filter px-4 py-2 rounded-lg text-sm font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition" data-period="ALL">ALL</button>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="portfolioChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-grid mb-8">
+                        <!-- Portfolio Saya -->
+                        <div class="col-span-12 lg:col-span-6 glass-card rounded-2xl p-6">
+                            <h3 class="text-lg font-bold text-slate-900 mb-6">Portfolio Saya</h3>
+                            <div class="table-wrapper">
+                                <table class="w-full">
+                                    <thead>
+                                        <tr class="border-b-2 border-purple-100">
+                                            <th class="text-left text-xs font-bold text-slate-600 pb-3 uppercase">Produk</th>
+                                            <th class="text-right text-xs font-bold text-slate-600 pb-3 uppercase">Modal</th>
+                                            <th class="text-right text-xs font-bold text-slate-600 pb-3 uppercase">Nilai</th>
+                                            <th class="text-right text-xs font-bold text-slate-600 pb-3 uppercase">P/L</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-100">
+                                        <tr class="hover:bg-purple-50/50 transition">
+                                            <td class="py-4">
+                                                <div class="flex items-center">
+                                                    <div class="w-9 h-9 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center mr-3 shadow-md">
+                                                        <i class="fas fa-chart-line text-white text-sm"></i>
+                                                    </div>
+                                                    <span class="text-sm font-semibold text-slate-900">Saham</span>
+                                                </div>
+                                            </td>
+                                            <td class="text-right text-sm font-medium text-slate-700">100jt</td>
+                                            <td class="text-right text-sm font-bold text-slate-900">142jt</td>
+                                            <td class="text-right text-sm font-bold text-emerald-600">+42%</td>
+                                        </tr>
+                                        <tr class="hover:bg-purple-50/50 transition">
+                                            <td class="py-4">
+                                                <div class="flex items-center">
+                                                    <div class="w-9 h-9 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center mr-3 shadow-md">
+                                                        <i class="fas fa-file-invoice text-white text-sm"></i>
+                                                    </div>
+                                                    <span class="text-sm font-semibold text-slate-900">Obligasi</span>
+                                                </div>
+                                            </td>
+                                            <td class="text-right text-sm font-medium text-slate-700">50jt</td>
+                                            <td class="text-right text-sm font-bold text-slate-900">58jt</td>
+                                            <td class="text-right text-sm font-bold text-emerald-600">+16%</td>
+                                        </tr>
+                                        <tr class="hover:bg-purple-50/50 transition">
+                                            <td class="py-4">
+                                                <div class="flex items-center">
+                                                    <div class="w-9 h-9 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-lg flex items-center justify-center mr-3 shadow-md">
+                                                        <i class="fas fa-piggy-bank text-white text-sm"></i>
+                                                    </div>
+                                                    <span class="text-sm font-semibold text-slate-900">Pasar Uang</span>
+                                                </div>
+                                            </td>
+                                            <td class="text-right text-sm font-medium text-slate-700">30jt</td>
+                                            <td class="text-right text-sm font-bold text-slate-900">32jt</td>
+                                            <td class="text-right text-sm font-bold text-emerald-600">+6.7%</td>
+                                        </tr>
+                                        <tr class="hover:bg-purple-50/50 transition">
+                                            <td class="py-4">
+                                                <div class="flex items-center">
+                                                    <div class="w-9 h-9 bg-gradient-to-br from-pink-500 to-pink-600 rounded-lg flex items-center justify-center mr-3 shadow-md">
+                                                        <i class="fab fa-bitcoin text-white text-sm"></i>
+                                                    </div>
+                                                    <span class="text-sm font-semibold text-slate-900">Crypto</span>
+                                                </div>
+                                            </td>
+                                            <td class="text-right text-sm font-medium text-slate-700">20jt</td>
+                                            <td class="text-right text-sm font-bold text-slate-900">53jt</td>
+                                            <td class="text-right text-sm font-bold text-emerald-600">+165%</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Transaksi Terakhir -->
+                        <div class="col-span-12 lg:col-span-6 glass-card rounded-2xl p-6">
+                            <div class="flex justify-between items-center mb-6">
+                                <h3 class="text-lg font-bold text-slate-900">Transaksi Terakhir</h3>
+                                <button class="text-sm text-purple-600 font-semibold hover:text-purple-700 transition">Lihat Semua</button>
+                            </div>
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between p-4 bg-gradient-to-r from-emerald-50 to-emerald-100/50 rounded-xl border border-emerald-200/50">
+                                    <div class="flex items-center flex-1 min-w-0">
+                                        <div class="w-11 h-11 bg-gradient-to-br from-emerald-600 to-emerald-500 rounded-xl flex items-center justify-center mr-3 flex-shrink-0 shadow-md">
+                                            <i class="fas fa-arrow-up text-white"></i>
+                                        </div>
+                                        <div class="min-w-0">
+                                            <p class="text-sm font-bold text-slate-900">Top Up</p>
+                                            <p class="text-xs text-slate-500 font-medium">12 Okt 2024, 14:30</p>
+                                        </div>
+                                    </div>
+                                    <p class="text-sm font-bold text-emerald-600 whitespace-nowrap ml-2">+Rp 10.000.000</p>
+                                </div>
+                                
+                                <div class="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-blue-100/50 rounded-xl border border-blue-200/50">
+                                    <div class="flex items-center flex-1 min-w-0">
+                                        <div class="w-11 h-11 bg-gradient-to-br from-blue-600 to-blue-500 rounded-xl flex items-center justify-center mr-3 flex-shrink-0 shadow-md">
+                                            <i class="fas fa-coins text-white"></i>
+                                        </div>
+                                        <div class="min-w-0">
+                                            <p class="text-sm font-bold text-slate-900">Dividen</p>
+                                            <p class="text-xs text-slate-500 font-medium">10 Okt 2024, 09:00</p>
+                                        </div>
+                                    </div>
+                                    <p class="text-sm font-bold text-blue-600 whitespace-nowrap ml-2">+Rp 1.250.000</p>
+                                </div>
+                                
+                                <div class="flex items-center justify-between p-4 bg-gradient-to-r from-amber-50 to-amber-100/50 rounded-xl border border-amber-200/50">
+                                    <div class="flex items-center flex-1 min-w-0">
+                                        <div class="w-11 h-11 bg-gradient-to-br from-amber-600 to-amber-500 rounded-xl flex items-center justify-center mr-3 flex-shrink-0 shadow-md">
+                                            <i class="fas fa-arrow-down text-white"></i>
+                                        </div>
+                                        <div class="min-w-0">
+                                            <p class="text-sm font-bold text-slate-900">Withdraw</p>
+                                            <p class="text-xs text-slate-500 font-medium">08 Okt 2024, 16:45</p>
+                                        </div>
+                                    <p class="text-sm font-bold text-amber-600 whitespace-nowrap ml-2">-Rp 5.000.000</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Kalkulator Investasi -->
+                    <div class="col-span-12 glass-card rounded-2xl p-6 md:p-8">
+                        <h3 class="text-xl font-bold text-slate-900 mb-6">Kalkulator Simulasi Investasi</h3>
+                        <div class="grid md:grid-cols-2 gap-8">
+                            <div class="space-y-5">
+                                <div>
+                                    <label class="block text-sm font-semibold text-slate-700 mb-2">Modal Awal</label>
+                                    <input type="number" id="modalAwal" value="10000000" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition bg-white/80 font-medium">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-semibold text-slate-700 mb-2">Durasi Investasi (Tahun)</label>
+                                    <input type="number" id="durasiTahun" value="5" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition bg-white/80 font-medium">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-semibold text-slate-700 mb-2">Estimasi Return (% per tahun)</label>
+                                    <input type="number" id="returnPersen" value="15" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition bg-white/80 font-medium">
+                                </div>
+                                <button id="hitungBtn" class="w-full btn-primary py-3.5 rounded-xl text-white font-semibold shadow-lg">
+                                    <i class="fas fa-calculator mr-2"></i>Hitung Simulasi
+                                </button>
+                            </div>
+                            <div class="bg-gradient-to-br from-purple-50 to-blue-50 rounded-2xl p-6 flex flex-col justify-center border-2 border-purple-100">
+                                <div class="space-y-5">
+                                    <div class="flex justify-between items-center pb-4 border-b-2 border-purple-200">
+                                        <span class="text-slate-600 font-medium">Modal Awal</span>
+                                        <span class="text-lg font-bold text-slate-900" id="hasilModal">Rp 10.000.000</span>
+                                    </div>
+                                    <div class="flex justify-between items-center pb-4 border-b-2 border-purple-200">
+                                        <span class="text-slate-600 font-medium">Total Keuntungan</span>
+                                        <span class="text-lg font-bold text-emerald-600" id="hasilProfit">Rp 10.113.568</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-slate-700 font-semibold">Total Akhir</span>
+                                        <span class="text-2xl font-bold text-purple-600" id="hasilTotal">Rp 20.113.568</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Mobile Menu Toggle
+        document.getElementById('mobileMenuBtn').addEventListener('click', function() {
+            document.getElementById('mobileMenu').classList.toggle('hidden');
+        });
+
+        // Dashboard Toggle
+        const dashboardBtn = document.getElementById('dashboardBtn');
+        const dashboardBtnMobile = document.getElementById('dashboardBtnMobile');
+        const websiteContent = document.getElementById('websiteContent');
+        const dashboardContent = document.getElementById('dashboardContent');
+        const backToWebsite = document.getElementById('backToWebsite');
+
+        function showDashboard() {
+            websiteContent.classList.add('hidden');
+            dashboardContent.classList.remove('hidden');
+            window.scrollTo(0, 0);
+            document.getElementById('mobileMenu').classList.add('hidden');
+        }
+
+        function showWebsite() {
+            dashboardContent.classList.add('hidden');
+            websiteContent.classList.remove('hidden');
+            window.scrollTo(0, 0);
+        }
+
+        dashboardBtn.addEventListener('click', showDashboard);
+        dashboardBtnMobile.addEventListener('click', showDashboard);
+        backToWebsite.addEventListener('click', showWebsite);
+
+        // Sidebar Mobile Toggle
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebar = document.getElementById('sidebar');
+        
+        sidebarToggle?.addEventListener('click', function() {
+            sidebar.classList.toggle('open');
+        });
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', function(e) {
+            if (window.innerWidth < 1024 && !sidebar.contains(e.target) && !sidebarToggle.contains(e.target)) {
+                sidebar.classList.remove('open');
+            }
+        });
+
+        // Lihat Kinerja Button
+        document.getElementById('lihatKinerjaBtn').addEventListener('click', function() {
+            document.getElementById('kinerja').scrollIntoView({ behavior: 'smooth' });
+        });
+
+        // Chart.js - Growth Chart
+        const growthCtx = document.getElementById('growthChart');
+        if (growthCtx) {
+            new Chart(growthCtx, {
+                type: 'line',
+                data: {
+                    labels: ['2019', '2020', '2021', '2022', '2023', '2024'],
+                    datasets: [{
+                        label: 'Dana Kelolaan (Triliun)',
+                        data: [0.8, 1.1, 1.5, 1.9, 2.2, 2.5],
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.15)',
+                        tension: 0.4,
+                        fill: true,
+                        borderWidth: 3,
+                        pointBackgroundColor: '#764ba2',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 5,
+                        pointHoverRadius: 7
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { 
+                            beginAtZero: true,
+                            grid: { color: 'rgba(102, 126, 234, 0.1)' }
+                        },
+                        x: {
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Chart.js - Allocation Chart
+        const allocationCtx = document.getElementById('allocationChart');
+        if (allocationCtx) {
+            new Chart(allocationCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Saham', 'Obligasi', 'Pasar Uang', 'Crypto', 'Lainnya'],
+                    datasets: [{
+                        data: [50, 25, 15, 7, 3],
+                        backgroundColor: [
+                            '#667eea',
+                            '#10b981',
+                            '#fbbf24',
+                            '#8b5cf6',
+                            '#f59e0b'
+                        ],
+                        borderWidth: 3,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { 
+                            position: 'bottom',
+                            labels: {
+                                padding: 15,
+                                font: { size: 12, weight: '600' }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Portfolio Chart Data
+        const chartData = {
+            '1B': {
+                labels: ['W1', 'W2', 'W3', 'W4'],
+                data: [260, 268, 275, 285]
+            },
+            '3B': {
+                labels: ['Jul', 'Agu', 'Sep', 'Okt'],
+                data: [230, 245, 265, 285]
+            },
+            '1T': {
+                labels: ['Jan', 'Mar', 'May', 'Jul', 'Sep', 'Okt'],
+                data: [180, 195, 210, 230, 255, 285]
+            },
+            'ALL': {
+                labels: ['2020', '2021', '2022', '2023', '2024'],
+                data: [80, 120, 165, 220, 285]
+            }
+        };
+
+        // Portfolio Chart
+        const portfolioCtx = document.getElementById('portfolioChart');
+        let portfolioChart;
+        
+        if (portfolioCtx) {
+            portfolioChart = new Chart(portfolioCtx, {
+                type: 'line',
+                data: {
+                    labels: chartData['1B'].labels,
+                    datasets: [{
+                        label: 'Nilai Portfolio (Juta)',
+                        data: chartData['1B'].data,
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.15)',
+                        tension: 0.4,
+                        fill: true,
+                        borderWidth: 3,
+                        pointBackgroundColor: '#059669',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 5,
+                        pointHoverRadius: 7
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { 
+                            beginAtZero: false,
+                            grid: { color: 'rgba(16, 185, 129, 0.1)' }
+                        },
+                        x: {
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+
+            // Chart Filter
+            document.querySelectorAll('.chart-filter').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.chart-filter').forEach(b => {
+                        b.classList.remove('bg-gradient-to-r', 'from-purple-600', 'to-purple-700', 'text-white', 'shadow-md');
+                        b.classList.add('bg-slate-100', 'text-slate-600');
+                    });
+                    this.classList.remove('bg-slate-100', 'text-slate-600');
+                    this.classList.add('bg-gradient-to-r', 'from-purple-600', 'to-purple-700', 'text-white', 'shadow-md');
+                    
+                    const period = this.dataset.period;
+                    portfolioChart.data.labels = chartData[period].labels;
+                    portfolioChart.data.datasets[0].data = chartData[period].data;
+                    portfolioChart.update();
+                });
+            });
+        }
+
+        // Kalkulator Investasi
+        const hitungBtn = document.getElementById('hitungBtn');
+        hitungBtn?.addEventListener('click', function() {
+            const modal = parseFloat(document.getElementById('modalAwal').value) || 0;
+            const tahun = parseFloat(document.getElementById('durasiTahun').value) || 0;
+            const returns = parseFloat(document.getElementById('returnPersen').value) || 0;
+            
+            const totalAkhir = modal * Math.pow(1 + returns/100, tahun);
+            const profit = totalAkhir - modal;
+            
+            document.getElementById('hasilModal').textContent = 'Rp ' + modal.toLocaleString('id-ID');
+            document.getElementById('hasilProfit').textContent = 'Rp ' + Math.round(profit).toLocaleString('id-ID');
+            document.getElementById('hasilTotal').textContent = 'Rp ' + Math.round(totalAkhir).toLocaleString('id-ID');
+        });
+
+        // Contact Form
+        document.getElementById('contactForm')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Terima kasih! Pesan Anda telah terkirim. Tim kami akan menghubungi Anda segera.');
+            this.reset();
+        });
+
+        // Smooth Scroll for Nav Links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                    document.getElementById('mobileMenu').classList.add('hidden');
+                }
+            });
+        });
+    </script>
+<script>(function(){document.addEventListener("click",function(e){var a=e.target.closest("[data-product-id]");if(!a)return;e.preventDefault();var pid=a.getAttribute("data-product-id");if(pid)parent.postMessage({type:"ecto-artifact-link-click",productId:pid},"*")})})();</script>
+</body>
+</html>

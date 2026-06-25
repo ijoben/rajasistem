@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NusaDoge Clicker - Portfolio Demo</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;600;700;900&display=swap');
+    
+    * {
+        -webkit-tap-highlight-color: transparent;
+        user-select: none;
+    }
+    
+    body {
+        font-family: 'Inter', sans-serif;
+        background: #0f0f0f;
+        background-image: 
+            radial-gradient(circle at 20% 50%, #f9731620 0%, transparent 50%),
+            radial-gradient(circle at 80% 80%, #facc1520 0%, transparent 50%);
+    }
+    
+    .pixel-font {
+        font-family: 'Press Start 2P', cursive;
+    }
+    
+    .coin-img {
+        image-rendering: pixelated;
+        image-rendering: -moz-crisp-edges;
+        image-rendering: crisp-edges;
+        transition: transform 0.1s ease;
+        cursor: pointer;
+    }
+    
+    .coin-img:active {
+        transform: scale(0.92);
+    }
+    
+    @keyframes floatUp {
+        0% { opacity: 1; transform: translateY(0) scale(1); }
+        100% { opacity: 0; transform: translateY(-80px) scale(1.5); }
+    }
+    
+    .floating-text {
+        animation: floatUp 1s ease-out forwards;
+        pointer-events: none;
+    }
+    
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-5px); }
+        75% { transform: translateX(5px); }
+    }
+    
+    .shake {
+        animation: shake 0.3s ease;
+    }
+    
+    @keyframes pulse-glow {
+        0%, 100% { box-shadow: 0 0 20px #f97316aa; }
+        50% { box-shadow: 0 0 40px #facc15ff; }
+    }
+    
+    .glow-btn {
+        animation: pulse-glow 2s infinite;
+    }
+    
+    .modal-backdrop {
+        backdrop-filter: blur(8px);
+        background: rgba(0,0,0,0.7);
+    }
+    
+    .disabled {
+        opacity: 0.5;
+        cursor: not-allowed !important;
+    }
+    
+    @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+    }
+    
+    .bounce {
+        animation: bounce 0.3s ease;
+    }
+    
+    .toast {
+        animation: slideIn 0.3s ease, fadeOut 0.3s ease 2.7s forwards;
+    }
+    
+    @keyframes slideIn {
+        from { transform: translateY(-100px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+    
+    @keyframes fadeOut {
+        to { opacity: 0; transform: translateY(-20px); }
+    }
+    
+    #particleCanvas {
+        pointer-events: none;
+    }
+</style>
+</head>
+<body class="text-white min-h-screen">
+<!-- Disclaimer Banner -->
+<div class="bg-gradient-to-r from-red-600 to-orange-600 text-center py-2 px-4 text-xs sm:text-sm font-bold tracking-wide">
+    🚨 DEMO GAME PORTFOLIO - BUKAN CRYPTO ASLI 🚨
+</div>
+
+<!-- Toast Container -->
+<div id="toastContainer" class="fixed top-20 left-1/2 -translate-x-1/2 z-[100] space-y-2"></div>
+
+<!-- Header -->
+<header class="sticky top-0 z-50 bg-black/80 backdrop-blur-md border-b border-orange-500/30">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 py-3 sm:py-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+            <!-- Logo -->
+            <div class="flex items-center gap-2 sm:gap-3">
+                <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-orange-500 to-yellow-400 rounded-lg flex items-center justify-center text-2xl">
+                    🐕
+                </div>
+                <div>
+                    <h1 class="pixel-font text-sm sm:text-lg text-orange-400">NusaDoge</h1>
+                    <p class="text-[10px] sm:text-xs text-gray-400">Clicker Game</p>
+                </div>
+            </div>
+            
+            <!-- Balances -->
+            <div class="flex gap-2 sm:gap-4 w-full sm:w-auto">
+                <div class="flex-1 sm:flex-initial bg-gradient-to-br from-orange-950 to-yellow-950 border border-orange-500/50 rounded-lg px-3 sm:px-4 py-2">
+                    <p class="text-[10px] sm:text-xs text-gray-400">Saldo $NDOGE</p>
+                    <p class="pixel-font text-sm sm:text-lg text-orange-400" id="ndogeBalance">0</p>
+                </div>
+                <div class="flex-1 sm:flex-initial bg-gradient-to-br from-green-950 to-emerald-950 border border-green-500/50 rounded-lg px-3 sm:px-4 py-2">
+                    <p class="text-[10px] sm:text-xs text-gray-400">Saldo IDR</p>
+                    <p class="pixel-font text-sm sm:text-lg text-green-400" id="idrBalance">Rp 0</p>
+                </div>
+            </div>
+            
+            <!-- Actions -->
+            <div class="flex gap-2 w-full sm:w-auto">
+                <button id="exchangeBtn" class="flex-1 sm:flex-initial bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all">
+                    💰 Jual
+                </button>
+                <button id="walletBtn" class="flex-1 sm:flex-initial bg-gradient-to-r from-orange-600 to-yellow-600 hover:from-orange-700 hover:to-yellow-700 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all">
+                    🔗 Wallet
+                </button>
+            </div>
+        </div>
+        
+        <!-- Stats Bar -->
+        <div class="grid grid-cols-3 gap-2 sm:gap-4 mt-3 sm:mt-4">
+            <div class="bg-black/40 rounded-lg px-2 sm:px-3 py-2 border border-gray-800">
+                <p class="text-[10px] sm:text-xs text-gray-500">Koin/Detik</p>
+                <p class="text-sm sm:text-base font-bold text-yellow-400" id="coinsPerSec">0</p>
+            </div>
+            <div class="bg-black/40 rounded-lg px-2 sm:px-3 py-2 border border-gray-800">
+                <p class="text-[10px] sm:text-xs text-gray-500">Total Klik</p>
+                <p class="text-sm sm:text-base font-bold text-orange-400" id="totalClicks">0</p>
+            </div>
+            <div class="bg-black/40 rounded-lg px-2 sm:px-3 py-2 border border-gray-800">
+                <p class="text-[10px] sm:text-xs text-gray-500">Harga $NDOGE</p>
+                <p class="text-sm sm:text-base font-bold text-green-400" id="ndogePrice">Rp 1.23</p>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Main Content -->
+<main class="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-8">
+    <div class="grid lg:grid-cols-3 gap-4 sm:gap-6">
+        <!-- Clicker Area -->
+        <div class="lg:col-span-2">
+            <div class="bg-gradient-to-br from-gray-900 to-black border border-orange-500/30 rounded-2xl p-4 sm:p-8 relative overflow-hidden">
+                <canvas id="particleCanvas" class="absolute inset-0 w-full h-full"></canvas>
+                
+                <div class="relative z-10 flex flex-col items-center justify-center min-h-[300px] sm:min-h-[400px]">
+                    <!-- Multiplier Badge -->
+                    <div id="multiplierBadge" class="hidden absolute top-0 right-0 bg-gradient-to-r from-purple-600 to-pink-600 px-3 py-1 rounded-full text-xs font-bold glow-btn">
+                        x<span id="multiplierValue">1</span> MULTIPLIER
+                    </div>
+                    
+                    <!-- Main Coin -->
+                    <div class="relative" id="coinContainer">
+                        <div id="floatingTextContainer" class="absolute inset-0 pointer-events-none"></div>
+                        <div id="coinButton" class="coin-img w-48 h-48 sm:w-64 sm:h-64 md:w-80 md:h-80 bg-gradient-to-br from-orange-400 via-yellow-400 to-orange-500 rounded-full flex items-center justify-center text-6xl sm:text-8xl shadow-2xl border-8 border-yellow-300/50 relative">
+                            <span class="drop-shadow-2xl">🐕</span>
+                            <div class="absolute inset-0 rounded-full bg-gradient-to-t from-transparent to-white/20"></div>
+                        </div>
+                    </div>
+                    
+                    <p class="mt-6 text-gray-400 text-sm sm:text-base text-center">Klik NusaDoge untuk mining $NDOGE!</p>
+                    <p class="text-[10px] sm:text-xs text-gray-600 mt-2" id="diamondPawInfo"></p>
+                </div>
+            </div>
+            
+            <!-- Leaderboard -->
+            <div class="mt-4 sm:mt-6 bg-gradient-to-br from-gray-900 to-black border border-yellow-500/30 rounded-2xl p-4 sm:p-6">
+                <h2 class="pixel-font text-sm sm:text-base text-yellow-400 mb-4 flex items-center gap-2">
+                    🏆 LEADERBOARD
+                </h2>
+                <div id="leaderboardList" class="space-y-2"></div>
+            </div>
+        </div>
+        
+        <!-- Shop Sidebar -->
+        <div class="space-y-4 sm:space-y-6">
+            <!-- Shop -->
+            <div class="bg-gradient-to-br from-gray-900 to-black border border-orange-500/30 rounded-2xl p-4 sm:p-6">
+                <h2 class="pixel-font text-sm sm:text-base text-orange-400 mb-4 flex items-center gap-2">
+                    🛒 UPGRADE SHOP
+                </h2>
+                <div class="space-y-3" id="shopContainer"></div>
+            </div>
+            
+            <!-- Actions -->
+            <div class="bg-gradient-to-br from-gray-900 to-black border border-red-500/30 rounded-2xl p-4 sm:p-6">
+                <h2 class="pixel-font text-xs sm:text-sm text-red-400 mb-4">⚙️ SETTINGS</h2>
+                <button id="prestigeBtn" class="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-gray-700 disabled:to-gray-800 px-4 py-3 rounded-lg font-semibold transition-all disabled">
+                    💎 Prestige Reset<br>
+                    <span class="text-xs font-normal opacity-80">Butuh 100k NDOGE</span>
+                </button>
+                <p class="text-[10px] sm:text-xs text-gray-500 mt-3 text-center">Reset game untuk dapat Diamond Paw x2 multiplier permanen</p>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Exchange Modal -->
+<div id="exchangeModal" class="hidden fixed inset-0 z-[90] modal-backdrop flex items-center justify-center p-4">
+    <div class="bg-gradient-to-br from-gray-900 to-black border border-green-500/50 rounded-2xl p-6 max-w-md w-full">
+        <h3 class="pixel-font text-lg text-green-400 mb-4">💱 EXCHANGE NDOGE</h3>
+        <div class="space-y-4">
+            <div>
+                <label class="text-sm text-gray-400 block mb-2">Jumlah $NDOGE yang dijual:</label>
+                <input type="number" id="exchangeAmount" class="w-full bg-black/50 border border-gray-700 rounded-lg px-4 py-3 text-white focus:border-green-500 outline-none" placeholder="0" min="0">
+            </div>
+            <div class="bg-black/40 rounded-lg p-3 border border-gray-800">
+                <p class="text-xs text-gray-500">Rate: <span id="modalPrice">Rp 1.23</span> per NDOGE</p>
+                <p class="text-lg font-bold text-green-400 mt-1">Dapat: <span id="exchangeResult">Rp 0</span></p>
+            </div>
+            <div class="flex gap-2">
+                <button id="confirmExchange" class="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 px-4 py-3 rounded-lg font-semibold transition-all">
+                    Konfirmasi
+                </button>
+                <button id="cancelExchange" class="px-4 py-3 bg-gray-800 hover:bg-gray-700 rounded-lg font-semibold transition-all">
+                    Batal
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Achievement Modal -->
+<div id="achievementModal" class="hidden fixed inset-0 z-[95] modal-backdrop flex items-center justify-center p-4">
+    <div class="bg-gradient-to-br from-yellow-900 to-orange-900 border-4 border-yellow-400 rounded-2xl p-6 sm:p-8 max-w-sm w-full text-center glow-btn">
+        <div class="text-6xl mb-4">🏆</div>
+        <h3 class="pixel-font text-lg text-yellow-300 mb-2">ACHIEVEMENT!</h3>
+        <p class="text-xl font-bold text-white mb-4" id="achievementText"></p>
+        <button id="closeAchievement" class="bg-yellow-500 hover:bg-yellow-600 text-black px-6 py-3 rounded-lg font-bold transition-all">
+            SIAP!
+        </button>
+    </div>
+</div>
+
+<script>
+// ==================== GAME STATE ====================
+const gameState = {
+    ndoge: 0,
+    idr: 0,
+    totalClicks: 0,
+    coinsPerSec: 0,
+    ndogePrice: 1.23,
+    multiplier: 1,
+    diamondPaws: 0,
+    rocketActive: false,
+    rocketTimer: 0,
+    
+    upgrades: {
+        autoClicker: { level: 0, cost: 50, cps: 1 },
+        minerGPU: { level: 0, cost: 500, cps: 10 },
+        influencer: { level: 0, cost: 5000, cps: 100 },
+        rocket: { level: 0, cost: 50000, priceMultiplier: 2, duration: 30 }
+    },
+    
+    achievements: {
+        first100: false,
+        first1k: false,
+        firstRocket: false
+    },
+    
+    leaderboard: [
+        { name: "ElonNusaDog", idr: 15678900 },
+        { name: "CryptoSultan88", idr: 12345000 },
+        { name: "ToTheMoon69", idr: 8900000 },
+        { name: "DiamondPaws", idr: 5670000 },
+        { name: "ShibaKing", idr: 2340000 }
+    ],
+    
+    username: "You"
+};
+
+// ==================== AUDIO SYSTEM ====================
+let audioCtx;
+const initAudio = () => {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+};
+
+const playSound = (frequency, duration, type = 'sine') => {
+    if (!audioCtx) return;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.frequency.value = frequency;
+    osc.type = type;
+    gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+    osc.start(audioCtx.currentTime);
+    osc.stop(audioCtx.currentTime + duration);
+};
+
+const playClickSound = () => playSound(800, 0.1, 'square');
+const playBuySound = () => {
+    playSound(523, 0.1, 'sine');
+    setTimeout(() => playSound(659, 0.1, 'sine'), 100);
+    setTimeout(() => playSound(784, 0.15, 'sine'), 200);
+};
+const playRocketSound = () => {
+    for(let i = 0; i < 5; i++) {
+        setTimeout(() => playSound(200 + i * 100, 0.2, 'sawtooth'), i * 100);
+    }
+};
+
+// ==================== PARTICLE SYSTEM ====================
+class Particle {
+    constructor(x, y, color) {
+        this.x = x;
+        this.y = y;
+        this.vx = (Math.random() - 0.5) * 8;
+        this.vy = (Math.random() - 0.5) * 8 - 5;
+        this.life = 1;
+        this.color = color;
+        this.size = Math.random() * 6 + 2;
+    }
+    
+    update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.vy += 0.3;
+        this.life -= 0.02;
+        this.size *= 0.98;
+    }
+    
+    draw(ctx) {
+        ctx.globalAlpha = this.life;
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+    }
+}
+
+let particles = [];
+const canvas = document.getElementById('particleCanvas');
+const ctx = canvas.getContext('2d');
+const resizeCanvas = () => {
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+};
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+// ==================== UI ELEMENTS ====================
+const elements = {
+    ndogeBalance: document.getElementById('ndogeBalance'),
+    idrBalance: document.getElementById('idrBalance'),
+    coinsPerSec: document.getElementById('coinsPerSec'),
+    totalClicks: document.getElementById('totalClicks'),
+    ndogePrice: document.getElementById('ndogePrice'),
+    coinButton: document.getElementById('coinButton'),
+    floatingTextContainer: document.getElementById('floatingTextContainer'),
+    shopContainer: document.getElementById('shopContainer'),
+    leaderboardList: document.getElementById('leaderboardList'),
+    exchangeBtn: document.getElementById('exchangeBtn'),
+    walletBtn: document.getElementById('walletBtn'),
+    prestigeBtn: document.getElementById('prestigeBtn'),
+    exchangeModal: document.getElementById('exchangeModal'),
+    exchangeAmount: document.getElementById('exchangeAmount'),
+    exchangeResult: document.getElementById('exchangeResult'),
+    modalPrice: document.getElementById('modalPrice'),
+    confirmExchange: document.getElementById('confirmExchange'),
+    cancelExchange: document.getElementById('cancelExchange'),
+    achievementModal: document.getElementById('achievementModal'),
+    achievementText: document.getElementById('achievementText'),
+    closeAchievement: document.getElementById('closeAchievement'),
+    multiplierBadge: document.getElementById('multiplierBadge'),
+    multiplierValue: document.getElementById('multiplierValue'),
+    diamondPawInfo: document.getElementById('diamondPawInfo'),
+    toastContainer: document.getElementById('toastContainer')
+};
+
+// ==================== SHOP CONFIG ====================
+const shopItems = [
+    {
+        id: 'autoClicker',
+        name: 'Auto Clicker',
+        emoji: '🤖',
+        desc: '+1 koin/detik per level',
+        baseCost: 50,
+        cps: 1
+    },
+    {
+        id: 'minerGPU',
+        name: 'Miner GPU',
+        emoji: '⚡',
+        desc: '+10 koin/detik per level',
+        baseCost: 500,
+        cps: 10
+    },
+    {
+        id: 'influencer',
+        name: 'Influencer Shill',
+        emoji: '📢',
+        desc: '+100 koin/detik + harga naik 20%',
+        baseCost: 5000,
+        cps: 100,
+        priceBoost: true
+    },
+    {
+        id: 'rocket',
+        name: 'To The Moon',
+        emoji: '🚀',
+        desc: 'Harga x2 selama 30 detik',
+        baseCost: 50000,
+        rocket: true
+    }
+];
+
+// ==================== GAME FUNCTIONS ====================
+const formatNumber = (num) => {
+    if (num >= 1e9) return (num / 1e9).toFixed(2) + 'B';
+    if (num >= 1e6) return (num / 1e6).toFixed(2) + 'M';
+    if (num >= 1e3) return (num / 1e3).toFixed(2) + 'K';
+    return Math.floor(num).toLocaleString('id-ID');
+};
+
+const formatIDR = (num) => {
+    return 'Rp ' + Math.floor(num).toLocaleString('id-ID');
+};
+
+const updateUI = () => {
+    elements.ndogeBalance.textContent = formatNumber(gameState.ndoge);
+    elements.idrBalance.textContent = formatIDR(gameState.idr);
+    elements.coinsPerSec.textContent = formatNumber(gameState.coinsPerSec * gameState.multiplier);
+    elements.totalClicks.textContent = formatNumber(gameState.totalClicks);
+    elements.ndogePrice.textContent = 'Rp ' + gameState.ndogePrice.toFixed(2);
+    elements.modalPrice.textContent = 'Rp ' + gameState.ndogePrice.toFixed(2);
+    
+    if (gameState.diamondPaws > 0) {
+        elements.multiplierBadge.classList.remove('hidden');
+        elements.multiplierValue.textContent = gameState.multiplier;
+        elements.diamondPawInfo.textContent = `💎 Diamond Paw x${gameState.multiplier}`;
+    }
+    
+    if (gameState.rocketActive) {
+        elements.ndogePrice.classList.add('text-yellow-400', 'font-bold');
+        elements.ndogePrice.textContent = '🚀 Rp ' + gameState.ndogePrice.toFixed(2) + ` (${gameState.rocketTimer}s)`;
+    } else {
+        elements.ndogePrice.classList.remove('text-yellow-400', 'font-bold');
+    }
+    
+    elements.prestigeBtn.disabled = gameState.ndoge < 100000;
+    updateShop();
+    updateLeaderboard();
+};
+
+const updateShop = () => {
+    elements.shopContainer.innerHTML = shopItems.map(item => {
+        const upgrade = gameState.upgrades[item.id];
+        const cost = Math.floor(item.baseCost * Math.pow(1.15, upgrade.level));
+        const canAfford = gameState.ndoge >= cost;
+        
+        return `
+            <div class="bg-black/40 border border-gray-800 rounded-lg p-3 hover:border-orange-500/50 transition-all ${!canAfford ? 'opacity-60' : ''}">
+                <div class="flex items-start justify-between gap-2 mb-2">
+                    <div class="flex-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-2xl">${item.emoji}</span>
+                            <div>
+                                <p class="font-bold text-sm">${item.name}</p>
+                                <p class="text-[10px] text-gray-500">Lvl ${upgrade.level}</p>
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-1">${item.desc}</p>
+                    </div>
+                </div>
+                <button onclick="buyUpgrade('${item.id}')" 
+                    class="w-full mt-2 bg-gradient-to-r from-orange-600 to-yellow-600 hover:from-orange-700 hover:to-yellow-700 disabled:from-gray-700 disabled:to-gray-800 disabled:cursor-not-allowed px-3 py-2 rounded text-xs font-semibold transition-all"
+                    ${!canAfford ? 'disabled' : ''}>
+                    Beli - ${formatNumber(cost)} NDOGE
+                </button>
+            </div>
+        `;
+    }).join('');
+};
+
+const updateLeaderboard = () => {
+    const allPlayers = [...gameState.leaderboard, { name: gameState.username + ' (You)', idr: gameState.idr, isUser: true }];
+    allPlayers.sort((a, b) => b.idr - a.idr);
+    const top5 = allPlayers.slice(0, 6);
+    
+    elements.leaderboardList.innerHTML = top5.map((player, index) => `
+        <div class="flex items-center justify-between bg-black/40 rounded-lg px-3 py-2 border ${player.isUser ? 'border-yellow-500/50' : 'border-gray-800'}">
+            <div class="flex items-center gap-3">
+                <span class="text-lg ${index < 3 ? 'text-yellow-400' : 'text-gray-500'}">#${index + 1}</span>
+                <span class="text-sm font-semibold ${player.isUser ? 'text-yellow-400' : 'text-white'}">${player.name}</span>
+            </div>
+            <span class="text-sm font-bold text-green-400">${formatIDR(player.idr)}</span>
+        </div>
+    `).join('');
+};
+
+const showFloatingText = (x, y, text, color = '#facc15') => {
+    const el = document.createElement('div');
+    el.className = 'floating-text absolute font-bold text-xl sm:text-2xl pixel-font';
+    el.style.left = x + 'px';
+    el.style.top = y + 'px';
+    el.style.color = color;
+    el.style.textShadow = '2px 2px 4px rgba(0,0,0,0.8)';
+    el.textContent = text;
+    elements.floatingTextContainer.appendChild(el);
+    setTimeout(() => el.remove(), 1000);
+};
+
+const showToast = (message, type = 'info') => {
+    const colors = {
+        success: 'from-green-600 to-emerald-600',
+        error: 'from-red-600 to-orange-600',
+        info: 'from-blue-600 to-cyan-600',
+        achievement: 'from-yellow-500 to-orange-500'
+    };
+    
+    const toast = document.createElement('div');
+    toast.className = `toast bg-gradient-to-r ${colors[type]} px-4 sm:px-6 py-3 rounded-lg font-semibold shadow-2xl text-sm sm:text-base`;
+    toast.textContent = message;
+    elements.toastContainer.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+};
+
+const showAchievement = (text) => {
+    elements.achievementText.textContent = text;
+    elements.achievementModal.classList.remove('hidden');
+    playBuySound();
+};
+
+const checkAchievements = () => {
+    if (!gameState.achievements.first100 && gameState.totalClicks >= 100) {
+        gameState.achievements.first100 = true;
+        showAchievement('100 KLIK PERTAMA!');
+    }
+    if (!gameState.achievements.first1k && gameState.ndoge >= 1000) {
+        gameState.achievements.first1k = true;
+        showAchievement('1000 NDOGE TERCAPAI!');
+    }
+    if (!gameState.achievements.firstRocket && gameState.upgrades.rocket.level >= 1) {
+        gameState.achievements.firstRocket = true;
+        showAchievement('TO THE MOON! 🚀');
+    }
+};
+
+const createConfetti = (x, y, count = 30) => {
+    const colors = ['#f97316', '#facc15', '#10b981', '#3b82f6', '#ec4899'];
+    for (let i = 0; i < count; i++) {
+        particles.push(new Particle(x, y, colors[Math.floor(Math.random() * colors.length)]));
+    }
+};
+
+const handleClick = (e) => {
+    initAudio();
+    playClickSound();
+    
+    const rect = elements.coinButton.getBoundingClientRect();
+    const x = e.clientX || (e.touches && e.touches[0].clientX) || rect.left + rect.width / 2;
+    const y = e.clientY || (e.touches && e.touches[0].clientY) || rect.top + rect.height / 2;
+    
+    const coinsGained = 1 * gameState.multiplier;
+    gameState.ndoge += coinsGained;
+    gameState.totalClicks++;
+    
+    showFloatingText(x - rect.left, y - rect.top, `+${coinsGained}`, '#facc15');
+    
+    // Small particles
+    for (let i = 0; i < 5; i++) {
+        particles.push(new Particle(
+            canvas.width / 2 + (Math.random() - 0.5) * 100,
+            canvas.height / 2 + (Math.random() - 0.5) * 100,
+            '#f97316'
+        ));
+    }
+    
+    elements.coinButton.classList.add('bounce');
+    setTimeout(() => elements.coinButton.classList.remove('bounce'), 300);
+    
+    checkAchievements();
+    saveGame();
+    updateUI();
+};
+
+window.buyUpgrade = (id) => {
+    initAudio();
+    const item = shopItems.find(i => i.id === id);
+    const upgrade = gameState.upgrades[id];
+    const cost = Math.floor(item.baseCost * Math.pow(1.15, upgrade.level));
+    
+    if (gameState.ndoge < cost) {
+        showToast('NDOGE tidak cukup!', 'error');
+        elements.coinButton.classList.add('shake');
+        setTimeout(() => elements.coinButton.classList.remove('shake'), 300);
+        return;
+    }
+    
+    gameState.ndoge -= cost;
+    upgrade.level++;
+    
+    if (item.rocket) {
+        gameState.rocketActive = true;
+        gameState.rocketTimer = 30;
+        gameState.ndogePrice *= 2;
+        playRocketSound();
+        createConfetti(canvas.width / 2, canvas.height / 2, 50);
+        showToast('TO THE MOON! Harga x2 selama 30 detik!', 'success');
+    } else {
+        upgrade.cost = Math.floor(item.baseCost * Math.pow(1.15, upgrade.level));
+        gameState.coinsPerSec += item.cps;
+        
+        if (item.priceBoost) {
+            gameState.ndogePrice *= 1.2;
+            showToast('Influencer berhasil shill! Harga naik 20%', 'success');
+        }
+        
+        playBuySound();
+    }
+    
+    checkAchievements();
+    saveGame();
+    updateUI();
+};
+
+const updatePrice = () => {
+    if (gameState.rocketActive) {
+        gameState.rocketTimer--;
+        if (gameState.rocketTimer <= 0) {
+            gameState.rocketActive = false;
+            gameState.ndogePrice /= 2;
+            showToast('Efek roket habis!', 'info');
+        }
+    } else {
+        // Random price fluctuation -5% to +5%
+        const change = (Math.random() - 0.5) * 0.1;
+        gameState.ndogePrice = Math.max(0.5, gameState.ndogePrice * (1 + change));
+    }
+};
+
+const openExchange = () => {
+    elements.exchangeModal.classList.remove('hidden');
+    elements.exchangeAmount.value = Math.floor(gameState.ndoge);
+    updateExchangeResult();
+};
+
+const updateExchangeResult = () => {
+    const amount = parseFloat(elements.exchangeAmount.value) || 0;
+    const result = amount * gameState.ndogePrice;
+    elements.exchangeResult.textContent = formatIDR(result);
+};
+
+const confirmExchangeAction = () => {
+    const amount = parseFloat(elements.exchangeAmount.value) || 0;
+    if (amount <= 0 || amount > gameState.ndoge) {
+        showToast('Jumlah tidak valid!', 'error');
+        return;
+    }
+    
+    const idrGained = amount * gameState.ndogePrice;
+    gameState.ndoge -= amount;
+    gameState.idr += idrGained;
+    
+    elements.exchangeModal.classList.add('hidden');
+    showToast(`Berhasil jual ${formatNumber(amount)} NDOGE!`, 'success');
+    playBuySound();
+    saveGame();
+    updateUI();
+};
+
+const doPrestige = () => {
+    if (gameState.ndoge < 100000) {
+        showToast('Butuh minimal 100k NDOGE untuk Prestige!', 'error');
+        return;
+    }
+    
+    if (!confirm('Yakin mau Prestige? Semua progress akan direset tapi dapat Diamond Paw x2 multiplier permanen!')) {
+        return;
+    }
+    
+    gameState.diamondPaws++;
+    gameState.multiplier = Math.pow(2, gameState.diamondPaws);
+    gameState.ndoge = 0;
+    gameState.totalClicks = 0;
+    gameState.coinsPerSec = 0;
+    gameState.upgrades = {
+        autoClicker: { level: 0, cost: 50, cps: 1 },
+        minerGPU: { level: 0, cost: 500, cps: 10 },
+        influencer: { level: 0, cost: 5000, cps: 100 },
+        rocket: { level: 0, cost: 50000, priceMultiplier: 2, duration: 30 }
+    };
+    
+    showAchievement(`PRESTIGE! Diamond Paw x${gameState.multiplier}`);
+    createConfetti(canvas.width / 2, canvas.height / 2, 100);
+    saveGame();
+    updateUI();
+};
+
+// ==================== GAME LOOP ====================
+let lastTime = 0;
+let priceUpdateTimer = 0;
+const gameLoop = (currentTime) => {
+    const deltaTime = (currentTime - lastTime) / 1000;
+    lastTime = currentTime;
+    
+    // Auto income
+    if (gameState.coinsPerSec > 0) {
+        gameState.ndoge += gameState.coinsPerSec * gameState.multiplier * deltaTime;
+    }
+    
+    // Price update every 3 seconds
+    priceUpdateTimer += deltaTime;
+    if (priceUpdateTimer >= 3) {
+        priceUpdateTimer = 0;
+        updatePrice();
+        updateUI();
+    }
+    
+    // Update particles
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles = particles.filter(p => {
+        p.update();
+        p.draw(ctx);
+        return p.life > 0;
+    });
+    
+    requestAnimationFrame(gameLoop);
+};
+
+// ==================== SAVE/LOAD ====================
+const saveGame = () => {
+    try {
+        localStorage.setItem('nusaDogeGame', JSON.stringify(gameState));
+    } catch (e) {
+        console.error('Save failed:', e);
+    }
+};
+
+const loadGame = () => {
+    try {
+        const saved = localStorage.getItem('nusaDogeGame');
+        if (saved) {
+            const loaded = JSON.parse(saved);
+            Object.assign(gameState, loaded);
+            
+            // Recalculate CPS from upgrades
+            gameState.coinsPerSec = 
+                gameState.upgrades.autoClicker.level * 1 +
+                gameState.upgrades.minerGPU.level * 10 +
+                gameState.upgrades.influencer.level * 100;
+        }
+    } catch (e) {
+        console.error('Load failed:', e);
+    }
+};
+
+// ==================== EVENT LISTENERS ====================
+// Click & Touch support
+elements.coinButton.addEventListener('click', handleClick);
+elements.coinButton.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    handleClick(e);
+});
+
+elements.exchangeBtn.addEventListener('click', openExchange);
+elements.walletBtn.addEventListener('click', () => {
+    showToast('Connect Wallet: Fitur dummy untuk demo', 'info');
+});
+elements.cancelExchange.addEventListener('click', () => {
+    elements.exchangeModal.classList.add('hidden');
+});
+elements.confirmExchange.addEventListener('click', confirmExchangeAction);
+elements.exchangeAmount.addEventListener('input', updateExchangeResult);
+elements.prestigeBtn.addEventListener('click', doPrestige);
+elements.closeAchievement.addEventListener('click', () => {
+    elements.achievementModal.classList.add('hidden');
+});
+
+// Close modals on backdrop click
+elements.exchangeModal.addEventListener('click', (e) => {
+    if (e.target === elements.exchangeModal) elements.exchangeModal.classList.add('hidden');
+});
+elements.achievementModal.addEventListener('click', (e) => {
+    if (e.target === elements.achievementModal) elements.achievementModal.classList.add('hidden');
+});
+
+// ==================== INIT ====================
+loadGame();
+updateUI();
+requestAnimationFrame(gameLoop);
+
+// Auto save every 10 seconds
+setInterval(saveGame, 10000);
+
+// Prevent zoom on double tap mobile
+let lastTouchEnd = 0;
+document.addEventListener('touchend', (e) => {
+    const now = Date.now();
+    if (now - lastTouchEnd <= 300) {
+        e.preventDefault();
+    }
+    lastTouchEnd = now;
+}, false);
+</script>
+<script>(function(){document.addEventListener("click",function(e){var a=e.target.closest("[data-product-id]");if(!a)return;e.preventDefault();var pid=a.getAttribute("data-product-id");if(pid)parent.postMessage({type:"ecto-artifact-link-click",productId:pid},"*")})})();</script>
+</body>
+</html>

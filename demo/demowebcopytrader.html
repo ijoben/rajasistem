@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CopyTrader Pro - Social Trading Platform</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+    
+    :root {
+        --bg-primary: #0a0e1a;
+        --bg-secondary: #151b2d;
+        --bg-tertiary: #1f2940;
+        --border: #2d3748;
+        --text-primary: #f1f5f9;
+        --text-secondary: #94a3b8;
+        --accent: #3b82f6;
+        --success: #10b981;
+        --danger: #ef4444;
+        --warning: #f59e0b;
+    }
+    
+    .light {
+        --bg-primary: #ffffff;
+        --bg-secondary: #f8fafc;
+        --bg-tertiary: #e2e8f0;
+        --border: #e2e8f0;
+        --text-primary: #0f172a;
+        --text-secondary: #64748b;
+    }
+    
+    * {
+        font-family: 'Inter', sans-serif;
+    }
+    
+    html {
+        scroll-behavior: smooth;
+    }
+    
+    body {
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        transition: background 0.3s ease;
+    }
+    
+    .card {
+        background: var(--bg-secondary);
+        border: 1px solid var(--border);
+        transition: all 0.3s ease;
+    }
+    
+    .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.15);
+    }
+    
+    .gradient-text {
+        background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .gradient-bg {
+        background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+    }
+    
+    .gradient-border {
+        position: relative;
+        background: var(--bg-secondary);
+        border-radius: 1rem;
+    }
+    
+    .gradient-border::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 1rem;
+        padding: 1px;
+        background: linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899);
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+    
+    .gradient-border:hover::before {
+        opacity: 1;
+    }
+    
+    .glass {
+        background: rgba(21, 27, 45, 0.8);
+        backdrop-filter: blur(16px);
+        border: 1px solid rgba(148, 163, 184, 0.1);
+    }
+    
+    .light .glass {
+        background: rgba(255, 255, 255, 0.8);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .hero-grid {
+        background-image: 
+            linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px);
+        background-size: 50px 50px;
+    }
+    
+    .glow {
+        box-shadow: 0 0 40px rgba(59, 130, 246, 0.3);
+    }
+    
+    .progress-bar {
+        background: var(--bg-tertiary);
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .progress-fill {
+        height: 100%;
+        transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .badge-risk-low { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .badge-risk-medium { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); }
+    .badge-risk-high { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
+    
+    .modal-backdrop {
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(4px);
+    }
+    
+    .toast-enter {
+        animation: slideIn 0.3s ease-out;
+    }
+    
+    @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+    
+    .toast-exit {
+        animation: slideOut 0.3s ease-in;
+    }
+    
+    @keyframes slideOut {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(100%); opacity: 0; }
+    }
+    
+    .table-row-hover:hover {
+        background: var(--bg-tertiary);
+    }
+    
+    input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: var(--accent);
+        cursor: pointer;
+        border: 2px solid var(--bg-secondary);
+    }
+    
+    .animate-float {
+        animation: float 6s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-20px); }
+    }
+    
+    .animate-pulse-slow {
+        animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    
+    @media (max-width: 640px) {
+        .mobile-stack > * {
+            width: 100% !important;
+        }
+    }
+</style>
+</head>
+<body class="min-h-screen">
+    <!-- Sticky Nav Bar -->
+    <header class="glass sticky top-0 z-50 border-b" style="border-color: var(--border)">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-3 cursor-pointer" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                    <div class="w-10 h-10 rounded-xl gradient-bg flex items-center justify-center glow">
+                        <i class="fa-solid fa-chart-line text-white"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold gradient-text">CopyTrader Pro</h1>
+                        <p class="text-xs hidden sm:block" style="color: var(--text-secondary)">Social Trading Platform</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <nav class="hidden lg:flex items-center gap-6 mr-4">
+                        <a href="#features" class="text-sm hover:text-blue-500 transition" style="color: var(--text-secondary)">Features</a>
+                        <a href="#how-it-works" class="text-sm hover:text-blue-500 transition" style="color: var(--text-secondary)">How It Works</a>
+                        <a href="#traders" class="text-sm hover:text-blue-500 transition" style="color: var(--text-secondary)">Traders</a>
+                    </nav>
+                    <button id="themeToggle" class="p-2 rounded-lg card hover:bg-opacity-80">
+                        <i class="fa-solid fa-moon text-lg"></i>
+                    </button>
+                    <a href="#dashboard" class="hidden sm:flex items-center gap-2 card px-3 py-2 rounded-lg text-sm hover:bg-opacity-80 transition">
+                        <img src="https://i.pravatar.cc/32?img=1" class="w-7 h-7 rounded-full" alt="User">
+                        <span class="font-medium">Dashboard</span>
+                    </a>
+                    <button onclick="showToast('Login feature coming soon', 'info')" class="px-4 py-2 text-sm font-medium rounded-lg card hover:bg-opacity-80 transition">
+                        Login
+                    </button>
+                    <button onclick="scrollToDashboard()" class="px-4 py-2 text-sm font-semibold rounded-lg gradient-bg text-white hover:opacity-90 transition">
+                        Register
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Landing Page -->
+    <!-- Hero Section -->
+    <section class="relative hero-grid overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-b from-blue-500/5 via-purple-500/5 to-transparent pointer-events-none"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32 relative">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <div class="text-center lg:text-left">
+                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full card mb-6">
+                        <span class="relative flex h-2 w-2">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                        </span>
+                        <span class="text-sm font-medium" style="color: var(--text-secondary)">Live Trading • 10,247 Active Copiers</span>
+                    </div>
+                    <h1 class="text-5xl lg:text-7xl font-black mb-6 leading-tight">
+                        Copy Top Traders,<br>
+                        <span class="gradient-text">Profit Together</span>
+                    </h1>
+                    <p class="text-lg lg:text-xl mb-8 max-w-xl mx-auto lg:mx-0" style="color: var(--text-secondary)">
+                        Mirror the strategies of verified professional traders. Start with as little as $100. Auto-copy trades, earn profits, and pay only when you win.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-8">
+                        <button onclick="scrollToDashboard()" class="px-8 py-4 rounded-xl font-bold text-lg gradient-bg text-white hover:opacity-90 transition glow">
+                            <i class="fa-solid fa-rocket mr-2"></i>Start Copying
+                        </button>
+                        <button onclick="document.getElementById('traders').scrollIntoView({behavior: 'smooth'})" class="px-8 py-4 rounded-xl font-bold text-lg card hover:bg-opacity-80 transition border-2" style="border-color: var(--border)">
+                            <i class="fa-solid fa-users mr-2"></i>View Traders
+                        </button>
+                    </div>
+                    <div class="flex items-center gap-6 justify-center lg:justify-start text-sm" style="color: var(--text-secondary)">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-shield-halved text-green-500"></i>
+                            <span>Bank-Level Security</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-bolt text-yellow-500"></i>
+                            <span>Instant Execution</span>
+                        </div>
+                    </div>
+                <div class="relative hidden lg:block">
+                    <div class="animate-float">
+                        <div class="card rounded-2xl p-6 glow">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-3">
+                                    <img src="https://i.pravatar.cc/48?img=12" class="w-12 h-12 rounded-full">
+                                    <div>
+                                        <p class="font-bold">AlphaQuant</p>
+                                        <p class="text-xs" style="color: var(--text-secondary)">#1 Trader • Low Risk</p>
+                                    </div>
+                                </div>
+                                <span class="badge-risk-low px-3 py-1 rounded-full text-xs font-semibold">Low</span>
+                            </div>
+                            <div class="grid grid-cols-3 gap-4 mb-4">
+                                <div>
+                                    <p class="text-xs" style="color: var(--text-secondary)">30D ROI</p>
+                                    <p class="text-xl font-bold text-green-500">+42.8%</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs" style="color: var(--text-secondary)">Win Rate</p>
+                                    <p class="text-xl font-bold">94.2%</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs" style="color: var(--text-secondary)">Copiers</p>
+                                    <p class="text-xl font-bold">8.2K</p>
+                                </div>
+                            </div>
+                            <div class="h-20">
+                                <canvas id="heroChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="absolute -bottom-6 -right-6 w-32 h-32 bg-purple-500/20 rounded-full blur-3xl animate-pulse-slow"></div>
+                    <div class="absolute -top-6 -left-6 w-32 h-32 bg-blue-500/20 rounded-full blur-3xl animate-pulse-slow"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="py-16 border-y" style="border-color: var(--border); background: var(--bg-secondary)">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                <div>
+                    <div class="text-4xl lg:text-5xl font-black gradient-text mb-2">$2M+</div>
+                    <p class="text-lg font-semibold mb-1">Assets Under Management</p>
+                    <p class="text-sm" style="color: var(--text-secondary)">Across 10+ verified traders</p>
+                </div>
+                <div>
+                    <div class="text-4xl lg:text-5xl font-black gradient-text mb-2">10K+</div>
+                    <p class="text-lg font-semibold mb-1">Active Users</p>
+                    <p class="text-sm" style="color: var(--text-secondary)">Growing 25% month-over-month</p>
+                </div>
+                <div>
+                    <div class="text-4xl lg:text-5xl font-black gradient-text mb-2">85%</div>
+                    <p class="text-lg font-semibold mb-1">Avg Win Rate</p>
+                    <p class="text-sm" style="color: var(--text-secondary)">Top 10 traders combined</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="py-20 lg:py-32">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl lg:text-5xl font-black mb-4">How It <span class="gradient-text">Works</span></h2>
+                <p class="text-lg max-w-2xl mx-auto" style="color: var(--text-secondary)">
+                    Start copying professional traders in 3 simple steps. No trading experience required.
+                </p>
+            </div>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="gradient-border card rounded-2xl p-8 text-center">
+                    <div class="w-16 h-16 rounded-2xl gradient-bg flex items-center justify-center mx-auto mb-6 glow">
+                        <i class="fa-solid fa-user-check text-2xl text-white"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-3">1. Pick Trader</h3>
+                    <p style="color: var(--text-secondary)">
+                        Browse our leaderboard of verified traders. Filter by ROI, risk level, and win rate to find your perfect match.
+                    </p>
+                </div>
+                <div class="gradient-border card rounded-2xl p-8 text-center">
+                    <div class="w-16 h-16 rounded-2xl gradient-bg flex items-center justify-center mx-auto mb-6 glow">
+                        <i class="fa-solid fa-sliders text-2xl text-white"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-3">2. Set Amount</h3>
+                    <p style="color: var(--text-secondary)">
+                        Choose your allocation and set risk controls. Enable auto-stop at max drawdown and configure profit share settings.
+                    </p>
+                </div>
+                <div class="gradient-border card rounded-2xl p-8 text-center">
+                    <div class="w-16 h-16 rounded-2xl gradient-bg flex items-center justify-center mx-auto mb-6 glow">
+                        <i class="fa-solid fa-copy text-2xl text-white"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-3">3. Auto Copy</h3>
+                    <p style="color: var(--text-secondary)">
+                        Sit back and watch. All trades are copied automatically with institutional-grade execution. Pay profit share only on wins.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Traders Preview -->
+    <section id="featured" class="py-20 lg:py-32" style="background: var(--bg-secondary)">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl lg:text-5xl font-black mb-4">Featured <span class="gradient-text">Traders</span></h2>
+                <p class="text-lg max-w-2xl mx-auto" style="color: var(--text-secondary)">
+                    Meet our top-performing traders with proven track records and transparent performance metrics.
+                </p>
+            </div>
+            <div class="grid md:grid-cols-3 gap-6 mb-12">
+                <div class="card rounded-2xl p-6 gradient-border">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center gap-3">
+                            <img src="https://i.pravatar.cc/56?img=12" class="w-14 h-14 rounded-full">
+                            <div>
+                                <p class="font-bold text-lg">AlphaQuant</p>
+                                <div class="flex items-center gap-1 text-xs">
+                                    <i class="fa-solid fa-star text-yellow-500"></i>
+                                    <span style="color: var(--text-secondary)">4.9 • Scalper</span>
+                                </div>
+                            </div>
+                        </div>
+                        <span class="badge-risk-low px-3 py-1 rounded-full text-xs font-semibold">Low Risk</span>
+                    </div>
+                    <div class="grid grid-cols-3 gap-4 mb-4 py-4 border-y" style="border-color: var(--border)">
+                        <div>
+                            <p class="text-xs mb-1" style="color: var(--text-secondary)">30D ROI</p>
+                            <p class="text-xl font-bold text-green-500">+42.8%</p>
+                        </div>
+                        <div>
+                            <p class="text-xs mb-1" style="color: var(--text-secondary)">Win Rate</p>
+                            <p class="text-xl font-bold">94.2%</p>
+                        </div>
+                        <div>
+                            <p class="text-xs mb-1" style="color: var(--text-secondary)">Copiers</p>
+                            <p class="text-xl font-bold">8.2K</p>
+                        </div>
+                    </div>
+                    <button onclick="scrollToDashboard()" class="w-full py-3 rounded-xl font-semibold gradient-bg text-white hover:opacity-90 transition">
+                        Copy Trader
+                    </button>
+                </div>
+                <div class="card rounded-2xl p-6 gradient-border">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center gap-3">
+                            <img src="https://i.pravatar.cc/56?img=33" class="w-14 h-14 rounded-full">
+                            <div>
+                                <p class="font-bold text-lg">SwingMaster</p>
+                                <div class="flex items-center gap-1 text-xs">
+                                    <i class="fa-solid fa-star text-yellow-500"></i>
+                                    <span style="color: var(--text-secondary)">4.8 • Swing</span>
+                                </div>
+                            </div>
+                        </div>
+                        <span class="badge-risk-medium px-3 py-1 rounded-full text-xs font-semibold">Medium</span>
+                    </div>
+                    <div class="grid grid-cols-3 gap-4 mb-4 py-4 border-y" style="border-color: var(--border)">
+                        <div>
+                            <p class="text-xs mb-1" style="color: var(--text-secondary)">30D ROI</p>
+                            <p class="text-xl font-bold text-green-500">+87.3%</p>
+                        </div>
+                        <div>
+                            <p class="text-xs mb-1" style="color: var(--text-secondary)">Win Rate</p>
+                            <p class="text-xl font-bold">72.1%</p>
+                        </div>
+                        <div>
+                            <p class="text-xs mb-1" style="color: var(--text-secondary)">Copiers</p>
+                            <p class="text-xl font-bold">6.1K</p>
+                        </div>
+                    </div>
+                    <button onclick="scrollToDashboard()" class="w-full py-3 rounded-xl font-semibold gradient-bg text-white hover:opacity-90 transition">
+                        Copy Trader
+                    </button>
+                </div>
+                <div class="card rounded-2xl p-6 gradient-border">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center gap-3">
+                            <img src="https://i.pravatar.cc/56?img=47" class="w-14 h-14 rounded-full">
+                            <div>
+                                <p class="font-bold text-lg">CryptoNinja</p>
+                                <div class="flex items-center gap-1 text-xs">
+                                    <i class="fa-solid fa-star text-yellow-500"></i>
+                                    <span style="color: var(--text-secondary)">4.7 • Crypto</span>
+                                </div>
+                            </div>
+                        <span class="badge-risk-high px-3 py-1 rounded-full text-xs font-semibold">High Risk</span>
+                    </div>
+                    <div class="grid grid-cols-3 gap-4 mb-4 py-4 border-y" style="border-color: var(--border)">
+                        <div>
+                            <p class="text-xs mb-1" style="color: var(--text-secondary)">30D ROI</p>
+                            <p class="text-xl font-bold text-green-500">+124.5%</p>
+                        </div>
+                        <div>
+                            <p class="text-xs mb-1" style="color: var(--text-secondary)">Win Rate</p>
+                            <p class="text-xl font-bold">68.4%</p>
+                        </div>
+                        <div>
+                            <p class="text-xs mb-1" style="color: var(--text-secondary)">Copiers</p>
+                            <p class="text-xl font-bold">15.6K</p>
+                        </div>
+                    </div>
+                    <button onclick="scrollToDashboard()" class="w-full py-3 rounded-xl font-semibold gradient-bg text-white hover:opacity-90 transition">
+                        Copy Trader
+                    </button>
+                </div>
+            </div>
+            <div class="text-center">
+                <button onclick="scrollToDashboard()" class="px-8 py-4 rounded-xl font-bold text-lg card hover:bg-opacity-80 transition border-2" style="border-color: var(--border)">
+                    View All Traders <i class="fa-solid fa-arrow-right ml-2"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 lg:py-32 relative overflow-hidden">
+        <div class="absolute inset-0 gradient-bg opacity-10"></div>
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative">
+            <h2 class="text-4xl lg:text-5xl font-black mb-6">Ready to Start <span class="gradient-text">Copy Trading?</span></h2>
+            <p class="text-lg mb-8" style="color: var(--text-secondary)">
+                Join thousands of traders who are already profiting with CopyTrader Pro. Start with as little as $100.
+            </p>
+            <button onclick="scrollToDashboard()" class="px-10 py-5 rounded-xl font-bold text-xl gradient-bg text-white hover:opacity-90 transition glow">
+                <i class="fa-solid fa-rocket mr-2"></i>Launch Dashboard
+            </button>
+        </div>
+    </section>
+
+    <!-- Dashboard App -->
+    <div id="dashboard"></div>
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <!-- Portfolio Overview -->
+        <section class="mb-8 pt-8">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-3xl font-bold">My Portfolio</h2>
+                <div class="text-sm px-4 py-2 rounded-lg card" style="color: var(--text-secondary)">
+                    <i class="fa-solid fa-circle text-green-500 text-xs"></i> Live
+                </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <div class="card rounded-xl p-5">
+                    <div class="flex items-center justify-between mb-2">
+                        <p class="text-sm" style="color: var(--text-secondary)">Total Invested</p>
+                        <i class="fa-solid fa-wallet" style="color: var(--accent)"></i>
+                    </div>
+                    <p class="text-2xl font-bold" id="totalInvested">$8,250.00</p>
+                    <p class="text-xs mt-1" style="color: var(--text-secondary)">
+                        <i class="fa-solid fa-arrow-up text-green-500"></i> 4 traders copied
+                    </p>
+                </div>
+                
+                <div class="card rounded-xl p-5">
+                    <div class="flex items-center justify-between mb-2">
+                        <p class="text-sm" style="color: var(--text-secondary)">Total P/L</p>
+                        <i class="fa-solid fa-chart-line" style="color: var(--success)"></i>
+                    </div>
+                    <p class="text-2xl font-bold text-green-500" id="totalPL">+$1,247.50</p>
+                    <p class="text-xs mt-1" style="color: var(--text-secondary)">
+                        <span class="text-green-500">+15.12%</span> all time
+                    </p>
+                </div>
+                
+                <div class="card rounded-xl p-5">
+                    <div class="flex items-center justify-between mb-2">
+                        <p class="text-sm" style="color: var(--text-secondary)">Active Copies</p>
+                        <i class="fa-solid fa-users" style="color: var(--warning)"></i>
+                    </div>
+                    <p class="text-2xl font-bold" id="activeCopies">4</p>
+                    <p class="text-xs mt-1" style="color: var(--text-secondary)">Across 12 pairs</p>
+                </div>
+                
+                <div class="card rounded-xl p-5">
+                    <div class="flex items-center justify-between mb-2">
+                        <p class="text-sm" style="color: var(--text-secondary)">Profit Share Due</p>
+                        <i class="fa-solid fa-hand-holding-dollar" style="color: var(--danger)"></i>
+                    </div>
+                    <p class="text-2xl font-bold" id="profitShareDue">$124.75</p>
+                    <p class="text-xs mt-1" style="color: var(--text-secondary)">
+                        <button onclick="showToast('Profit share paid successfully', 'success')" class="text-blue-500 hover:underline">Pay Now</button>
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Portfolio Equity Chart -->
+            <div class="card rounded-xl p-5">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3">
+                    <h3 class="font-semibold">Portfolio Equity Growth</h3>
+                    <div class="flex gap-2">
+                        <button class="chartRangeBtn px-3 py-1 text-sm rounded-lg card" data-range="3M">3M</button>
+                        <button class="chartRangeBtn px-3 py-1 text-sm rounded-lg bg-blue-600 text-white" data-range="6M">6M</button>
+                        <button class="chartRangeBtn px-3 py-1 text-sm rounded-lg card" data-range="1Y">1Y</button>
+                    </div>
+                </div>
+                <div class="h-64">
+                    <canvas id="portfolioChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Top Traders Leaderboard -->
+        <section class="mb-8" id="traders">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3">
+                <h2 class="text-2xl font-bold">Top Traders Leaderboard</h2>
+                <div class="flex gap-2 mobile-stack">
+                    <select id="sortTraders" class="card px-3 py-2 rounded-lg text-sm">
+                        <option value="roi">Sort by ROI</option>
+                        <option value="followers">Sort by Followers</option>
+                        <option value="winrate">Sort by Win Rate</option>
+                        <option value="risk">Sort by Risk</option>
+                    </select>
+                    <input type="text" id="searchTrader" placeholder="Search trader..." class="card px-3 py-2 rounded-lg text-sm">
+                </div>
+            </div>
+            
+            <!-- Desktop Table -->
+            <div class="card rounded-xl overflow-hidden hidden md:block">
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead style="background: var(--bg-tertiary)">
+                            <tr class="text-left text-sm">
+                                <th class="px-5 py-3 font-semibold">Rank</th>
+                                <th class="px-5 py-3 font-semibold">Trader</th>
+                                <th class="px-5 py-3 font-semibold">30D ROI</th>
+                                <th class="px-5 py-3 font-semibold">Win Rate</th>
+                                <th class="px-5 py-3 font-semibold">Followers</th>
+                                <th class="px-5 py-3 font-semibold">AUM</th>
+                                <th class="px-5 py-3 font-semibold">Risk</th>
+                                <th class="px-5 py-3 font-semibold">Share %</th>
+                                <th class="px-5 py-3 font-semibold">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tradersTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Mobile Cards -->
+            <div id="tradersCards" class="grid grid-cols-1 gap-4 md:hidden"></div>
+        </section>
+
+        <!-- Active Copies & Performance Stats -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <!-- Active Copies Table -->
+            <div class="lg:col-span-2 card rounded-xl p-5">
+                <h3 class="font-semibold mb-4">Active Copies</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead style="color: var(--text-secondary)">
+                            <tr class="text-left border-b" style="border-color: var(--border)">
+                                <th class="pb-3 font-medium">Trader</th>
+                                <th class="pb-3 font-medium">Allocated</th>
+                                <th class="pb-3 font-medium">Current P/L</th>
+                                <th class="pb-3 font-medium">Accrued Share</th>
+                                <th class="pb-3 font-medium">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="activeCopiesBody"></tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Performance Stats -->
+            <div class="card rounded-xl p-5">
+                <h3 class="font-semibold mb-4">Portfolio Stats</h3>
+                <div class="space-y-4">
+                    <div>
+                        <div class="flex justify-between text-sm mb-1">
+                            <span style="color: var(--text-secondary)">Win Rate</span>
+                            <span class="font-semibold">68.4%</span>
+                        </div>
+                        <div class="progress-bar h-2 rounded-full">
+                            <div class="progress-fill bg-green-500 rounded-full" style="width: 68.4%"></div>
+                        </div>
+                    <div>
+                        <div class="flex justify-between text-sm mb-1">
+                            <span style="color: var(--text-secondary)">Avg R:R</span>
+                            <span class="font-semibold">1:2.3</span>
+                        </div>
+                        <div class="progress-bar h-2 rounded-full">
+                            <div class="progress-fill bg-blue-500 rounded-full" style="width: 65%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-sm mb-1">
+                            <span style="color: var(--text-secondary)">Profit Factor</span>
+                            <span class="font-semibold">2.14</span>
+                        </div>
+                        <div class="progress-bar h-2 rounded-full">
+                            <div class="progress-fill bg-purple-500 rounded-full" style="width: 71%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-sm mb-1">
+                            <span style="color: var(--text-secondary)">Sharpe Ratio</span>
+                            <span class="font-semibold">1.87</span>
+                        </div>
+                        <div class="progress-bar h-2 rounded-full">
+                            <div class="progress-fill bg-orange-500 rounded-full" style="width: 62%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-4 p-3 rounded-lg text-xs" style="background: var(--bg-tertiary)">
+                    <i class="fa-solid fa-info-circle mr-1"></i>
+                    Educational metrics based on copied trades performance
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t py-8" style="border-color: var(--border); background: var(--bg-secondary)">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center" style="color: var(--text-secondary)">
+            <p class="text-sm">© 2024 CopyTrader Pro. Educational demo platform. Not financial advice.</p>
+        </div>
+    </footer>
+
+    <!-- Trader Profile Modal -->
+    <div id="profileModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+        <div class="modal-backdrop absolute inset-0" onclick="closeModal('profileModal')"></div>
+        <div class="card rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto relative z-10">
+            <div class="sticky top-0 glass p-5 border-b flex justify-between items-center" style="border-color: var(--border)">
+                <h3 class="text-xl font-bold" id="modalTraderName">Trader Profile</h3>
+                <button onclick="closeModal('profileModal')" class="p-2 hover:bg-opacity-50 rounded-lg">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+            <div class="p-5">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <div class="md:col-span-1">
+                        <div class="text-center mb-4">
+                            <img id="modalAvatar" src="" class="w-24 h-24 rounded-full mx-auto mb-3">
+                            <h4 class="font-bold text-lg" id="modalUsername"></h4>
+                            <div id="modalRiskBadge" class="inline-block px-3 py-1 rounded-full text-sm font-medium mt-2"></div>
+                        </div>
+                        <div class="space-y-3 text-sm">
+                            <div class="flex justify-between">
+                                <span style="color: var(--text-secondary)">Total Trades</span>
+                                <span class="font-semibold" id="modalTotalTrades">1,247</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span style="color: var(--text-secondary)">Avg Profit/Trade</span>
+                                <span class="font-semibold text-green-500" id="modalAvgProfit">+$42.30</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span style="color: var(--text-secondary)">Max Drawdown</span>
+                                <span class="font-semibold text-red-500" id="modalMaxDD">-18.5%</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span style="color: var(--text-secondary)">Risk Score</span>
+                                <span class="font-semibold" id="modalRiskScore">6.2/10</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span style="color: var(--text-secondary)">Profit Share</span>
+                                <span class="font-semibold" id="modalProfitShare">15%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="md:col-span-2">
+                        <div class="flex gap-2 mb-3">
+                            <button class="traderChartRange px-3 py-1 text-sm rounded-lg bg-blue-600 text-white" data-range="3M">3M</button>
+                            <button class="traderChartRange px-3 py-1 text-sm rounded-lg card" data-range="6M">6M</button>
+                            <button class="traderChartRange px-3 py-1 text-sm rounded-lg card" data-range="1Y">1Y</button>
+                        </div>
+                        <div class="h-64">
+                            <canvas id="traderEquityChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <h4 class="font-semibold mb-3">Trading Pairs</h4>
+                    <div class="flex flex-wrap gap-2" id="modalPairs"></div>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-3">Recent Trades</h4>
+                    <div class="space-y-2" id="modalRecentTrades"></div>
+                </div>
+                
+                <div class="mt-6 flex gap-3">
+                    <button onclick="openCopyModal(currentTraderId)" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl transition">
+                        <i class="fa-solid fa-copy mr-2"></i>Copy This Trader
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Copy Settings Modal -->
+    <div id="copyModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+        <div class="modal-backdrop absolute inset-0" onclick="closeModal('copyModal')"></div>
+        <div class="card rounded-2xl max-w-md w-full relative z-10">
+            <div class="p-5 border-b" style="border-color: var(--border)">
+                <h3 class="text-xl font-bold">Copy Settings</h3>
+                <p class="text-sm mt-1" style="color: var(--text-secondary)" id="copyTraderName">Configure your copy parameters</p>
+            </div>
+            <div class="p-5 space-y-5">
+                <div>
+                    <label class="block text-sm font-medium mb-2">Allocation Amount ($)</label>
+                    <input type="number" id="allocAmount" value="1000" min="100" max="10000" step="100" 
+                           class="w-full card px-4 py-2 rounded-lg">
+                    <p class="text-xs mt-1" style="color: var(--text-secondary)">Available: $4,200.00</p>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-2">
+                        Max Drawdown Stop: <span id="ddValue" class="text-blue-500">20%</span>
+                    </label>
+                    <input type="range" id="maxDrawdown" min="5" max="50" value="20" 
+                           class="w-full h-2 rounded-lg appearance-none cursor-pointer" style="background: var(--bg-tertiary)">
+                    <p class="text-xs mt-1" style="color: var(--text-secondary)">Auto-stop copying if drawdown exceeds this limit</p>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-2">Profit Share Agreement</label>
+                    <div class="card px-4 py-3 rounded-lg">
+                        <div class="flex justify-between items-center">
+                            <span id="profitShareLabel">20% of profits</span>
+                            <i class="fa-solid fa-circle-info" style="color: var(--accent)"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex items-center justify-between card px-4 py-3 rounded-lg">
+                    <div>
+                        <p class="font-medium text-sm">Auto-Compound</p>
+                        <p class="text-xs" style="color: var(--text-secondary)">Reinvest profits automatically</p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="autoCompound" class="sr-only peer">
+                        <div class="w-11 h-6 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600" style="background: var(--bg-tertiary)"></div>
+                    </label>
+                </div>
+                
+                <button onclick="confirmCopy()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl transition">
+                    Start Copying
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="fixed top-20 right-4 z-50 space-y-2"></div>
+
+<script>
+const traders = [
+    {id: 1, rank: 1, avatar: 'https://i.pravatar.cc/80?img=12', username: 'AlphaQuant', roi: 42.8, winRate: 94.2, followers: 8247, aum: 2.4, risk: 'Low', riskScore: 2.1, profitShare: 10, totalTrades: 1847, avgProfit: 18.50, maxDD: 5.2, pairs: ['EURUSD', 'GBPUSD', 'USDJPY'], type: 'Scalper'},
+    {id: 2, rank: 2, avatar: 'https://i.pravatar.cc/80?img=33', username: 'SwingMaster', roi: 87.3, winRate: 72.1, followers: 6123, aum: 1.8, risk: 'Medium', riskScore: 5.8, profitShare: 15, totalTrades: 642, avgProfit: 124.30, maxDD: 18.5, pairs: ['BTCUSD', 'ETHUSD', 'XAUUSD'], type: 'Swing'},
+    {id: 3, rank: 3, avatar: 'https://i.pravatar.cc/80?img=47', username: 'CryptoNinja', roi: 124.5, winRate: 68.4, followers: 15639, aum: 4.2, risk: 'High', riskScore: 8.4, profitShare: 25, totalTrades: 2156, avgProfit: 87.20, maxDD: 42.3, pairs: ['BTCUSD', 'SOLUSDT', 'DOGEUSD'], type: 'Aggressive'},
+    {id: 4, rank: 4, avatar: 'https://i.pravatar.cc/80?img=68', username: 'ForexPro', roi: 31.2, winRate: 88.7, followers: 4211, aum: 1.1, risk: 'Low', riskScore: 3.2, profitShare: 12, totalTrades: 3421, avgProfit: 12.40, maxDD: 8.1, pairs: ['EURUSD', 'AUDUSD', 'NZDUSD'], type: 'Scalper'},
+    {id: 5, rank: 5, avatar: 'https://i.pravatar.cc/80?img=51', username: 'GoldRush', roi: 56.8, winRate: 76.3, followers: 3892, aum: 0.9, risk: 'Medium', riskScore: 6.1, profitShare: 18, totalTrades: 892, avgProfit: 94.50, maxDD: 22.4, pairs: ['XAUUSD', 'XAGUSD', 'USOIL'], type: 'Swing'},
+    {id: 6, rank: 6, avatar: 'https://i.pravatar.cc/80?img=60', username: 'AlgoMaster', roi: 68.9, winRate: 81.2, followers: 7234, aum: 3.1, risk: 'Medium', riskScore: 5.4, profitShare: 20, totalTrades: 4123, avgProfit: 34.20, maxDD: 15.8, pairs: ['BTCUSD', 'EURUSD', 'SPX500'], type: 'Algo'},
+    {id: 7, rank: 7, avatar: 'https://i.pravatar.cc/80?img=25', username: 'RiskReaper', roi: 156.2, winRate: 61.8, followers: 9821, aum: 2.7, risk: 'High', riskScore: 9.1, profitShare: 30, totalTrades: 1745, avgProfit: 156.30, maxDD: 58.7, pairs: ['BTCUSD', 'ETHUSD', 'BTCUSDT'], type: 'Aggressive'},
+    {id: 8, rank: 8, avatar: 'https://i.pravatar.cc/80?img=13', username: 'SteadyEdge', roi: 24.7, winRate: 91.3, followers: 3142, aum: 0.7, risk: 'Low', riskScore: 2.8, profitShare: 12, totalTrades: 5234, avgProfit: 8.90, maxDD: 6.3, pairs: ['EURUSD', 'GBPUSD', 'USDCHF'], type: 'Scalper'},
+    {id: 9, rank: 9, avatar: 'https://i.pravatar.cc/80?img=14', username: 'TrendHunter', roi: 73.4, winRate: 77.6, followers: 5621, aum: 1.5, risk: 'Medium', riskScore: 6.7, profitShare: 18, totalTrades: 1234, avgProfit: 82.40, maxDD: 24.1, pairs: ['USOIL', 'NAS100', 'XAUUSD'], type: 'Swing'},
+    {id: 10, rank: 10, avatar: 'https://i.pravatar.cc/80?img=45', username: 'VolatilityKing', roi: 98.1, winRate: 65.2, followers: 8472, aum: 2.1, risk: 'High', riskScore: 8.9, profitShare: 28, totalTrades: 1923, avgProfit: 112.80, maxDD: 47.2, pairs: ['BTCUSD', 'ETHUSD', 'SOLUSDT'], type: 'Aggressive'}
+];
+
+let activeCopies = [
+    {traderId: 1, allocated: 2000, currentPL: 342.50, accruedShare: 34.25},
+    {traderId: 3, allocated: 1500, currentPL: 612.30, accruedShare: 153.08},
+    {traderId: 5, allocated: 2500, currentPL: -87.20, accruedShare: 0},
+    {traderId: 7, allocated: 2250, currentPL: 380.90, accruedShare: 114.27}
+];
+
+let currentTraderId = null;
+let portfolioChart = null;
+let traderChart = null;
+let heroMiniChart = null;
+
+function scrollToDashboard() {
+    document.getElementById('dashboard').scrollIntoView({behavior: 'smooth'});
+}
+
+function generateEquityData(baseValue, volatility, periods) {
+    const data = [];
+    let value = baseValue;
+    const labels = [];
+    
+    for (let i = 0; i < periods; i++) {
+        const change = (Math.random() - 0.45) * volatility * value;
+        value += change;
+        data.push(parseFloat(value.toFixed(2)));
+        labels.push(`Day ${i + 1}`);
+    }
+    return { data, labels };
+}
+
+function initHeroChart() {
+    const ctx = document.getElementById('heroChart');
+    if (!ctx) return;
+    
+    const {data} = generateEquityData(10000, 0.008, 30);
+    
+    if (heroMiniChart) heroMiniChart.destroy();
+    
+    heroMiniChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: Array(30).fill(''),
+            datasets: [{
+                data: data,
+                borderColor: '#10b981',
+                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.4,
+                pointRadius: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false }, tooltip: { enabled: false } },
+            scales: {
+                x: { display: false },
+                y: { display: false }
+            }
+        }
+    });
+}
+
+function initPortfolioChart(range = '6M') {
+    const ctx = document.getElementById('portfolioChart');
+    const periods = range === '3M' ? 90 : range === '6M' ? 180 : 365;
+    const {data, labels} = generateEquityData(7000, 0.015, periods);
+    
+    if (portfolioChart) portfolioChart.destroy();
+    
+    portfolioChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Portfolio Value',
+                data: data,
+                borderColor: '#3b82f6',
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.4,
+                pointRadius: 0,
+                pointHoverRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false,
+                    backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                    titleColor: '#f1f5f9',
+                    bodyColor: '#f1f5f9',
+                    borderColor: '#334155',
+                    borderWidth: 1,
+                    callbacks: {
+                        label: (context) => '$' + context.parsed.y.toLocaleString()
+                    }
+                }
+            },
+            scales: {
+                x: { 
+                    display: false,
+                    grid: { display: false }
+                },
+                y: {
+                    grid: { color: 'rgba(148, 163, 184, 0.1)' },
+                    ticks: { 
+                        color: '#94a3b8',
+                        callback: value => '$' + value.toLocaleString()
+                    }
+                }
+            }
+        }
+    });
+}
+
+function renderTradersTable() {
+    const tbody = document.getElementById('tradersTableBody');
+    const cardsContainer = document.getElementById('tradersCards');
+    const sortValue = document.getElementById('sortTraders').value;
+    const searchValue = document.getElementById('searchTrader').value.toLowerCase();
+    
+    let sorted = [...traders].filter(t => t.username.toLowerCase().includes(searchValue));
+    
+    if (sortValue === 'roi') sorted.sort((a, b) => b.roi - a.roi);
+    else if (sortValue === 'followers') sorted.sort((a, b) => b.followers - a.followers);
+    else if (sortValue === 'winrate') sorted.sort((a, b) => b.winRate - a.winRate);
+    else if (sortValue === 'risk') sorted.sort((a, b) => a.riskScore - b.riskScore);
+    
+    tbody.innerHTML = sorted.map(trader => {
+        const isCopied = activeCopies.some(c => c.traderId === trader.id);
+        const riskClass = `badge-risk-${trader.risk.toLowerCase()}`;
+        return `
+            <tr class="table-row-hover border-b" style="border-color: var(--border)">
+                <td class="px-5 py-4 font-semibold">#${trader.rank}</td>
+                <td class="px-5 py-4">
+                    <div class="flex items-center gap-3 cursor-pointer" onclick="showTraderProfile(${trader.id})">
+                        <img src="${trader.avatar}" class="w-10 h-10 rounded-full">
+                        <div>
+                            <p class="font-semibold">${trader.username}</p>
+                            <p class="text-xs" style="color: var(--text-secondary)">${trader.type}</p>
+                        </div>
+                    </div>
+                </td>
+                <td class="px-5 py-4 font-semibold text-green-500">+${trader.roi}%</td>
+                <td class="px-5 py-4">${trader.winRate}%</td>
+                <td class="px-5 py-4">${trader.followers.toLocaleString()}</td>
+                <td class="px-5 py-4">$${trader.aum}M</td>
+                <td class="px-5 py-4">
+                    <span class="px-2 py-1 rounded-full text-xs font-medium ${riskClass}">${trader.risk}</span>
+                </td>
+                <td class="px-5 py-4">${trader.profitShare}%</td>
+                <td class="px-5 py-4">
+                    ${isCopied ? 
+                        '<button disabled class="px-4 py-2 rounded-lg text-sm font-medium opacity-50 cursor-not-allowed card">Copied</button>' :
+                        `<button onclick="openCopyModal(${trader.id})" class="px-4 py-2 rounded-lg text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white transition">Copy</button>`
+                    }
+                </td>
+            </tr>
+        `;
+    }).join('');
+    
+    cardsContainer.innerHTML = sorted.map(trader => {
+        const isCopied = activeCopies.some(c => c.traderId === trader.id);
+        const riskClass = `badge-risk-${trader.risk.toLowerCase()}`;
+        return `
+            <div class="card rounded-xl p-4">
+                <div class="flex items-start justify-between mb-3">
+                    <div class="flex items-center gap-3 cursor-pointer" onclick="showTraderProfile(${trader.id})">
+                        <img src="${trader.avatar}" class="w-12 h-12 rounded-full">
+                        <div>
+                            <p class="font-semibold">${trader.username}</p>
+                            <p class="text-xs" style="color: var(--text-secondary)">#${trader.rank} • ${trader.type}</p>
+                        </div>
+                    </div>
+                    <span class="px-2 py-1 rounded-full text-xs font-medium ${riskClass}">${trader.risk}</span>
+                </div>
+                <div class="grid grid-cols-2 gap-3 mb-3 text-sm">
+                    <div>
+                        <p style="color: var(--text-secondary)">30D ROI</p>
+                        <p class="font-bold text-green-500">+${trader.roi}%</p>
+                    </div>
+                    <div>
+                        <p style="color: var(--text-secondary)">Win Rate</p>
+                        <p class="font-bold">${trader.winRate}%</p>
+                    </div>
+                    <div>
+                        <p style="color: var(--text-secondary)">Followers</p>
+                        <p class="font-bold">${trader.followers.toLocaleString()}</p>
+                    </div>
+                    <div>
+                        <p style="color: var(--text-secondary)">AUM</p>
+                        <p class="font-bold">$${trader.aum}M</p>
+                    </div>
+                </div>
+                ${isCopied ? 
+                    '<button disabled class="w-full py-2 rounded-lg text-sm font-medium opacity-50 cursor-not-allowed card">Already Copying</button>' :
+                    `<button onclick="openCopyModal(${trader.id})" class="w-full py-2 rounded-lg text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white transition">Copy Trader</button>`
+                }
+            </div>
+        `;
+    }).join('');
+}
+
+function renderActiveCopies() {
+    const tbody = document.getElementById('activeCopiesBody');
+    tbody.innerHTML = activeCopies.map(copy => {
+        const trader = traders.find(t => t.id === copy.traderId);
+        const plColor = copy.currentPL >= 0 ? 'text-green-500' : 'text-red-500';
+        const plSign = copy.currentPL >= 0 ? '+' : '';
+        return `
+            <tr class="border-b" style="border-color: var(--border)">
+                <td class="py-3 pr-3">
+                    <div class="flex items-center gap-2">
+                        <img src="${trader.avatar}" class="w-8 h-8 rounded-full">
+                        <span class="font-medium">${trader.username}</span>
+                    </div>
+                </td>
+                <td class="py-3 pr-3">$${copy.allocated.toLocaleString()}</td>
+                <td class="py-3 pr-3 font-semibold ${plColor}">${plSign}$${Math.abs(copy.currentPL).toFixed(2)}</td>
+                <td class="py-3 pr-3">$${copy.accruedShare.toFixed(2)}</td>
+                <td class="py-3">
+                    <button onclick="stopCopy(${trader.id})" class="text-red-500 hover:text-red-600 text-sm font-medium">
+                        <i class="fa-solid fa-stop-circle mr-1"></i>Stop
+                    </button>
+                </td>
+            </tr>
+        `;
+    }).join('');
+    
+    document.getElementById('activeCopies').textContent = activeCopies.length;
+}
+
+function showTraderProfile(traderId) {
+    const trader = traders.find(t => t.id === traderId);
+    currentTraderId = traderId;
+    
+    document.getElementById('modalTraderName').textContent = trader.username;
+    document.getElementById('modalUsername').textContent = trader.username;
+    document.getElementById('modalAvatar').src = trader.avatar;
+    document.getElementById('modalTotalTrades').textContent = trader.totalTrades.toLocaleString();
+    document.getElementById('modalAvgProfit').textContent = `+$${trader.avgProfit.toFixed(2)}`;
+    document.getElementById('modalMaxDD').textContent = `-${trader.maxDD}%`;
+    document.getElementById('modalRiskScore').textContent = `${trader.riskScore}/10`;
+    document.getElementById('modalProfitShare').textContent = `${trader.profitShare}%`;
+    
+    const riskBadge = document.getElementById('modalRiskBadge');
+    riskBadge.textContent = `${trader.risk} Risk`;
+    riskBadge.className = `inline-block px-3 py-1 rounded-full text-sm font-medium badge-risk-${trader.risk.toLowerCase()}`;
+    
+    document.getElementById('modalPairs').innerHTML = trader.pairs.map(pair => 
+        `<span class="px-3 py-1 rounded-lg text-xs font-medium card">${pair}</span>`
+    ).join('');
+    
+    const recentTradesData = [
+        {pair: trader.pairs[0], type: 'BUY', profit: 124.50, date: '2h ago'},
+        {pair: trader.pairs[1] || trader.pairs[0], type: 'SELL', profit: -23.40, date: '5h ago'},
+        {pair: trader.pairs[0], type: 'BUY', profit: 287.30, date: '1d ago'},
+        {pair: trader.pairs[2] || trader.pairs[0], type: 'SELL', profit: 94.20, date: '1d ago'},
+    ];
+    
+    document.getElementById('modalRecentTrades').innerHTML = recentTradesData.map(trade => `
+        <div class="card px-3 py-2 rounded-lg flex items-center justify-between text-sm">
+            <div class="flex items-center gap-3">
+                <span class="font-semibold">${trade.pair}</span>
+                <span class="px-2 py-0.5 rounded text-xs ${trade.type === 'BUY' ? 'bg-green-500/20 text-green-500' : 'bg-red-500/20 text-red-500'}">${trade.type}</span>
+            </div>
+            <div class="text-right">
+                <p class="font-semibold ${trade.profit >= 0 ? 'text-green-500' : 'text-red-500'}">
+                    ${trade.profit >= 0 ? '+' : ''}$${Math.abs(trade.profit).toFixed(2)}
+                </p>
+                <p class="text-xs" style="color: var(--text-secondary)">${trade.date}</p>
+            </div>
+        </div>
+    `).join('');
+    
+    initTraderChart(trader);
+    
+    document.getElementById('profileModal').classList.remove('hidden');
+    document.getElementById('profileModal').classList.add('flex');
+}
+
+function initTraderChart(trader, range = '3M') {
+    const ctx = document.getElementById('traderEquityChart');
+    const periods = range === '3M' ? 90 : range === '6M' ? 180 : 365;
+    const volatility = trader.risk === 'Low' ? 0.008 : trader.risk === 'Medium' ? 0.018 : 0.032;
+    const {data, labels} = generateEquityData(10000, volatility, periods);
+    
+    if (traderChart) traderChart.destroy();
+    
+    traderChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Equity',
+                data: data,
+                borderColor: '#8b5cf6',
+                backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.4,
+                pointRadius: 0,
+                pointHoverRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                    titleColor: '#f1f5f9',
+                    bodyColor: '#f1f5f9',
+                    callbacks: {
+                        label: (context) => '$' + context.parsed.y.toLocaleString()
+                    }
+                }
+            },
+            scales: {
+                x: { display: false },
+                y: {
+                    grid: { color: 'rgba(148, 163, 184, 0.1)' },
+                    ticks: { 
+                        color: '#94a3b8',
+                        callback: value => '$' + value.toLocaleString()
+                    }
+                }
+            }
+        }
+    });
+}
+
+function openCopyModal(traderId) {
+    const trader = traders.find(t => t.id === traderId);
+    currentTraderId = traderId;
+    document.getElementById('copyTraderName').textContent = `Copy ${trader.username}`;
+    document.getElementById('profitShareLabel').textContent = `${trader.profitShare}% of profits`;
+    
+    document.getElementById('copyModal').classList.remove('hidden');
+    document.getElementById('copyModal').classList.add('flex');
+    closeModal('profileModal');
+}
+
+function confirmCopy() {
+    const trader = traders.find(t => t.id === currentTraderId);
+    const amount = parseInt(document.getElementById('allocAmount').value);
+    const maxDD = document.getElementById('maxDrawdown').value;
+    const autoComp = document.getElementById('autoCompound').checked;
+    
+    activeCopies.push({
+        traderId: currentTraderId,
+        allocated: amount,
+        currentPL: 0,
+        accruedShare: 0
+    });
+    
+    closeModal('copyModal');
+    renderTradersTable();
+    renderActiveCopies();
+    showToast(`Successfully started copying ${trader.username} with $${amount.toLocaleString()}`, 'success');
+}
+
+function stopCopy(traderId) {
+    const trader = traders.find(t => t.id === traderId);
+    activeCopies = activeCopies.filter(c => c.traderId !== traderId);
+    renderTradersTable();
+    renderActiveCopies();
+    showToast(`Stopped copying ${trader.username}`, 'warning');
+}
+
+function closeModal(modalId) {
+    document.getElementById(modalId).classList.add('hidden');
+    document.getElementById(modalId).classList.remove('flex');
+}
+
+function showToast(message, type = 'info') {
+    const container = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    const bgColor = type === 'success' ? 'bg-green-600' : type === 'warning' ? 'bg-orange-600' : 'bg-blue-600';
+    const icon = type === 'success' ? 'fa-check-circle' : type === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle';
+    
+    toast.className = `toast-enter ${bgColor} text-white px-4 py-3 rounded-xl shadow-lg flex items-center gap-3 max-w-sm`;
+    toast.innerHTML = `
+        <i class="fa-solid ${icon}"></i>
+        <p class="text-sm font-medium">${message}</p>
+    `;
+    
+    container.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.classList.remove('toast-enter');
+        toast.classList.add('toast-exit');
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
+function updatePortfolioStats() {
+    const totalInvested = activeCopies.reduce((sum, c) => sum + c.allocated, 0);
+    const totalPL = activeCopies.reduce((sum, c) => sum + c.currentPL, 0);
+    const profitShareDue = activeCopies.reduce((sum, c) => sum + c.accruedShare, 0);
+    
+    document.getElementById('totalInvested').textContent = `$${totalInvested.toLocaleString()}.00`;
+    document.getElementById('totalPL').textContent = `${totalPL >= 0 ? '+' : ''}$${Math.abs(totalPL).toFixed(2)}`;
+    document.getElementById('totalPL').className = `text-2xl font-bold ${totalPL >= 0 ? 'text-green-500' : 'text-red-500'}`;
+    document.getElementById('profitShareDue').textContent = `$${profitShareDue.toFixed(2)}`;
+}
+
+document.getElementById('themeToggle').addEventListener('click', () => {
+    document.documentElement.classList.toggle('light');
+    const icon = document.querySelector('#themeToggle i');
+    icon.classList.toggle('fa-moon');
+    icon.classList.toggle('fa-sun');
+});
+
+document.getElementById('sortTraders').addEventListener('change', renderTradersTable);
+document.getElementById('searchTrader').addEventListener('input', renderTradersTable);
+
+document.getElementById('maxDrawdown').addEventListener('input', (e) => {
+    document.getElementById('ddValue').textContent = e.target.value + '%';
+});
+
+document.querySelectorAll('.chartRangeBtn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.chartRangeBtn').forEach(b => {
+            b.classList.remove('bg-blue-600', 'text-white');
+            b.classList.add('card');
+        });
+        e.target.classList.add('bg-blue-600', 'text-white');
+        e.target.classList.remove('card');
+        initPortfolioChart(e.target.dataset.range);
+    });
+});
+
+document.querySelectorAll('.traderChartRange').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.traderChartRange').forEach(b => {
+            b.classList.remove('bg-blue-600', 'text-white');
+            b.classList.add('card');
+        });
+        e.target.classList.add('bg-blue-600', 'text-white');
+        e.target.classList.remove('card');
+        const trader = traders.find(t => t.id === currentTraderId);
+        initTraderChart(trader, e.target.dataset.range);
+    });
+});
+
+renderTradersTable();
+renderActiveCopies();
+initPortfolioChart();
+initHeroChart();
+updatePortfolioStats();
+
+setInterval(() => {
+    activeCopies.forEach(copy => {
+        const change = (Math.random() - 0.48) * copy.allocated * 0.01;
+        copy.currentPL += change;
+        if (copy.currentPL > 0) {
+            const trader = traders.find(t => t.id === copy.traderId);
+            copy.accruedShare = copy.currentPL * (trader.profitShare / 100);
+        }
+    });
+    renderActiveCopies();
+    updatePortfolioStats();
+}, 5000);
+</script>
+<script>(function(){document.addEventListener("click",function(e){var a=e.target.closest("[data-product-id]");if(!a)return;e.preventDefault();var pid=a.getAttribute("data-product-id");if(pid)parent.postMessage({type:"ecto-artifact-link-click",productId:pid},"*")})})();</script>
+</body>
+</html>

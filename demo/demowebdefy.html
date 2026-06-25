@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DeFi Staking Dashboard | YieldFarm Pro</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+    
+    :root {
+        --bg-primary: #0a0b14;
+        --bg-secondary: #111322;
+        --neon-purple: #8b5cf6;
+        --neon-cyan: #06b6d4;
+        --neon-pink: #ec4899;
+        --neon-green: #10b981;
+    }
+    
+    * {
+        font-family: 'Inter', sans-serif;
+    }
+    
+    h1, h2, h3, .font-display {
+        font-family: 'Space Grotesk', sans-serif;
+    }
+    
+    body {
+        background: var(--bg-primary);
+        background-image: 
+            radial-gradient(at 20% 30%, rgba(139, 92, 246, 0.15) 0px, transparent 50%),
+            radial-gradient(at 80% 70%, rgba(6, 182, 212, 0.15) 0px, transparent 50%),
+            radial-gradient(at 50% 50%, rgba(236, 72, 153, 0.1) 0px, transparent 50%);
+        min-height: 100vh;
+    }
+    
+    .glass {
+        background: rgba(17, 19, 34, 0.6);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    
+    .glass-hover:hover {
+        background: rgba(17, 19, 34, 0.8);
+        border: 1px solid rgba(139, 92, 246, 0.3);
+        transform: translateY(-2px);
+        transition: all 0.3s ease;
+    }
+    
+    .neon-gradient {
+        background: linear-gradient(135deg, var(--neon-purple), var(--neon-cyan));
+    }
+    
+    .neon-text {
+        background: linear-gradient(135deg, var(--neon-purple), var(--neon-cyan));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .neon-border {
+        position: relative;
+        border: 1px solid transparent;
+        background: linear-gradient(var(--bg-secondary), var(--bg-secondary)) padding-box,
+                    linear-gradient(135deg, var(--neon-purple), var(--neon-cyan)) border-box;
+    }
+    
+    .glow {
+        box-shadow: 0 0 20px rgba(139, 92, 246, 0.3), 0 0 40px rgba(139, 92, 246, 0.1);
+    }
+    
+    .glow-hover:hover {
+        box-shadow: 0 0 30px rgba(139, 92, 246, 0.5), 0 0 60px rgba(139, 92, 246, 0.2);
+    }
+    
+    @keyframes pulse-neon {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+    }
+    
+    .pulse-neon {
+        animation: pulse-neon 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    
+    @keyframes slide-up {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .animate-slide-up {
+        animation: slide-up 0.4s ease-out;
+    }
+    
+    .tooltip {
+        position: relative;
+    }
+    
+    .tooltip-content {
+        visibility: hidden;
+        opacity: 0;
+        position: absolute;
+        z-index: 100;
+        bottom: 125%;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(10, 11, 20, 0.98);
+        border: 1px solid rgba(139, 92, 246, 0.3);
+        border-radius: 0.5rem;
+        padding: 0.75rem;
+        width: 250px;
+        transition: opacity 0.3s;
+        font-size: 0.75rem;
+        line-height: 1.4;
+    }
+    
+    .tooltip:hover .tooltip-content {
+        visibility: visible;
+        opacity: 1;
+    }
+    
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 999;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(10px);
+    }
+    
+    .modal.active {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: fadeIn 0.3s;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    
+    .toast-container {
+        position: fixed;
+        top: 1rem;
+        right: 1rem;
+        z-index: 1000;
+    }
+    
+    .toast {
+        animation: slideInRight 0.3s, fadeOut 0.3s 2.7s;
+    }
+    
+    @keyframes slideInRight {
+        from {
+            transform: translateX(400px);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    
+    @keyframes fadeOut {
+        to {
+            opacity: 0;
+        }
+    }
+    
+    .loader {
+        border: 3px solid rgba(139, 92, 246, 0.2);
+        border-top: 3px solid var(--neon-purple);
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        background: linear-gradient(135deg, var(--neon-purple), var(--neon-cyan));
+        cursor: pointer;
+        border-radius: 50%;
+        box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+    }
+    
+    input[type="range"]::-moz-range-thumb {
+        width: 20px;
+        height: 20px;
+        background: linear-gradient(135deg, var(--neon-purple), var(--neon-cyan));
+        cursor: pointer;
+        border-radius: 50%;
+        border: none;
+        box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+    }
+    
+    .risk-badge {
+        animation: pulse-neon 2s infinite;
+    }
+</style>
+</head>
+<body class="text-gray-100">
+    <!-- Navbar -->
+    <nav class="glass sticky top-0 z-50 border-b border-gray-800/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 neon-gradient rounded-xl flex items-center justify-center glow">
+                        <i class="fa-solid fa-layer-group text-white text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold font-display neon-text">YieldFarm Pro</h1>
+                        <p class="text-[10px] text-gray-500 -mt-1">DeFi Staking Dashboard</p>
+                    </div>
+                </div>
+                
+                <div id="walletSection">
+                    <button id="connectWalletBtn" class="neon-border px-5 py-2.5 rounded-xl font-semibold text-sm glow-hover transition-all">
+                        <i class="fa-solid fa-wallet mr-2"></i>Connect Wallet
+                    </button>
+                </div>
+                
+                <div id="walletConnected" class="hidden items-center gap-3">
+                    <div class="glass px-4 py-2 rounded-xl text-sm">
+                        <div class="text-xs text-gray-400">Balance</div>
+                        <div class="font-bold neon-text" id="walletBalance">$12,450.00</div>
+                    </div>
+                    <div class="glass px-4 py-2 rounded-xl">
+                        <div class="flex items-center gap-2">
+                            <div class="w-2 h-2 bg-green-500 rounded-full pulse-neon"></div>
+                            <span class="text-sm font-mono" id="walletAddress">0x7a23...9f4c</span>
+                        </div>
+                    </div>
+                    <button id="disconnectBtn" class="glass-hover px-3 py-2 rounded-xl text-gray-400 hover:text-white">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        <!-- Portfolio Overview -->
+        <section class="mb-8">
+            <h2 class="text-2xl font-bold font-display mb-5 flex items-center gap-2">
+                <i class="fa-solid fa-chart-pie neon-text"></i>
+                Portfolio Overview
+            </h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="glass glass-hover rounded-2xl p-5 animate-slide-up">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-gray-400 text-sm">Total Staked Value</span>
+                        <i class="fa-solid fa-coins text-purple-500"></i>
+                    </div>
+                    <div class="text-3xl font-bold font-display" id="totalStaked">$8,425.32</div>
+                    <div class="text-xs text-green-500 mt-2">
+                        <i class="fa-solid fa-arrow-up"></i> +12.4% this month
+                    </div>
+                </div>
+                
+                <div class="glass glass-hover rounded-2xl p-5 animate-slide-up" style="animation-delay: 0.1s">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-gray-400 text-sm">Total Rewards Earned</span>
+                        <i class="fa-solid fa-gift text-cyan-500"></i>
+                    </div>
+                    <div class="text-3xl font-bold font-display" id="totalRewards">$342.18</div>
+                    <div class="text-xs text-gray-500 mt-2">Lifetime earnings</div>
+                </div>
+                
+                <div class="glass glass-hover rounded-2xl p-5 animate-slide-up" style="animation-delay: 0.2s">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-gray-400 text-sm flex items-center gap-1">
+                            Avg APR/APY
+                            <div class="tooltip">
+                                <i class="fa-regular fa-circle-question text-xs text-gray-500"></i>
+                                <div class="tooltip-content">
+                                    <strong>APR vs APY:</strong><br>
+                                    APR = Simple annual rate without compounding<br>
+                                    APY = Includes compound interest effect<br>
+                                    APY is always >= APR
+                                </div>
+                            </div>
+                        </span>
+                        <i class="fa-solid fa-percent text-pink-500"></i>
+                    </div>
+                    <div class="text-3xl font-bold font-display" id="avgAPY">48.75%</div>
+                    <div class="text-xs text-gray-500 mt-2">Weighted average</div>
+                </div>
+                
+                <div class="glass glass-hover rounded-2xl p-5 animate-slide-up" style="animation-delay: 0.3s">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-gray-400 text-sm">Active Pools</span>
+                        <i class="fa-solid fa-water text-green-500"></i>
+                    </div>
+                    <div class="text-3xl font-bold font-display" id="activePools">4</div>
+                    <div class="text-xs text-gray-500 mt-2">Across 4 networks</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Two Column Layout -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <!-- APY Calculator -->
+            <div class="lg:col-span-1">
+                <div class="glass rounded-2xl p-6 h-full">
+                    <h3 class="text-xl font-bold font-display mb-5 flex items-center gap-2">
+                        <i class="fa-solid fa-calculator neon-text"></i>
+                        APY Calculator
+                    </h3>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="text-sm text-gray-400 mb-2 block">Principal Amount ($)</label>
+                            <input type="number" id="calcPrincipal" value="1000" class="w-full glass px-4 py-3 rounded-xl border border-gray-800 focus:border-purple-500 outline-none transition-all">
+                        </div>
+                        
+                        <div>
+                            <label class="text-sm text-gray-400 mb-2 block">APY (%)</label>
+                            <input type="number" id="calcAPY" value="25" class="w-full glass px-4 py-3 rounded-xl border border-gray-800 focus:border-purple-500 outline-none transition-all">
+                        </div>
+                        
+                        <div>
+                            <label class="text-sm text-gray-400 mb-2 block">Time Period (days)</label>
+                            <input type="number" id="calcDays" value="365" class="w-full glass px-4 py-3 rounded-xl border border-gray-800 focus:border-purple-500 outline-none transition-all">
+                        </div>
+                        
+                        <div>
+                            <label class="text-sm text-gray-400 mb-2 block">Compounding</label>
+                            <select id="calcCompound" class="w-full glass px-4 py-3 rounded-xl border border-gray-800 focus:border-purple-500 outline-none transition-all">
+                                <option value="1">Yearly</option>
+                                <option value="12" selected>Monthly</option>
+                                <option value="52">Weekly</option>
+                                <option value="365">Daily</option>
+                            </select>
+                        </div>
+                        
+                        <div class="glass neon-border rounded-xl p-4 mt-6">
+                            <div class="text-xs text-gray-400 mb-1">Estimated Earnings</div>
+                            <div class="text-2xl font-bold neon-text mb-3" id="calcResult">$281.12</div>
+                            <div class="grid grid-cols-2 gap-2 text-xs">
+                                <div>
+                                    <div class="text-gray-500">Daily</div>
+                                    <div class="font-semibold" id="dailyProfit">$0.77</div>
+                                </div>
+                                <div>
+                                    <div class="text-gray-500">Monthly</div>
+                                    <div class="font-semibold" id="monthlyProfit">$23.43</div>
+                                </div>
+                                <div>
+                                    <div class="text-gray-500">Yearly</div>
+                                    <div class="font-semibold" id="yearlyProfit">$281.12</div>
+                                </div>
+                                <div>
+                                    <div class="text-gray-500">Total</div>
+                                    <div class="font-semibold" id="totalReturn">$1,281.12</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <canvas id="calcChart" class="mt-4" height="120"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profit Simulator -->
+            <div class="lg:col-span-2">
+                <div class="glass rounded-2xl p-6 h-full">
+                    <h3 class="text-xl font-bold font-display mb-5 flex items-center gap-2">
+                        <i class="fa-solid fa-chart-line neon-text"></i>
+                        Profit Simulator
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                            <label class="text-sm text-gray-400 mb-2 block flex justify-between">
+                                <span>Stake Amount</span>
+                                <span class="font-bold neon-text" id="simAmountDisplay">$5,000</span>
+                            </label>
+                            <input type="range" id="simAmount" min="100" max="50000" value="5000" step="100" class="w-full h-2 bg-gray-800 rounded-lg appearance-none cursor-pointer">
+                            <div class="flex justify-between text-xs text-gray-500 mt-1">
+                                <span>$100</span>
+                                <span>$50k</span>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="text-sm text-gray-400 mb-2 block flex justify-between">
+                                <span>Duration</span>
+                                <span class="font-bold neon-text" id="simDurationDisplay">180 days</span>
+                            </label>
+                            <input type="range" id="simDuration" min="7" max="730" value="180" step="1" class="w-full h-2 bg-gray-800 rounded-lg appearance-none cursor-pointer">
+                            <div class="flex justify-between text-xs text-gray-500 mt-1">
+                                <span>7d</span>
+                                <span>2y</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                        <div class="glass rounded-xl p-4 text-center">
+                            <div class="text-xs text-gray-400 mb-1">Initial Stake</div>
+                            <div class="text-xl font-bold" id="simInitial">$5,000</div>
+                        </div>
+                        <div class="glass rounded-xl p-4 text-center neon-border">
+                            <div class="text-xs text-gray-400 mb-1">Projected Profit</div>
+                            <div class="text-xl font-bold neon-text" id="simProfit">+$1,250.00</div>
+                        </div>
+                        <div class="glass rounded-xl p-4 text-center">
+                            <div class="text-xs text-gray-400 mb-1">Final Value</div>
+                            <div class="text-xl font-bold" id="simFinal">$6,250.00</div>
+                        </div>
+                    </div>
+                    
+                    <canvas id="simChart" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Staking Pools -->
+        <section class="mb-8">
+            <h2 class="text-2xl font-bold font-display mb-5 flex items-center gap-2">
+                <i class="fa-solid fa-water neon-text"></i>
+                Staking Pools
+            </h2>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-5" id="poolsContainer">
+                <!-- Pools will be injected by JS -->
+            </div>
+        </section>
+
+        <!-- Transaction History -->
+        <section>
+            <h2 class="text-2xl font-bold font-display mb-5 flex items-center gap-2">
+                <i class="fa-solid fa-clock-rotate-left neon-text"></i>
+                Transaction History
+            </h2>
+            <div class="glass rounded-2xl overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-900/50 border-b border-gray-800">
+                            <tr class="text-left text-xs text-gray-400 uppercase">
+                                <th class="px-4 sm:px-6 py-4">Type</th>
+                                <th class="px-4 sm:px-6 py-4">Pool</th>
+                                <th class="px-4 sm:px-6 py-4">Amount</th>
+                                <th class="px-4 sm:px-6 py-4 hidden sm:table-cell">Tx Hash</th>
+                                <th class="px-4 sm:px-6 py-4">Date</th>
+                                <th class="px-4 sm:px-6 py-4">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="txHistory" class="divide-y divide-gray-800/50">
+                            <!-- Transactions will be injected by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Stake Modal -->
+    <div id="stakeModal" class="modal">
+        <div class="glass rounded-3xl p-6 sm:p-8 max-w-lg w-full mx-4 animate-slide-up">
+            <div class="flex justify-between items-start mb-6">
+                <div>
+                    <h3 class="text-2xl font-bold font-display mb-1">Stake Tokens</h3>
+                    <p class="text-sm text-gray-400" id="modalPoolName">ETH-USDC Pool</p>
+                </div>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-white transition-colors">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-5">
+                <div>
+                    <label class="text-sm text-gray-400 mb-2 block flex justify-between">
+                        <span>Amount to Stake</span>
+                        <span class="text-xs">Balance: <span id="modalBalance" class="font-semibold">1,250.00</span></span>
+                    </label>
+                    <div class="relative">
+                        <input type="number" id="stakeAmount" placeholder="0.00" class="w-full glass px-4 py-4 rounded-xl border border-gray-800 focus:border-purple-500 outline-none transition-all text-lg">
+                        <div class="absolute right-4 top-1/2 -translate-y-1/2 flex gap-2">
+                            <button onclick="setMaxStake()" class="text-xs neon-text font-semibold">MAX</button>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-4 gap-2 mt-2">
+                        <button onclick="setStakePercent(25)" class="glass px-3 py-2 rounded-lg text-xs hover:bg-purple-500/20">25%</button>
+                        <button onclick="setStakePercent(50)" class="glass px-3 py-2 rounded-lg text-xs hover:bg-purple-500/20">50%</button>
+                        <button onclick="setStakePercent(75)" class="glass px-3 py-2 rounded-lg text-xs hover:bg-purple-500/20">75%</button>
+                        <button onclick="setStakePercent(100)" class="glass px-3 py-2 rounded-lg text-xs hover:bg-purple-500/20">100%</button>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="text-sm text-gray-400 mb-2 block flex items-center gap-1">
+                        Lock Period
+                        <div class="tooltip">
+                            <i class="fa-regular fa-circle-question text-xs text-gray-500"></i>
+                            <div class="tooltip-content">
+                                <strong>Lock Period Info:</strong><br>
+                                Longer lock periods earn bonus APY but tokens cannot be withdrawn until maturity. Early unlock incurs penalty fees.
+                            </div>
+                        </div>
+                    </label>
+                    <div class="grid grid-cols-3 gap-3">
+                        <button onclick="selectLockPeriod(30, 0)" class="lockPeriodBtn glass px-4 py-3 rounded-xl border-2 border-gray-800 hover:border-purple-500 transition-all text-center" data-days="30">
+                            <div class="font-bold">30 Days</div>
+                            <div class="text-xs text-gray-500">+0% Bonus</div>
+                        </button>
+                        <button onclick="selectLockPeriod(90, 5)" class="lockPeriodBtn glass px-4 py-3 rounded-xl border-2 border-purple-500 transition-all text-center" data-days="90">
+                            <div class="font-bold">90 Days</div>
+                            <div class="text-xs neon-text">+5% Bonus</div>
+                        </button>
+                        <button onclick="selectLockPeriod(180, 12)" class="lockPeriodBtn glass px-4 py-3 rounded-xl border-2 border-gray-800 hover:border-purple-500 transition-all text-center" data-days="180">
+                            <div class="font-bold">180 Days</div>
+                            <div class="text-xs neon-text">+12% Bonus</div>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="glass neon-border rounded-xl p-4 space-y-3">
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-400">Base APY</span>
+                        <span class="font-semibold" id="modalBaseAPY">12.00%</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-400">Lock Bonus</span>
+                        <span class="font-semibold neon-text" id="modalBonusAPY">+5.00%</span>
+                    </div>
+                    <div class="border-t border-gray-800 pt-3 flex justify-between">
+                        <span class="font-semibold">Total APY</span>
+                        <span class="font-bold text-xl neon-text" id="modalTotalAPY">17.00%</span>
+                    </div>
+                    <div class="border-t border-gray-800 pt-3 flex justify-between text-sm">
+                        <span class="text-gray-400">Est. Earnings (<span id="modalDays">90</span> days)</span>
+                        <span class="font-bold neon-text" id="modalEarnings">$0.00</span>
+                    </div>
+                </div>
+                
+                <div class="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4 flex gap-3">
+                    <i class="fa-solid fa-triangle-exclamation text-yellow-500 mt-0.5"></i>
+                    <div class="text-xs text-yellow-200">
+                        <div class="tooltip inline-block">
+                            <strong class="cursor-help">Impermanent Loss Warning</strong>
+                            <div class="tooltip-content">
+                                <strong>Impermanent Loss:</strong><br>
+                                When providing liquidity, price changes between paired assets can cause losses compared to HODLing. Higher volatility = higher risk. Always DYOR.
+                            </div>
+                        </div>
+                        <p class="mt-1">Staking in liquidity pools carries IL risk. Your final value may differ from initial deposit.</p>
+                    </div>
+                </div>
+                
+                <button onclick="confirmStake()" class="w-full neon-gradient py-4 rounded-xl font-bold text-white glow-hover transition-all">
+                    <i class="fa-solid fa-lock mr-2"></i>Confirm Stake
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        // State Management
+        let walletConnected = false;
+        let totalStaked = 8425.32;
+        let totalRewards = 342.18;
+        let selectedPool = null;
+        let selectedLockDays = 90;
+        let selectedLockBonus = 5;
+        
+        const pools = [
+            {
+                id: 1,
+                name: 'ETH-USDC',
+                tokens: ['ETH', 'USDC'],
+                apy: 12,
+                tvl: 12450000,
+                yourStake: 3250.00,
+                pendingRewards: 48.25,
+                balance: 1250.00,
+                risk: 'low',
+                icon1: 'fa-brands fa-ethereum',
+                icon2: 'fa-solid fa-dollar-sign',
+                color1: '#627EEA',
+                color2: '#2775CA',
+                prices: [1820, 1845, 1825, 1860, 1840, 1835, 1855]
+            },
+            {
+                id: 2,
+                name: 'BTC-USDT',
+                tokens: ['BTC', 'USDT'],
+                apy: 8,
+                tvl: 28900000,
+                yourStake: 2845.50,
+                pendingRewards: 28.45,
+                balance: 890.00,
+                risk: 'low',
+                icon1: 'fa-brands fa-bitcoin',
+                icon2: 'fa-solid fa-dollar-sign',
+                color1: '#F7931A',
+                color2: '#26A17B',
+                prices: [43200, 43100, 43400, 43250, 43600, 43500, 43800]
+            },
+            {
+                id: 3,
+                name: 'ARB-ETH',
+                tokens: ['ARB', 'ETH'],
+                apy: 25,
+                tvl: 5420000,
+                yourStake: 1578.32,
+                pendingRewards: 78.92,
+                balance: 2100.00,
+                risk: 'medium',
+                icon1: 'fa-solid fa-circle',
+                icon2: 'fa-brands fa-ethereum',
+                color1: '#28A0F0',
+                color2: '#627EEA',
+                prices: [0.95, 0.98, 1.02, 0.99, 1.05, 1.03, 1.08]
+            },
+            {
+                id: 4,
+                name: 'PEPE-USDC',
+                tokens: ['PEPE', 'USDC'],
+                apy: 150,
+                tvl: 890000,
+                yourStake: 751.50,
+                pendingRewards: 187.56,
+                balance: 3400.00,
+                risk: 'high',
+                icon1: 'fa-solid fa-frog',
+                icon2: 'fa-solid fa-dollar-sign',
+                color1: '#4CAF50',
+                color2: '#2775CA',
+                prices: [0.0000012, 0.0000015, 0.0000013, 0.0000018, 0.0000016, 0.0000021, 0.0000019]
+            }
+        ];
+        
+        let transactions = [
+            { type: 'Deposit', pool: 'ETH-USDC', amount: 1000, hash: '0x7a23...9f4c', date: '2024-03-15', status: 'Completed' },
+            { type: 'Claim', pool: 'BTC-USDT', amount: 28.45, hash: '0x3b12...8e2a', date: '2024-03-14', status: 'Completed' },
+            { type: 'Deposit', pool: 'ARB-ETH', amount: 500, hash: '0x9c45...2d1b', date: '2024-03-12', status: 'Completed' },
+            { type: 'Withdraw', pool: 'PEPE-USDC', amount: 250, hash: '0x5f78...4a3e', date: '2024-03-10', status: 'Completed' },
+        ];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            renderPools();
+            renderTransactions();
+            initCalcChart();
+            initSimChart();
+            updatePortfolioStats();
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            document.getElementById('connectWalletBtn').addEventListener('click', connectWallet);
+            document.getElementById('disconnectBtn').addEventListener('click', disconnectWallet);
+            
+            ['calcPrincipal', 'calcAPY', 'calcDays', 'calcCompound'].forEach(id => {
+                document.getElementById(id).addEventListener('input', calculateAPY);
+            });
+            
+            document.getElementById('simAmount').addEventListener('input', updateSimulator);
+            document.getElementById('simDuration').addEventListener('input', updateSimulator);
+            document.getElementById('stakeAmount').addEventListener('input', updateStakeEarnings);
+            
+            calculateAPY();
+            updateSimulator();
+        }
+
+        // Wallet Functions
+        function connectWallet() {
+            walletConnected = true;
+            document.getElementById('walletSection').style.display = 'none';
+            document.getElementById('walletConnected').classList.remove('hidden');
+            document.getElementById('walletConnected').classList.add('flex');
+            showToast('Wallet Connected', 'Successfully connected to 0x7a23...9f4c', 'success');
+        }
+
+        function disconnectWallet() {
+            walletConnected = false;
+            document.getElementById('walletSection').style.display = 'block';
+            document.getElementById('walletConnected').classList.add('hidden');
+            document.getElementById('walletConnected').classList.remove('flex');
+            showToast('Wallet Disconnected', 'You have been disconnected', 'info');
+        }
+
+        // Pool Rendering
+        function renderPools() {
+            const container = document.getElementById('poolsContainer');
+            container.innerHTML = pools.map((pool, index) => `
+                <div class="glass glass-hover rounded-2xl p-6 animate-slide-up" style="animation-delay: ${index * 0.1}s">
+                    <div class="flex justify-between items-start mb-5">
+                        <div class="flex items-center gap-3">
+                            <div class="flex -space-x-2">
+                                <div class="w-10 h-10 rounded-full flex items-center justify-center" style="background: ${pool.color1}">
+                                    <i class="${pool.icon1} text-white"></i>
+                                </div>
+                                <div class="w-10 h-10 rounded-full flex items-center justify-center border-2 border-gray-900" style="background: ${pool.color2}">
+                                    <i class="${pool.icon2} text-white"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <h3 class="font-bold font-display text-lg">${pool.name}</h3>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs px-2 py-0.5 rounded-full ${pool.risk === 'high' ? 'bg-red-500/20 text-red-400 risk-badge' : pool.risk === 'medium' ? 'bg-yellow-500/20 text-yellow-400' : 'bg-green-500/20 text-green-400'}">
+                                        ${pool.risk.toUpperCase()} RISK
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-2xl font-bold neon-text">${pool.apy}%</div>
+                            <div class="text-xs text-gray-500">APY</div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <canvas id="chart-${pool.id}" height="60"></canvas>
+                    </div>
+                    
+                    <div class="space-y-3 mb-5">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-400">TVL</span>
+                            <span class="font-semibold">$${(pool.tvl / 1000000).toFixed(2)}M</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-400">Your Stake</span>
+                            <span class="font-semibold">$${pool.yourStake.toFixed(2)}</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-400">Pending Rewards</span>
+                            <span class="font-semibold neon-text">$${pool.pendingRewards.toFixed(2)}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-3 gap-2">
+                        <button onclick="openStakeModal(${pool.id})" class="glass-hover px-3 py-2.5 rounded-xl text-sm font-semibold transition-all">
+                            <i class="fa-solid fa-plus text-xs mr-1"></i>Stake
+                        </button>
+                        <button onclick="unstake(${pool.id})" class="glass-hover px-3 py-2.5 rounded-xl text-sm font-semibold transition-all">
+                            <i class="fa-solid fa-minus text-xs mr-1"></i>Unstake
+                        </button>
+                        <button onclick="claimRewards(${pool.id})" class="neon-gradient px-3 py-2.5 rounded-xl text-sm font-semibold transition-all glow-hover" ${pool.pendingRewards === 0 ? 'disabled' : ''}>
+                            <i class="fa-solid fa-gift text-xs mr-1"></i>Claim
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Initialize mini charts
+            setTimeout(() => {
+                pools.forEach(pool => initPoolChart(pool));
+            }, 100);
+        }
+
+        function initPoolChart(pool) {
+            const ctx = document.getElementById(`chart-${pool.id}`);
+            if (!ctx) return;
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['', '', '', '', '', '', ''],
+                    datasets: [{
+                        data: pool.prices,
+                        borderColor: pool.color1,
+                        backgroundColor: `${pool.color1}20`,
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false }, tooltip: { enabled: false } },
+                    scales: {
+                        x: { display: false },
+                        y: { display: false }
+                    }
+                }
+            });
+        }
+
+        // Modal Functions
+        function openStakeModal(poolId) {
+            if (!walletConnected) {
+                showToast('Wallet Required', 'Please connect your wallet first', 'warning');
+                return;
+            }
+            
+            selectedPool = pools.find(p => p.id === poolId);
+            document.getElementById('modalPoolName').textContent = `${selectedPool.name} Pool`;
+            document.getElementById('modalBalance').textContent = selectedPool.balance.toFixed(2);
+            document.getElementById('modalBaseAPY').textContent = `${selectedPool.apy.toFixed(2)}%`;
+            document.getElementById('stakeAmount').value = '';
+            selectLockPeriod(90, 5);
+            document.getElementById('stakeModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('stakeModal').classList.remove('active');
+        }
+
+        function selectLockPeriod(days, bonus) {
+            selectedLockDays = days;
+            selectedLockBonus = bonus;
+            
+            document.querySelectorAll('.lockPeriodBtn').forEach(btn => {
+                if (parseInt(btn.dataset.days) === days) {
+                    btn.classList.add('border-purple-500');
+                    btn.classList.remove('border-gray-800');
+                } else {
+                    btn.classList.remove('border-purple-500');
+                    btn.classList.add('border-gray-800');
+                }
+            });
+            
+            updateStakeEarnings();
+        }
+
+        function setMaxStake() {
+            document.getElementById('stakeAmount').value = selectedPool.balance;
+            updateStakeEarnings();
+        }
+
+        function setStakePercent(percent) {
+            const amount = (selectedPool.balance * percent / 100).toFixed(2);
+            document.getElementById('stakeAmount').value = amount;
+            updateStakeEarnings();
+        }
+
+        function updateStakeEarnings() {
+            const amount = parseFloat(document.getElementById('stakeAmount').value) || 0;
+            const totalAPY = selectedPool.apy + selectedLockBonus;
+            const earnings = (amount * totalAPY / 100) * (selectedLockDays / 365);
+            
+            document.getElementById('modalBonusAPY').textContent = `+${selectedLockBonus.toFixed(2)}%`;
+            document.getElementById('modalTotalAPY').textContent = `${totalAPY.toFixed(2)}%`;
+            document.getElementById('modalDays').textContent = selectedLockDays;
+            document.getElementById('modalEarnings').textContent = `$${earnings.toFixed(2)}`;
+        }
+
+        function confirmStake() {
+            const amount = parseFloat(document.getElementById('stakeAmount').value);
+            
+            if (!amount || amount <= 0) {
+                showToast('Invalid Amount', 'Please enter a valid stake amount', 'error');
+                return;
+            }
+            
+            if (amount > selectedPool.balance) {
+                showToast('Insufficient Balance', 'You don\'t have enough tokens', 'error');
+                return;
+            }
+            
+            closeModal();
+            showToast('Transaction Submitted', 'Staking transaction processing...', 'info');
+            
+            setTimeout(() => {
+                selectedPool.yourStake += amount;
+                selectedPool.balance -= amount;
+                totalStaked += amount;
+                
+                addTransaction('Deposit', selectedPool.name, amount);
+                updatePortfolioStats();
+                renderPools();
+                
+                showToast('Stake Successful', `Successfully staked $${amount.toFixed(2)} in ${selectedPool.name}`, 'success');
+            }, 2000);
+        }
+
+        // Actions
+        function unstake(poolId) {
+            if (!walletConnected) {
+                showToast('Wallet Required', 'Please connect your wallet first', 'warning');
+                return;
+            }
+            
+            const pool = pools.find(p => p.id === poolId);
+            if (pool.yourStake <= 0) {
+                showToast('No Stake Found', 'You have no tokens staked in this pool', 'warning');
+                return;
+            }
+            
+            showToast('Processing Unstake', 'Unstaking your tokens...', 'info');
+            
+            setTimeout(() => {
+                const amount = pool.yourStake * 0.5; // Unstake 50%
+                pool.yourStake -= amount;
+                pool.balance += amount;
+                totalStaked -= amount;
+                
+                addTransaction('Withdraw', pool.name, amount);
+                updatePortfolioStats();
+                renderPools();
+                
+                showToast('Unstake Successful', `Unstaked $${amount.toFixed(2)} from ${pool.name}`, 'success');
+            }, 1500);
+        }
+
+        function claimRewards(poolId) {
+            if (!walletConnected) {
+                showToast('Wallet Required', 'Please connect your wallet first', 'warning');
+                return;
+            }
+            
+            const pool = pools.find(p => p.id === poolId);
+            if (pool.pendingRewards <= 0) {
+                showToast('No Rewards', 'No pending rewards to claim', 'warning');
+                return;
+            }
+            
+            showToast('Claiming Rewards', 'Processing reward claim...', 'info');
+            
+            setTimeout(() => {
+                const rewards = pool.pendingRewards;
+                totalRewards += rewards;
+                pool.pendingRewards = 0;
+                
+                addTransaction('Claim', pool.name, rewards);
+                updatePortfolioStats();
+                renderPools();
+                
+                showToast('Rewards Claimed', `Successfully claimed $${rewards.toFixed(2)}`, 'success');
+            }, 1500);
+        }
+
+        // Calculator
+        let calcChart;
+        function initCalcChart() {
+            const ctx = document.getElementById('calcChart');
+            calcChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Daily', 'Weekly', 'Monthly', 'Yearly'],
+                    datasets: [{
+                        label: 'Profit',
+                        data: [0, 0, 0, 0],
+                        backgroundColor: ['#8b5cf6', '#06b6d4', '#ec4899', '#10b981'],
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { 
+                            beginAtZero: true,
+                            ticks: { color: '#9ca3af', font: { size: 10 } },
+                            grid: { color: 'rgba(255,255,255,0.05)' }
+                        },
+                        x: { 
+                            ticks: { color: '#9ca3af', font: { size: 10 } },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+
+        function calculateAPY() {
+            const principal = parseFloat(document.getElementById('calcPrincipal').value) || 0;
+            const apy = parseFloat(document.getElementById('calcAPY').value) || 0;
+            const days = parseFloat(document.getElementById('calcDays').value) || 0;
+            const compound = parseFloat(document.getElementById('calcCompound').value) || 1;
+            
+            const rate = apy / 100;
+            const periodsPerYear = compound;
+            const years = days / 365;
+            
+            const futureValue = principal * Math.pow(1 + rate / periodsPerYear, periodsPerYear * years);
+            const earnings = futureValue - principal;
+            
+            const daily = earnings / days;
+            const weekly = daily * 7;
+            const monthly = daily * 30;
+            const yearly = earnings / years;
+            
+            document.getElementById('calcResult').textContent = `$${earnings.toFixed(2)}`;
+            document.getElementById('dailyProfit').textContent = `$${daily.toFixed(2)}`;
+            document.getElementById('monthlyProfit').textContent = `$${monthly.toFixed(2)}`;
+            document.getElementById('yearlyProfit').textContent = `$${yearly.toFixed(2)}`;
+            document.getElementById('totalReturn').textContent = `$${futureValue.toFixed(2)}`;
+            
+            if (calcChart) {
+                calcChart.data.datasets[0].data = [daily, weekly, monthly, yearly];
+                calcChart.update();
+            }
+        }
+
+        // Simulator
+        let simChart;
+        function initSimChart() {
+            const ctx = document.getElementById('simChart');
+            simChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Portfolio Value',
+                        data: [],
+                        borderColor: '#8b5cf6',
+                        backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 0,
+                        pointHoverRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { 
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(10, 11, 20, 0.9)',
+                            titleColor: '#fff',
+                            bodyColor: '#06b6d4',
+                            borderColor: '#8b5cf6',
+                            borderWidth: 1,
+                            padding: 12,
+                            displayColors: false
+                        }
+                    },
+                    scales: {
+                        y: { 
+                            ticks: { 
+                                color: '#9ca3af',
+                                callback: function(value) { return '$' + value.toLocaleString(); }
+                            },
+                            grid: { color: 'rgba(255,255,255,0.05)' }
+                        },
+                        x: { 
+                            ticks: { color: '#9ca3af' },
+                            grid: { color: 'rgba(255,255,255,0.05)' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateSimulator() {
+            const amount = parseFloat(document.getElementById('simAmount').value);
+            const duration = parseFloat(document.getElementById('simDuration').value);
+            const apy = 25; // Average APY for simulation
+            
+            document.getElementById('simAmountDisplay').textContent = `$${amount.toLocaleString()}`;
+            document.getElementById('simDurationDisplay').textContent = `${duration} days`;
+            
+            const rate = apy / 100;
+            const years = duration / 365;
+            const futureValue = amount * Math.pow(1 + rate / 12, 12 * years);
+            const profit = futureValue - amount;
+            
+            document.getElementById('simInitial').textContent = `$${amount.toLocaleString()}`;
+            document.getElementById('simProfit').textContent = `+$${profit.toFixed(2)}`;
+            document.getElementById('simFinal').textContent = `$${futureValue.toFixed(2)}`;
+            
+            // Generate chart data
+            const dataPoints = 12;
+            const labels = [];
+            const data = [];
+            
+            for (let i = 0; i <= dataPoints; i++) {
+                const monthFraction = (duration / 30) * (i / dataPoints);
+                const currentValue = amount * Math.pow(1 + rate / 12, monthFraction);
+                labels.push(`Month ${Math.round(monthFraction)}`);
+                data.push(currentValue);
+            }
+            
+            if (simChart) {
+                simChart.data.labels = labels;
+                simChart.data.datasets[0].data = data;
+                simChart.update();
+            }
+        }
+
+        // Transactions
+        function addTransaction(type, pool, amount) {
+            const tx = {
+                type,
+                pool,
+                amount,
+                hash: `0x${Math.random().toString(16).substr(2, 4)}...${Math.random().toString(16).substr(2, 4)}`,
+                date: new Date().toISOString().split('T')[0],
+                status: 'Completed'
+            };
+            transactions.unshift(tx);
+            renderTransactions();
+        }
+
+        function renderTransactions() {
+            const tbody = document.getElementById('txHistory');
+            tbody.innerHTML = transactions.map(tx => `
+                <tr class="hover:bg-gray-800/30 transition-colors">
+                    <td class="px-4 sm:px-6 py-4">
+                        <span class="inline-flex items-center gap-2 text-sm">
+                            <i class="fa-solid ${tx.type === 'Deposit' ? 'fa-arrow-down text-green-500' : tx.type === 'Withdraw' ? 'fa-arrow-up text-red-500' : 'fa-gift text-purple-500'} text-xs"></i>
+                            ${tx.type}
+                        </span>
+                    </td>
+                    <td class="px-4 sm:px-6 py-4 text-sm font-medium">${tx.pool}</td>
+                    <td class="px-4 sm:px-6 py-4 text-sm font-semibold neon-text">$${tx.amount.toFixed(2)}</td>
+                    <td class="px-4 sm:px-6 py-4 text-sm text-gray-400 font-mono hidden sm:table-cell">${tx.hash}</td>
+                    <td class="px-4 sm:px-6 py-4 text-sm text-gray-400">${tx.date}</td>
+                    <td class="px-4 sm:px-6 py-4">
+                        <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs bg-green-500/20 text-green-400">
+                            <i class="fa-solid fa-circle text-[6px]"></i>
+                            ${tx.status}
+                        </span>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Utilities
+        function updatePortfolioStats() {
+            const avgAPY = pools.reduce((sum, p) => sum + (p.apy * p.yourStake), 0) / totalStaked;
+            
+            document.getElementById('totalStaked').textContent = `$${totalStaked.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            document.getElementById('totalRewards').textContent = `$${totalRewards.toFixed(2)}`;
+            document.getElementById('avgAPY').textContent = `${avgAPY.toFixed(2)}%`;
+            document.getElementById('activePools').textContent = pools.filter(p => p.yourStake > 0).length;
+        }
+
+        function showToast(title, message, type = 'info') {
+            const colors = {
+                success: 'from-green-500 to-emerald-500',
+                error: 'from-red-500 to-rose-500',
+                warning: 'from-yellow-500 to-orange-500',
+                info: 'from-blue-500 to-cyan-500'
+            };
+            
+            const icons = {
+                success: 'fa-circle-check',
+                error: 'fa-circle-xmark',
+                warning: 'fa-triangle-exclamation',
+                info: 'fa-circle-info'
+            };
+            
+            const toast = document.createElement('div');
+            toast.className = `toast glass rounded-2xl p-4 mb-3 min-w-[320px] max-w-md animate-slide-up`;
+            toast.innerHTML = `
+                <div class="flex items-start gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br ${colors[type]} flex items-center justify-center flex-shrink-0">
+                        <i class="fa-solid ${icons[type]} text-white"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="font-bold text-sm mb-1">${title}</div>
+                        <div class="text-xs text-gray-400">${message}</div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('toastContainer').appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // Close modal on outside click
+        window.onclick = function(event) {
+            const modal = document.getElementById('stakeModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+    </script>
+<script>(function(){document.addEventListener("click",function(e){var a=e.target.closest("[data-product-id]");if(!a)return;e.preventDefault();var pid=a.getAttribute("data-product-id");if(pid)parent.postMessage({type:"ecto-artifact-link-click",productId:pid},"*")})})();</script>
+</body>
+</html>

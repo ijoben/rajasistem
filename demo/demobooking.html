@@ -1,0 +1,1501 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nusa Gentleman | Booking Barbershop Online</title>
+
+<!-- Google Fonts: Poppins -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- Chart.js for Laporan -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<!-- Lucide Icons -->
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+<style>
+    :root {
+        --color-black: #171717;
+        --color-gold: #ca8a04;
+        --color-gold-light: #eab308;
+        --color-white: #ffffff;
+        --color-gray: #404040;
+    }
+    * {
+        font-family: 'Poppins', sans-serif;
+    }
+    body {
+        background: var(--color-white);
+        color: var(--color-black);
+    }
+    .bg-gradient-gold {
+        background: linear-gradient(135deg, #ca8a04 0%, #eab308 100%);
+    }
+    .text-gold {
+        color: var(--color-gold);
+    }
+    .bg-gold {
+        background-color: var(--color-gold);
+    }
+    .border-gold {
+        border-color: var(--color-gold);
+    }
+    .btn-gold {
+        background: var(--color-gold);
+        color: white;
+        transition: all 0.3s ease;
+    }
+    .btn-gold:hover {
+        background: #b7791f;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(202, 138, 4, 0.3);
+    }
+    .btn-gold:disabled {
+        background: #d1d5db;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+    .card-hover {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .card-hover:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+    .step-active {
+        background: var(--color-gold);
+        color: white;
+    }
+    .step-inactive {
+        background: #e5e7eb;
+        color: #6b7280;
+    }
+    .slot-free {
+        background: #10b981;
+        color: white;
+    }
+    .slot-booked {
+        background: #ef4444;
+        color: white;
+        cursor: not-allowed;
+    }
+    .slot-selected {
+        background: var(--color-gold);
+        color: white;
+        outline: 3px solid #fde047;
+    }
+    .sidebar-link.active {
+        background: var(--color-gold);
+        color: white;
+    }
+    .modal-backdrop {
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(4px);
+    }
+    .toast-enter {
+        animation: slideIn 0.3s ease-out forwards;
+    }
+    @keyframes slideIn {
+        from { transform: translateY(100px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+    .animate-fade {
+        animation: fadeIn 0.4s ease-out;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    /* Hide scrollbar for mobile step */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    
+    @media print {
+        .no-print { display: none !important; }
+        body { background: white; }
+    }
+</style>
+</head>
+<body class="min-h-screen">
+
+<!-- ==================== CUSTOMER VIEW ==================== -->
+<div id="customerView" class="min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-[#171717] text-white shadow-lg sticky top-0 z-40 no-print">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-gradient-gold rounded-lg flex items-center justify-center">
+                    <i data-lucide="scissors" class="w-6 h-6 text-white"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl md:text-2xl font-bold">Nusa Gentleman</h1>
+                    <p class="text-xs text-gray-400">Premium Barbershop</p>
+                </div>
+            </div>
+            <button onclick="showAdminLogin()" class="text-xs md:text-sm text-gray-400 hover:text-gold transition">
+                Admin
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1">
+        <!-- STEP INDICATOR -->
+        <div id="stepIndicator" class="bg-gray-50 border-b no-print hidden">
+            <div class="max-w-4xl mx-auto px-4 py-4">
+                <div class="flex items-center justify-between text-xs md:text-sm">
+                    <div class="flex items-center gap-1 md:gap-2 step" data-step="1">
+                        <div class="w-7 h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center font-semibold step-active">1</div>
+                        <span class="hidden md:inline">Layanan</span>
+                    </div>
+                    <div class="flex-1 h-0.5 bg-gray-300 mx-1 md:mx-2"></div>
+                    <div class="flex items-center gap-1 md:gap-2 step" data-step="2">
+                        <div class="w-7 h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center font-semibold step-inactive">2</div>
+                        <span class="hidden md:inline">Barber</span>
+                    </div>
+                    <div class="flex-1 h-0.5 bg-gray-300 mx-1 md:mx-2"></div>
+                    <div class="flex items-center gap-1 md:gap-2 step" data-step="3">
+                        <div class="w-7 h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center font-semibold step-inactive">3</div>
+                        <span class="hidden md:inline">Jadwal</span>
+                    </div>
+                    <div class="flex-1 h-0.5 bg-gray-300 mx-1 md:mx-2"></div>
+                    <div class="flex items-center gap-1 md:gap-2 step" data-step="4">
+                        <div class="w-7 h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center font-semibold step-inactive">4</div>
+                        <span class="hidden md:inline">Data</span>
+                    </div>
+                    <div class="flex-1 h-0.5 bg-gray-300 mx-1 md:mx-2"></div>
+                    <div class="flex items-center gap-1 md:gap-2 step" data-step="5">
+                        <div class="w-7 h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center font-semibold step-inactive">5</div>
+                        <span class="hidden md:inline">Selesai</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 1: HERO / LANDING -->
+        <section id="sectionLanding" class="animate-fade">
+            <div class="bg-[#171717] text-white">
+                <div class="max-w-6xl mx-auto px-4 py-16 md:py-24">
+                    <div class="grid md:grid-cols-2 gap-10 items-center">
+                        <div class="text-center md:text-left">
+                            <h2 class="text-4xl md:text-6xl font-bold leading-tight mb-4">
+                                Booking Potong Rambut <span class="text-gold">Tanpa Antri</span>
+                            </h2>
+                            <p class="text-gray-300 text-lg mb-8">Hemat waktu, pilih barber favoritmu, dan bayar DP online. Tinggal datang sesuai jam booking.</p>
+                            <button onclick="startBooking()" class="btn-gold px-8 py-4 rounded-xl font-semibold text-lg shadow-lg">
+                                Booking Sekarang
+                                <i data-lucide="arrow-right" class="inline w-5 h-5 ml-2"></i>
+                            </button>
+                        </div>
+                        <div class="hidden md:block">
+                            <img src="https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=600&h=700&fit=crop" alt="Barbershop" class="rounded-2xl shadow-2xl object-cover w-full h-[500px]">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Keunggulan -->
+            <div class="max-w-6xl mx-auto px-4 py-16">
+                <h3 class="text-2xl md:text-3xl font-bold text-center mb-12">Kenapa Booking Online?</h3>
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 text-center card-hover">
+                        <div class="w-14 h-14 bg-gradient-gold rounded-xl flex items-center justify-center mx-auto mb-4">
+                            <i data-lucide="user-check" class="w-7 h-7 text-white"></i>
+                        </div>
+                        <h4 class="font-semibold text-lg mb-2">Pilih Barber</h4>
+                        <p class="text-gray-600 text-sm">Bebas pilih barber favorit yang sudah kamu percaya kualitasnya</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 text-center card-hover">
+                        <div class="w-14 h-14 bg-gradient-gold rounded-xl flex items-center justify-center mx-auto mb-4">
+                            <i data-lucide="credit-card" class="w-7 h-7 text-white"></i>
+                        </div>
+                        <h4 class="font-semibold text-lg mb-2">Bayar DP Online</h4>
+                        <p class="text-gray-600 text-sm">Amankan slot dengan DP 50%. Pelunasan saat di tempat</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 text-center card-hover">
+                        <div class="w-14 h-14 bg-gradient-gold rounded-xl flex items-center justify-center mx-auto mb-4">
+                            <i data-lucide="bell" class="w-7 h-7 text-white"></i>
+                        </div>
+                        <h4 class="font-semibold text-lg mb-2">Reminder H-1</h4>
+                        <p class="text-gray-600 text-sm">Kami kirim pengingat via WA biar kamu gak kelupaan jadwal</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: PILIH LAYANAN -->
+        <section id="sectionLayanan" class="hidden animate-fade">
+            <div class="max-w-4xl mx-auto px-4 py-8 md:py-12 pb-24 md:pb-12">
+                <h3 class="text-2xl md:text-3xl font-bold mb-2">Pilih Layanan</h3>
+                <p class="text-gray-600 mb-8">Pilih layanan yang kamu butuhkan hari ini</p>
+                <div id="layananList" class="grid md:grid-cols-2 gap-4"></div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: PILIH BARBER -->
+        <section id="sectionBarber" class="hidden animate-fade">
+            <div class="max-w-4xl mx-auto px-4 py-8 md:py-12 pb-24 md:pb-12">
+                <h3 class="text-2xl md:text-3xl font-bold mb-2">Pilih Barber</h3>
+                <p class="text-gray-600 mb-8">Pilih barber favoritmu untuk hasil terbaik</p>
+                <div id="barberList" class="grid md:grid-cols-2 gap-4"></div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: PILIH TANGGAL & JAM -->
+        <section id="sectionJadwal" class="hidden animate-fade">
+            <div class="max-w-4xl mx-auto px-4 py-8 md:py-12 pb-24 md:pb-12">
+                <h3 class="text-2xl md:text-3xl font-bold mb-2">Pilih Tanggal & Jam</h3>
+                <p class="text-gray-600 mb-8">Pilih waktu kedatangan yang pas buat kamu</p>
+                
+                <!-- Calendar -->
+                <div class="bg-white rounded-2xl shadow-lg p-4 md:p-6 mb-6 border">
+                    <div class="flex justify-between items-center mb-4">
+                        <button onclick="changeMonth(-1)" class="p-2 hover:bg-gray-100 rounded-lg">
+                            <i data-lucide="chevron-left" class="w-5 h-5"></i>
+                        </button>
+                        <h4 id="currentMonth" class="font-semibold text-lg"></h4>
+                        <button onclick="changeMonth(1)" class="p-2 hover:bg-gray-100 rounded-lg">
+                            <i data-lucide="chevron-right" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-7 gap-2 text-center text-xs mb-2 text-gray-500">
+                        <div>Min</div><div>Sen</div><div>Sel</div><div>Rab</div><div>Kam</div><div>Jum</div><div>Sab</div>
+                    </div>
+                    <div id="calendarGrid" class="grid grid-cols-7 gap-2"></div>
+                </div>
+
+                <!-- Time Slots -->
+                <div id="timeSlotContainer" class="bg-white rounded-2xl shadow-lg p-4 md:p-6 border hidden">
+                    <h5 class="font-semibold mb-4">Pilih Jam</h5>
+                    <div id="timeSlotGrid" class="grid grid-cols-3 md:grid-cols-4 gap-3"></div>
+                    <div class="flex gap-4 mt-6 text-xs">
+                        <div class="flex items-center gap-2"><div class="w-4 h-4 rounded slot-free"></div> Kosong</div>
+                        <div class="flex items-center gap-2"><div class="w-4 h-4 rounded slot-booked"></div> Terisi</div>
+                        <div class="flex items-center gap-2"><div class="w-4 h-4 rounded slot-selected"></div> Dipilih</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 5: DATA DIRI -->
+        <section id="sectionDataDiri" class="hidden animate-fade">
+            <div class="max-w-2xl mx-auto px-4 py-8 md:py-12 pb-24 md:pb-12">
+                <h3 class="text-2xl md:text-3xl font-bold mb-2">Data Diri</h3>
+                <p class="text-gray-600 mb-8">Isi data kamu untuk konfirmasi booking</p>
+
+                <div class="bg-white rounded-2xl shadow-lg p-6 border mb-6">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Nama Lengkap *</label>
+                            <input type="text" id="inputNama" class="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent outline-none" placeholder="Contoh: Budi Santoso">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">No WhatsApp *</label>
+                            <input type="tel" id="inputWA" class="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent outline-none" placeholder="08xxx">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Catatan (Opsional)</label>
+                            <textarea id="inputCatatan" rows="3" class="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent outline-none" placeholder="Contoh: Model fade, tipis samping"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ringkasan -->
+                <div class="bg-gray-50 rounded-2xl p-6 border">
+                    <h5 class="font-semibold mb-4">Ringkasan Booking</h5>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between"><span class="text-gray-600">Layanan</span><span id="summaryLayanan" class="font-medium"></span></div>
+                        <div class="flex justify-between"><span class="text-gray-600">Barber</span><span id="summaryBarber" class="font-medium"></span></div>
+                        <div class="flex justify-between"><span class="text-gray-600">Tanggal</span><span id="summaryTanggal" class="font-medium"></span></div>
+                        <div class="flex justify-between"><span class="text-gray-600">Jam</span><span id="summaryJam" class="font-medium"></span></div>
+                        <div class="border-t pt-2 mt-2">
+                            <div class="flex justify-between"><span class="text-gray-600">Total</span><span id="summaryTotal" class="font-semibold"></span></div>
+                            <div class="flex justify-between text-gold"><span>DP 50%</span><span id="summaryDP" class="font-bold"></span></div>
+                            <div class="flex justify-between text-xs text-gray-500"><span>Sisa Bayar</span><span id="summarySisa"></span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 6: KONFIRMASI -->
+        <section id="sectionKonfirmasi" class="hidden animate-fade">
+            <div class="max-w-2xl mx-auto px-4 py-12 text-center">
+                <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i data-lucide="check-circle" class="w-12 h-12 text-green-600"></i>
+                </div>
+                <h3 class="text-3xl font-bold mb-2">Booking Berhasil!</h3>
+                <p class="text-gray-600 mb-6">Kode booking kamu: <span id="kodeBooking" class="font-bold text-gold text-xl">#NS123</span></p>
+
+                <div class="bg-white rounded-2xl shadow-lg p-6 border text-left mb-6">
+                    <h5 class="font-semibold mb-4 text-center">Detail Booking</h5>
+                    <div class="space-y-3 text-sm">
+                        <div class="flex justify-between"><span class="text-gray-600">Nama</span><span id="confirmNama" class="font-medium"></span></div>
+                        <div class="flex justify-between"><span class="text-gray-600">Layanan</span><span id="confirmLayanan" class="font-medium"></span></div>
+                        <div class="flex justify-between"><span class="text-gray-600">Barber</span><span id="confirmBarber" class="font-medium"></span></div>
+                        <div class="flex justify-between"><span class="text-gray-600">Tanggal</span><span id="confirmTanggal" class="font-medium"></span></div>
+                        <div class="flex justify-between"><span class="text-gray-600">Jam</span><span id="confirmJam" class="font-medium"></span></div>
+                        <div class="border-t pt-3 mt-3">
+                            <div class="flex justify-between"><span class="text-gray-600">DP Dibayar</span><span id="confirmDP" class="font-bold text-gold"></span></div>
+                            <div class="flex justify-between text-xs text-gray-500"><span>Sisa</span><span id="confirmSisa"></span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col md:flex-row gap-3 justify-center">
+                    <button onclick="chatAdmin()" class="btn-gold px-6 py-3 rounded-xl font-semibold flex items-center justify-center gap-2">
+                        <i data-lucide="message-circle" class="w-5 h-5"></i>
+                        Chat Admin WA
+                    </button>
+                    <button onclick="downloadInvoice()" class="bg-gray-800 text-white px-6 py-3 rounded-xl font-semibold flex items-center justify-center gap-2 hover:bg-gray-900">
+                        <i data-lucide="download" class="w-5 h-5"></i>
+                        Download Invoice
+                    </button>
+                </div>
+
+                <button onclick="backToHome()" class="mt-6 text-gray-600 hover:text-gold text-sm">Kembali ke Beranda</button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Mobile Sticky Bottom Bar -->
+    <div id="mobileBar" class="fixed bottom-0 left-0 right-0 bg-white border-t shadow-2xl p-4 md:hidden no-print hidden">
+        <div class="flex gap-3">
+            <button onclick="prevStep()" id="btnPrev" class="flex-1 px-4 py-3 border border-gray-300 rounded-xl font-semibold text-gray-700">
+                Kembali
+            </button>
+            <button onclick="nextStep()" id="btnNext" class="flex-1 btn-gold px-4 py-3 rounded-xl font-semibold">
+                Lanjut
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-[#171717] text-gray-400 text-center py-6 text-xs no-print">
+        <p>&copy; 2024 Nusa Gentleman. All rights reserved.</p>
+        <p class="mt-2 text-gray-600">Demo Frontend Portfolio - Data Fiktif</p>
+    </footer>
+</div>
+
+<!-- ==================== ADMIN VIEW ==================== -->
+<div id="adminView" class="hidden min-h-screen bg-gray-50">
+
+    <!-- Admin Login Modal -->
+    <div id="loginModal" class="fixed inset-0 modal-backdrop z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8">
+            <h3 class="text-2xl font-bold mb-2 text-center">Login Admin</h3>
+            <p class="text-gray-600 text-sm text-center mb-6">Masuk ke dashboard Nusa Gentleman</p>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-2">Username</label>
+                    <input type="text" id="adminUser" value="admin" class="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-gold outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">Password</label>
+                    <input type="password" id="adminPass" value="admin123" class="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-gold outline-none">
+                </div>
+                <button onclick="loginAdmin()" class="w-full btn-gold py-3 rounded-xl font-semibold">Masuk</button>
+                <button onclick="closeLogin()" class="w-full text-gray-600 text-sm">Batal</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div id="dashboard" class="flex min-h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-[#171717] text-white flex-shrink-0 hidden md:block">
+            <div class="p-6">
+                <div class="flex items-center gap-3 mb-8">
+                    <div class="w-10 h-10 bg-gradient-gold rounded-lg flex items-center justify-center">
+                        <i data-lucide="scissors" class="w-6 h-6 text-white"></i>
+                    </div>
+                    <div>
+                        <h2 class="font-bold">Nusa Gentleman</h2>
+                        <p class="text-xs text-gray-400">Admin Panel</p>
+                    </div>
+                </div>
+
+                <nav class="space-y-2">
+                    <a href="#" onclick="showAdminPage('kalender')" class="sidebar-link active flex items-center gap-3 px-4 py-3 rounded-xl transition" data-page="kalender">
+                        <i data-lucide="calendar" class="w-5 h-5"></i>
+                        <span>Kalender</span>
+                    </a>
+                    <a href="#" onclick="showAdminPage('booking')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-800 transition" data-page="booking">
+                        <i data-lucide="list" class="w-5 h-5"></i>
+                        <span>Data Booking</span>
+                    </a>
+                    <a href="#" onclick="showAdminPage('layanan')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-800 transition" data-page="layanan">
+                        <i data-lucide="package" class="w-5 h-5"></i>
+                        <span>Kelola Layanan</span>
+                    </a>
+                    <a href="#" onclick="showAdminPage('barber')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-800 transition" data-page="barber">
+                        <i data-lucide="users" class="w-5 h-5"></i>
+                        <span>Kelola Barber</span>
+                    </a>
+                    <a href="#" onclick="showAdminPage('laporan')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-800 transition" data-page="laporan">
+                        <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
+                        <span>Laporan</span>
+                    </a>
+                </nav>
+            </div>
+            <div class="absolute bottom-0 w-64 p-6">
+                <button onclick="logoutAdmin()" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-800 transition text-gray-400">
+                    <i data-lucide="log-out" class="w-5 h-5"></i>
+                    <span>Keluar</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Mobile Header Admin -->
+        <div class="md:hidden fixed top-0 left-0 right-0 bg-[#171717] text-white z-30 px-4 py-4 flex justify-between items-center">
+            <h2 class="font-bold">Admin Panel</h2>
+            <button onclick="toggleMobileMenu()"><i data-lucide="menu" class="w-6 h-6"></i></button>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="md:hidden fixed inset-0 bg-[#171717] text-white z-40 transform -translate-x-full transition-transform">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="font-bold text-lg">Menu</h2>
+                    <button onclick="toggleMobileMenu()"><i data-lucide="x" class="w-6 h-6"></i></button>
+                </div>
+                <nav class="space-y-2">
+                    <a href="#" onclick="showAdminPage('kalender'); toggleMobileMenu()" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-800">
+                        <i data-lucide="calendar" class="w-5 h-5"></i>Kalender
+                    </a>
+                    <a href="#" onclick="showAdminPage('booking'); toggleMobileMenu()" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-800">
+                        <i data-lucide="list" class="w-5 h-5"></i>Data Booking
+                    </a>
+                    <a href="#" onclick="showAdminPage('layanan'); toggleMobileMenu()" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-800">
+                        <i data-lucide="package" class="w-5 h-5"></i>Kelola Layanan
+                    </a>
+                    <a href="#" onclick="showAdminPage('barber'); toggleMobileMenu()" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-800">
+                        <i data-lucide="users" class="w-5 h-5"></i>Kelola Barber
+                    </a>
+                    <a href="#" onclick="showAdminPage('laporan'); toggleMobileMenu()" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-800">
+                        <i data-lucide="bar-chart-3" class="w-5 h-5"></i>Laporan
+                    </a>
+                    <a href="#" onclick="logoutAdmin()" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-800 text-gray-400">
+                        <i data-lucide="log-out" class="w-5 h-5"></i>Keluar
+                    </a>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-4 md:p-8 mt-16 md:mt-0 overflow-y-auto">
+            <!-- Page: Kalender -->
+            <div id="adminPageKalender" class="admin-page">
+                <h3 class="text-2xl font-bold mb-6">Kalender Booking</h3>
+                <div class="bg-white rounded-2xl shadow-lg p-4 md:p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h4 class="font-semibold">Minggu Ini</h4>
+                        <div class="flex gap-2">
+                            <button onclick="changeWeek(-1)" class="p-2 hover:bg-gray-100 rounded-lg"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
+                            <button onclick="changeWeek(1)" class="p-2 hover:bg-gray-100 rounded-lg"><i data-lucide="chevron-right" class="w-5 h-5"></i></button>
+                        </div>
+                    </div>
+                    <div id="weekView" class="overflow-x-auto no-scrollbar">
+                        <div class="min-w-[700px]">
+                            <div class="grid grid-cols-7 gap-2 mb-2 text-center text-sm font-semibold" id="weekHeader"></div>
+                            <div class="space-y-2" id="weekSlots"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page: Data Booking -->
+            <div id="adminPageBooking" class="admin-page hidden">
+                <h3 class="text-2xl font-bold mb-6">Data Booking</h3>
+                <div class="bg-white rounded-2xl shadow-lg p-4 md:p-6">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead class="bg-gray-50 text-left">
+                                <tr>
+                                    <th class="p-3 font-semibold">Kode</th>
+                                    <th class="p-3 font-semibold">Nama</th>
+                                    <th class="p-3 font-semibold">Layanan</th>
+                                    <th class="p-3 font-semibold">Barber</th>
+                                    <th class="p-3 font-semibold">Jam</th>
+                                    <th class="p-3 font-semibold">Status</th>
+                                    <th class="p-3 font-semibold">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bookingTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page: Kelola Layanan -->
+            <div id="adminPageLayanan" class="admin-page hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold">Kelola Layanan</h3>
+                    <button onclick="showLayananModal()" class="btn-gold px-4 py-2 rounded-xl font-semibold flex items-center gap-2">
+                        <i data-lucide="plus" class="w-4 h-4"></i>Tambah
+                    </button>
+                </div>
+                <div class="bg-white rounded-2xl shadow-lg p-4 md:p-6">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead class="bg-gray-50 text-left">
+                                <tr>
+                                    <th class="p-3 font-semibold">Nama Layanan</th>
+                                    <th class="p-3 font-semibold">Harga</th>
+                                    <th class="p-3 font-semibold">Durasi</th>
+                                    <th class="p-3 font-semibold">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="layananTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page: Kelola Barber -->
+            <div id="adminPageBarber" class="admin-page hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold">Kelola Barber</h3>
+                    <button onclick="showBarberModal()" class="btn-gold px-4 py-2 rounded-xl font-semibold flex items-center gap-2">
+                        <i data-lucide="plus" class="w-4 h-4"></i>Tambah
+                    </button>
+                </div>
+                <div class="bg-white rounded-2xl shadow-lg p-4 md:p-6">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead class="bg-gray-50 text-left">
+                                <tr>
+                                    <th class="p-3 font-semibold">Nama</th>
+                                    <th class="p-3 font-semibold">Rating</th>
+                                    <th class="p-3 font-semibold">Jam Kerja</th>
+                                    <th class="p-3 font-semibold">Status</th>
+                                    <th class="p-3 font-semibold">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="barberTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page: Laporan -->
+            <div id="adminPageLaporan" class="admin-page hidden">
+                <h3 class="text-2xl font-bold mb-6">Laporan</h3>
+                <div class="grid md:grid-cols-2 gap-6 mb-6">
+                    <div class="bg-white rounded-2xl shadow-lg p-6">
+                        <h4 class="font-semibold mb-4">Omzet 7 Hari Terakhir</h4>
+                        <canvas id="chartOmzet"></canvas>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-lg p-6">
+                        <h4 class="font-semibold mb-4">Layanan Terlaris</h4>
+                        <canvas id="chartLayanan"></canvas>
+                    </div>
+                </div>
+                <button onclick="exportExcel()" class="btn-gold px-6 py-3 rounded-xl font-semibold flex items-center gap-2">
+                    <i data-lucide="file-spreadsheet" class="w-5 h-5"></i>
+                    Export Excel
+                </button>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- Modal Detail Booking -->
+<div id="detailModal" class="fixed inset-0 modal-backdrop z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-bold">Detail Booking</h3>
+            <button onclick="closeDetailModal()"><i data-lucide="x" class="w-6 h-6"></i></button>
+        </div>
+        <div id="detailContent" class="space-y-3 text-sm mb-6"></div>
+        <div class="flex gap-2">
+            <button onclick="updateBookingStatus('Selesai')" class="flex-1 bg-green-600 text-white py-2 rounded-lg font-semibold">Selesai</button>
+            <button onclick="updateBookingStatus('No Show')" class="flex-1 bg-red-600 text-white py-2 rounded-lg font-semibold">No Show</button>
+            <button onclick="rescheduleBooking()" class="flex-1 bg-gray-600 text-white py-2 rounded-lg font-semibold">Reschedule</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal CRUD Layanan -->
+<div id="layananModal" class="fixed inset-0 modal-backdrop z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
+        <h3 id="layananModalTitle" class="text-xl font-bold mb-4">Tambah Layanan</h3>
+        <div class="space-y-4">
+            <input type="hidden" id="layananId">
+            <div>
+                <label class="block text-sm font-medium mb-2">Nama Layanan</label>
+                <input type="text" id="layananNama" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold outline-none">
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-2">Harga</label>
+                <input type="number" id="layananHarga" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold outline-none">
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-2">Durasi (menit)</label>
+                <input type="number" id="layananDurasi" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold outline-none">
+            </div>
+            <div class="flex gap-2">
+                <button onclick="saveLayanan()" class="flex-1 btn-gold py-2 rounded-lg font-semibold">Simpan</button>
+                <button onclick="closeLayananModal()" class="flex-1 border py-2 rounded-lg font-semibold">Batal</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal CRUD Barber -->
+<div id="barberModal" class="fixed inset-0 modal-backdrop z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
+        <h3 id="barberModalTitle" class="text-xl font-bold mb-4">Tambah Barber</h3>
+        <div class="space-y-4">
+            <input type="hidden" id="barberId">
+            <div>
+                <label class="block text-sm font-medium mb-2">Nama Barber</label>
+                <input type="text" id="barberNama" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold outline-none">
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-2">Rating</label>
+                <input type="number" step="0.1" max="5" id="barberRating" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold outline-none">
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-2">Jam Kerja</label>
+                <input type="text" id="barberJamKerja" placeholder="09:00-20:00" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold outline-none">
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-2">Foto URL</label>
+                <input type="text" id="barberFoto" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold outline-none">
+            </div>
+            <div class="flex gap-2">
+                <button onclick="saveBarber()" class="flex-1 btn-gold py-2 rounded-lg font-semibold">Simpan</button>
+                <button onclick="closeBarberModal()" class="flex-1 border py-2 rounded-lg font-semibold">Batal</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="fixed bottom-20 md:bottom-6 right-6 bg-gray-900 text-white px-6 py-4 rounded-xl shadow-2xl hidden z-50 toast-enter no-print">
+    <div class="flex items-center gap-3">
+        <i data-lucide="check-circle" class="w-5 h-5 text-green-400"></i>
+        <span id="toastMessage"></span>
+    </div>
+</div>
+
+<script>
+/* ==================== STATE MANAGEMENT ==================== */
+let state = {
+    currentStep: 0,
+    booking: [],
+    layanan: [
+        { id: 1, nama: 'Haircut', harga: 75000, durasi: 30, icon: 'scissors' },
+        { id: 2, nama: 'Haircut + Wash', harga: 100000, durasi: 45, icon: 'droplets' },
+        { id: 3, nama: 'Coloring', harga: 250000, durasi: 90, icon: 'palette' },
+        { id: 4, nama: 'Keramas', harga: 25000, durasi: 15, icon: 'bath' }
+    ],
+    barber: [
+        { id: 1, nama: 'Rian', rating: 4.9, foto: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop', jamKerja: '09:00-20:00', libur: false },
+        { id: 2, nama: 'Dika', rating: 4.8, foto: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop', jamKerja: '09:00-20:00', libur: false },
+        { id: 3, nama: 'Andre', rating: 4.7, foto: 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=200&h=200&fit=crop', jamKerja: '10:00-21:00', libur: false },
+        { id: 4, nama: 'Bayu', rating: 4.9, foto: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=200&h=200&fit=crop', jamKerja: '09:00-19:00', libur: false }
+    ],
+    currentBooking: {
+        layananId: null,
+        barberId: null,
+        tanggal: null,
+        jam: null,
+        nama: '',
+        wa: '',
+        catatan: ''
+    },
+    calendarDate: new Date(),
+    weekDate: new Date(),
+    selectedDetailBooking: null
+};
+
+// Load from LocalStorage
+function loadState() {
+    const saved = localStorage.getItem('nusaGentlemanData');
+    if (saved) {
+        const parsed = JSON.parse(saved);
+        state.booking = parsed.booking || [];
+        state.layanan = parsed.layanan || state.layanan;
+        state.barber = parsed.barber || state.barber;
+    }
+}
+
+// Save to LocalStorage
+function saveState() {
+    localStorage.setItem('nusaGentlemanData', JSON.stringify({
+        booking: state.booking,
+        layanan: state.layanan,
+        barber: state.barber
+    }));
+}
+
+/* ==================== HELPER FUNCTIONS ==================== */
+function formatRupiah(num) {
+    return 'Rp ' + num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
+
+function showToast(msg) {
+    const toast = document.getElementById('toast');
+    document.getElementById('toastMessage').textContent = msg;
+    toast.classList.remove('hidden');
+    setTimeout(() => toast.classList.add('hidden'), 3000);
+}
+
+function generateKodeBooking() {
+    return '#NS' + Math.floor(100 + Math.random() * 900);
+}
+
+/* ==================== CUSTOMER FLOW ==================== */
+function startBooking() {
+    state.currentStep = 1;
+    showStep(1);
+    renderLayanan();
+}
+
+function showStep(step) {
+    document.querySelectorAll('[id^="section"]').forEach(s => s.classList.add('hidden'));
+    document.getElementById('stepIndicator').classList.remove('hidden');
+    document.getElementById('mobileBar').classList.remove('hidden');
+    
+    const steps = ['Landing', 'Layanan', 'Barber', 'Jadwal', 'DataDiri', 'Konfirmasi'];
+    document.getElementById(`section${steps[step]}`).classList.remove('hidden');
+    
+    // Update step indicator
+    document.querySelectorAll('.step').forEach((el, i) => {
+        const num = el.querySelector('div');
+        if (i + 1 <= step) {
+            num.classList.remove('step-inactive');
+            num.classList.add('step-active');
+        } else {
+            num.classList.remove('step-active');
+            num.classList.add('step-inactive');
+        }
+    });
+
+    // Update mobile buttons
+    document.getElementById('btnPrev').style.display = step === 1 ? 'none' : 'block';
+    document.getElementById('btnNext').textContent = step === 4 ? 'Bayar DP & Booking' : 'Lanjut';
+    
+    state.currentStep = step;
+    window.scrollTo(0, 0);
+    lucide.createIcons();
+}
+
+function nextStep() {
+    if (state.currentStep === 1 && !state.currentBooking.layananId) {
+        showToast('Pilih layanan terlebih dahulu');
+        return;
+    }
+    if (state.currentStep === 2 && !state.currentBooking.barberId) {
+        showToast('Pilih barber terlebih dahulu');
+        return;
+    }
+    if (state.currentStep === 3 && (!state.currentBooking.tanggal || !state.currentBooking.jam)) {
+        showToast('Pilih tanggal dan jam terlebih dahulu');
+        return;
+    }
+    if (state.currentStep === 4) {
+        const nama = document.getElementById('inputNama').value.trim();
+        const wa = document.getElementById('inputWA').value.trim();
+        if (!nama || !wa) {
+            showToast('Nama dan No WA wajib diisi');
+            return;
+        }
+        state.currentBooking.nama = nama;
+        state.currentBooking.wa = wa;
+        state.currentBooking.catatan = document.getElementById('inputCatatan').value.trim();
+        submitBooking();
+        return;
+    }
+    
+    if (state.currentStep < 5) {
+        state.currentStep++;
+        showStep(state.currentStep);
+        if (state.currentStep === 2) renderBarber();
+        if (state.currentStep === 3) renderCalendar();
+        if (state.currentStep === 4) renderSummary();
+    }
+}
+
+function prevStep() {
+    if (state.currentStep > 1) {
+        state.currentStep--;
+        showStep(state.currentStep);
+    }
+}
+
+// Render Layanan
+function renderLayanan() {
+    const list = document.getElementById('layananList');
+    list.innerHTML = state.layanan.map(l => `
+        <div onclick="selectLayanan(${l.id})" class="bg-white p-6 rounded-2xl shadow-lg border-2 cursor-pointer card-hover ${state.currentBooking.layananId === l.id ? 'border-gold bg-gold/5' : 'border-gray-200'}" data-id="${l.id}">
+            <div class="flex items-start justify-between mb-3">
+                <div class="w-12 h-12 bg-gradient-gold rounded-xl flex items-center justify-center">
+                    <i data-lucide="${l.icon}" class="w-6 h-6 text-white"></i>
+                </div>
+                <span class="text-xs bg-gray-100 px-2 py-1 rounded-full">${l.durasi} menit</span>
+            </div>
+            <h4 class="font-semibold text-lg mb-1">${l.nama}</h4>
+            <p class="text-gold font-bold text-xl">${formatRupiah(l.harga)}</p>
+        </div>
+    `).join('');
+    lucide.createIcons();
+}
+
+function selectLayanan(id) {
+    state.currentBooking.layananId = id;
+    renderLayanan();
+    setTimeout(() => nextStep(), 300);
+}
+
+// Render Barber
+function renderBarber() {
+    const list = document.getElementById('barberList');
+    const availableBarbers = state.barber.filter(b => !b.libur);
+    list.innerHTML = availableBarbers.map(b => `
+        <div onclick="selectBarber(${b.id})" class="bg-white p-6 rounded-2xl shadow-lg border-2 cursor-pointer card-hover ${state.currentBooking.barberId === b.id ? 'border-gold bg-gold/5' : 'border-gray-200'}" data-id="${b.id}">
+            <div class="flex items-center gap-4">
+                <img src="${b.foto}" alt="${b.nama}" class="w-16 h-16 rounded-xl object-cover">
+                <div class="flex-1">
+                    <h4 class="font-semibold text-lg">${b.nama}</h4>
+                    <div class="flex items-center gap-1 text-sm text-gold">
+                        <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                        <span class="font-semibold">${b.rating}</span>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">${b.jamKerja}</p>
+                </div>
+            </div>
+        </div>
+    `).join('');
+    lucide.createIcons();
+}
+
+function selectBarber(id) {
+    state.currentBooking.barberId = id;
+    renderBarber();
+    setTimeout(() => nextStep(), 300);
+}
+
+// Calendar Logic
+function renderCalendar() {
+    const date = new Date(state.calendarDate);
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    
+    document.getElementById('currentMonth').textContent = date.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+    
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    
+    let html = '';
+    for (let i = 0; i < firstDay; i++) {
+        html += '<div></div>';
+    }
+    
+    for (let day = 1; day <= daysInMonth; day++) {
+        const currentDate = new Date(year, month, day);
+        const dateStr = currentDate.toISOString().split('T')[0];
+        const isPast = currentDate < today;
+        const barber = state.barber.find(b => b.id === state.currentBooking.barberId);
+        const isFull = barber && barber.libur;
+        
+        const isSelected = state.currentBooking.tanggal === dateStr;
+        const classes = isPast || isFull 
+            ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+            : isSelected 
+            ? 'bg-gold text-white font-semibold' 
+            : 'hover:bg-gold/10 cursor-pointer border';
+        
+        html += `<div onclick="${isPast || isFull ? '' : `selectDate('${dateStr}')`}" class="p-2 rounded-lg text-sm ${classes}">${day}</div>`;
+    }
+    
+    document.getElementById('calendarGrid').innerHTML = html;
+}
+
+function changeMonth(delta) {
+    state.calendarDate.setMonth(state.calendarDate.getMonth() + delta);
+    renderCalendar();
+}
+
+function selectDate(dateStr) {
+    state.currentBooking.tanggal = dateStr;
+    state.currentBooking.jam = null;
+    renderCalendar();
+    renderTimeSlots();
+    document.getElementById('timeSlotContainer').classList.remove('hidden');
+}
+
+function renderTimeSlots() {
+    if (!state.currentBooking.tanggal || !state.currentBooking.barberId) return;
+    
+    const barber = state.barber.find(b => b.id === state.currentBooking.barberId);
+    const [start, end] = barber.jamKerja.split('-');
+    const [startH] = start.split(':').map(Number);
+    const [endH] = end.split(':').map(Number);
+    
+    const bookedSlots = state.booking
+        .filter(b => b.barberId === state.currentBooking.barberId && b.tanggal === state.currentBooking.tanggal && b.status !== 'No Show')
+        .map(b => b.jam);
+    
+    let html = '';
+    for (let h = startH; h < endH; h++) {
+        const time = `${String(h).padStart(2, '0')}:00`;
+        const isBooked = bookedSlots.includes(time);
+        const isSelected = state.currentBooking.jam === time;
+        
+        const classes = isBooked 
+            ? 'slot-booked cursor-not-allowed' 
+            : isSelected 
+            ? 'slot-selected' 
+            : 'slot-free hover:opacity-80';
+        
+        html += `<button onclick="${isBooked ? '' : `selectTime('${time}')`}" class="py-3 rounded-lg font-semibold transition ${classes}">${time}</button>`;
+    }
+    
+    document.getElementById('timeSlotGrid').innerHTML = html;
+}
+
+function selectTime(time) {
+    state.currentBooking.jam = time;
+    renderTimeSlots();
+}
+
+// Summary
+function renderSummary() {
+    const layanan = state.layanan.find(l => l.id === state.currentBooking.layananId);
+    const barber = state.barber.find(b => b.id === state.currentBooking.barberId);
+    const total = layanan.harga;
+    const dp = Math.floor(total * 0.5);
+    const sisa = total - dp;
+    
+    document.getElementById('summaryLayanan').textContent = layanan.nama;
+    document.getElementById('summaryBarber').textContent = barber.nama;
+    document.getElementById('summaryTanggal').textContent = new Date(state.currentBooking.tanggal).toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long' });
+    document.getElementById('summaryJam').textContent = state.currentBooking.jam;
+    document.getElementById('summaryTotal').textContent = formatRupiah(total);
+    document.getElementById('summaryDP').textContent = formatRupiah(dp);
+    document.getElementById('summarySisa').textContent = formatRupiah(sisa);
+}
+
+// Submit Booking
+function submitBooking() {
+    const layanan = state.layanan.find(l => l.id === state.currentBooking.layananId);
+    const kode = generateKodeBooking();
+    
+    const newBooking = {
+        id: Date.now(),
+        kode: kode,
+        ...state.currentBooking,
+        layananNama: layanan.nama,
+        harga: layanan.harga,
+        dp: Math.floor(layanan.harga * 0.5),
+        status: 'Pending',
+        createdAt: new Date().toISOString()
+    };
+    
+    state.booking.push(newBooking);
+    saveState();
+    
+    // Show confirmation
+    showConfirmation(newBooking);
+    showToast('Reminder H-1 akan dikirim via WA');
+}
+
+function showConfirmation(booking) {
+    const barber = state.barber.find(b => b.id === booking.barberId);
+    
+    document.getElementById('kodeBooking').textContent = booking.kode;
+    document.getElementById('confirmNama').textContent = booking.nama;
+    document.getElementById('confirmLayanan').textContent = booking.layananNama;
+    document.getElementById('confirmBarber').textContent = barber.nama;
+    document.getElementById('confirmTanggal').textContent = new Date(booking.tanggal).toLocaleDateString('id-ID');
+    document.getElementById('confirmJam').textContent = booking.jam;
+    document.getElementById('confirmDP').textContent = formatRupiah(booking.dp);
+    document.getElementById('confirmSisa').textContent = formatRupiah(booking.harga - booking.dp);
+    
+    state.currentStep = 5;
+    showStep(5);
+    document.getElementById('mobileBar').classList.add('hidden');
+}
+
+function chatAdmin() {
+    const msg = `Halo, saya sudah booking dengan kode ${document.getElementById('kodeBooking').textContent}. Mohon konfirmasinya.`;
+    window.open(`https://wa.me/628123456789?text=${encodeURIComponent(msg)}`, '_blank');
+}
+
+function downloadInvoice() {
+    window.print();
+}
+
+function backToHome() {
+    state.currentStep = 0;
+    state.currentBooking = { layananId: null, barberId: null, tanggal: null, jam: null, nama: '', wa: '', catatan: '' };
+    document.querySelectorAll('[id^="section"]').forEach(s => s.classList.add('hidden'));
+    document.getElementById('sectionLanding').classList.remove('hidden');
+    document.getElementById('stepIndicator').classList.add('hidden');
+    document.getElementById('mobileBar').classList.add('hidden');
+    window.scrollTo(0, 0);
+}
+
+/* ==================== ADMIN FUNCTIONS ==================== */
+function showAdminLogin() {
+    document.getElementById('loginModal').classList.remove('hidden');
+}
+
+function closeLogin() {
+    document.getElementById('loginModal').classList.add('hidden');
+}
+
+function loginAdmin() {
+    const user = document.getElementById('adminUser').value;
+    const pass = document.getElementById('adminPass').value;
+    if (user === 'admin' && pass === 'admin123') {
+        document.getElementById('customerView').classList.add('hidden');
+        document.getElementById('adminView').classList.remove('hidden');
+        closeLogin();
+        loadAdminData();
+        lucide.createIcons();
+    } else {
+        showToast('Username atau password salah');
+    }
+}
+
+function logoutAdmin() {
+    document.getElementById('adminView').classList.add('hidden');
+    document.getElementById('customerView').classList.remove('hidden');
+}
+
+function toggleMobileMenu() {
+    document.getElementById('mobileMenu').classList.toggle('-translate-x-full');
+}
+
+function showAdminPage(page) {
+    document.querySelectorAll('.admin-page').forEach(p => p.classList.add('hidden'));
+    document.getElementById(`adminPage${page.charAt(0).toUpperCase() + page.slice(1)}`).classList.remove('hidden');
+    
+    document.querySelectorAll('.sidebar-link').forEach(l => {
+        l.classList.remove('active');
+        if (l.dataset.page === page) l.classList.add('active');
+    });
+    
+    if (page === 'kalender') renderWeekView();
+    if (page === 'booking') renderBookingTable();
+    if (page === 'layanan') renderLayananTable();
+    if (page === 'barber') renderBarberTable();
+    if (page === 'laporan') renderLaporan();
+}
+
+function loadAdminData() {
+    renderWeekView();
+}
+
+// Kalender Admin
+function renderWeekView() {
+    const startOfWeek = new Date(state.weekDate);
+    startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
+    
+    let headerHtml = '';
+    let dates = [];
+    for (let i = 0; i < 7; i++) {
+        const d = new Date(startOfWeek);
+        d.setDate(d.getDate() + i);
+        dates.push(d.toISOString().split('T')[0]);
+        headerHtml += `<div>${d.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric' })}</div>`;
+    }
+    document.getElementById('weekHeader').innerHTML = headerHtml;
+    
+    // Render slots per barber
+    let slotsHtml = '';
+    state.barber.filter(b => !b.libur).forEach(barber => {
+        slotsHtml += `<div class="font-semibold text-sm mb-2">${barber.nama}</div>`;
+        let rowHtml = '<div class="grid grid-cols-7 gap-2">';
+        
+        dates.forEach(date => {
+            const bookings = state.booking.filter(b => b.barberId === barber.id && b.tanggal === date);
+            rowHtml += '<div class="bg-gray-50 rounded-lg p-2 min-h-[80px] text-xs space-y-1">';
+            bookings.forEach(b => {
+                const color = b.status === 'Selesai' ? 'bg-green-100 text-green-800' : b.status === 'No Show' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800';
+                rowHtml += `<div onclick="showDetailModal(${b.id})" class="${color} p-1 rounded cursor-pointer hover:opacity-80">${b.jam} - ${b.nama}</div>`;
+            });
+            rowHtml += '</div>';
+        });
+        rowHtml += '</div>';
+        slotsHtml += rowHtml;
+    });
+    
+    document.getElementById('weekSlots').innerHTML = slotsHtml;
+    lucide.createIcons();
+}
+
+function changeWeek(delta) {
+    state.weekDate.setDate(state.weekDate.getDate() + delta * 7);
+    renderWeekView();
+}
+
+// Detail Modal
+function showDetailModal(id) {
+    const booking = state.booking.find(b => b.id === id);
+    state.selectedDetailBooking = booking;
+    const barber = state.barber.find(b => b.id === booking.barberId);
+    
+    document.getElementById('detailContent').innerHTML = `
+        <div class="flex justify-between"><span class="text-gray-600">Kode</span><span class="font-semibold">${booking.kode}</span></div>
+        <div class="flex justify-between"><span class="text-gray-600">Nama</span><span class="font-semibold">${booking.nama}</span></div>
+        <div class="flex justify-between"><span class="text-gray-600">WA</span><span class="font-semibold">${booking.wa}</span></div>
+        <div class="flex justify-between"><span class="text-gray-600">Layanan</span><span class="font-semibold">${booking.layananNama}</span></div>
+        <div class="flex justify-between"><span class="text-gray-600">Barber</span><span class="font-semibold">${barber.nama}</span></div>
+        <div class="flex justify-between"><span class="text-gray-600">Tanggal</span><span class="font-semibold">${booking.tanggal}</span></div>
+        <div class="flex justify-between"><span class="text-gray-600">Jam</span><span class="font-semibold">${booking.jam}</span></div>
+        <div class="flex justify-between"><span class="text-gray-600">Status</span><span class="font-semibold">${booking.status}</span></div>
+        ${booking.catatan ? `<div><span class="text-gray-600">Catatan:</span><p class="font-medium mt-1">${booking.catatan}</p></div>` : ''}
+    `;
+    document.getElementById('detailModal').classList.remove('hidden');
+}
+
+function closeDetailModal() {
+    document.getElementById('detailModal').classList.add('hidden');
+}
+
+function updateBookingStatus(status) {
+    const booking = state.booking.find(b => b.id === state.selectedDetailBooking.id);
+    booking.status = status;
+    saveState();
+    closeDetailModal();
+    renderWeekView();
+    renderBookingTable();
+    showToast(`Status diubah ke ${status}`);
+}
+
+function rescheduleBooking() {
+    showToast('Fitur reschedule dalam pengembangan');
+}
+
+// Data Booking Table
+function renderBookingTable() {
+    const tbody = document.getElementById('bookingTable');
+    tbody.innerHTML = state.booking.map(b => {
+        const barber = state.barber.find(bar => bar.id === b.barberId);
+        const statusColor = b.status === 'Selesai' ? 'bg-green-100 text-green-800' : b.status === 'No Show' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800';
+        return `
+            <tr class="border-b hover:bg-gray-50">
+                <td class="p-3 font-mono text-xs">${b.kode}</td>
+                <td class="p-3">${b.nama}</td>
+                <td class="p-3">${b.layananNama}</td>
+                <td class="p-3">${barber?.nama || '-'}</td>
+                <td class="p-3 text-xs">${b.tanggal}<br>${b.jam}</td>
+                <td class="p-3"><span class="px-2 py-1 rounded-full text-xs ${statusColor}">${b.status}</span></td>
+                <td class="p-3">
+                    <button onclick="confirmWA('${b.wa}', '${b.kode}')" class="text-green-600 hover:text-green-800">
+                        <i data-lucide="message-circle" class="w-4 h-4"></i>
+                    </button>
+                </td>
+            </tr>
+        `;
+    }).join('');
+    lucide.createIcons();
+}
+
+function confirmWA(wa, kode) {
+    window.open(`https://wa.me/${wa.replace(/^0/, '62')}?text=Halo, booking Anda ${kode} sudah dikonfirmasi.`, '_blank');
+}
+
+// CRUD Layanan
+function renderLayananTable() {
+    const tbody = document.getElementById('layananTable');
+    tbody.innerHTML = state.layanan.map(l => `
+        <tr class="border-b hover:bg-gray-50">
+            <td class="p-3">${l.nama}</td>
+            <td class="p-3">${formatRupiah(l.harga)}</td>
+            <td class="p-3">${l.durasi} menit</td>
+            <td class="p-3 flex gap-2">
+                <button onclick="editLayanan(${l.id})" class="text-blue-600 hover:text-blue-800"><i data-lucide="edit" class="w-4 h-4"></i></button>
+                <button onclick="deleteLayanan(${l.id})" class="text-red-600 hover:text-red-800"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+            </td>
+        </tr>
+    `).join('');
+    lucide.createIcons();
+}
+
+function showLayananModal(id = null) {
+    if (id) {
+        const l = state.layanan.find(x => x.id === id);
+        document.getElementById('layananModalTitle').textContent = 'Edit Layanan';
+        document.getElementById('layananId').value = l.id;
+        document.getElementById('layananNama').value = l.nama;
+        document.getElementById('layananHarga').value = l.harga;
+        document.getElementById('layananDurasi').value = l.durasi;
+    } else {
+        document.getElementById('layananModalTitle').textContent = 'Tambah Layanan';
+        document.getElementById('layananId').value = '';
+        document.getElementById('layananNama').value = '';
+        document.getElementById('layananHarga').value = '';
+        document.getElementById('layananDurasi').value = '';
+    }
+    document.getElementById('layananModal').classList.remove('hidden');
+}
+
+function closeLayananModal() {
+    document.getElementById('layananModal').classList.add('hidden');
+}
+
+function editLayanan(id) {
+    showLayananModal(id);
+}
+
+function saveLayanan() {
+    const id = document.getElementById('layananId').value;
+    const data = {
+        nama: document.getElementById('layananNama').value,
+        harga: parseInt(document.getElementById('layananHarga').value),
+        durasi: parseInt(document.getElementById('layananDurasi').value),
+        icon: 'scissors'
+    };
+    
+    if (id) {
+        const idx = state.layanan.findIndex(l => l.id === parseInt(id));
+        state.layanan[idx] = { ...state.layanan[idx], ...data };
+    } else {
+        data.id = Date.now();
+        state.layanan.push(data);
+    }
+    
+    saveState();
+    renderLayananTable();
+    closeLayananModal();
+    showToast('Layanan berhasil disimpan');
+}
+
+function deleteLayanan(id) {
+    if (confirm('Hapus layanan ini?')) {
+        state.layanan = state.layanan.filter(l => l.id !== id);
+        saveState();
+        renderLayananTable();
+        showToast('Layanan dihapus');
+    }
+}
+
+// CRUD Barber
+function renderBarberTable() {
+    const tbody = document.getElementById('barberTable');
+    tbody.innerHTML = state.barber.map(b => `
+        <tr class="border-b hover:bg-gray-50">
+            <td class="p-3 flex items-center gap-2">
+                <img src="${b.foto}" class="w-8 h-8 rounded-full object-cover">
+                ${b.nama}
+            </td>
+            <td class="p-3">⭐ ${b.rating}</td>
+            <td class="p-3 text-xs">${b.jamKerja}</td>
+            <td class="p-3">
+                <button onclick="toggleLibur(${b.id})" class="px-2 py-1 rounded-full text-xs ${b.libur ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}">
+                    ${b.libur ? 'Libur' : 'Aktif'}
+                </button>
+            </td>
+            <td class="p-3 flex gap-2">
+                <button onclick="editBarber(${b.id})" class="text-blue-600 hover:text-blue-800"><i data-lucide="edit" class="w-4 h-4"></i></button>
+                <button onclick="deleteBarber(${b.id})" class="text-red-600 hover:text-red-800"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+            </td>
+        </tr>
+    `).join('');
+    lucide.createIcons();
+}
+
+function toggleLibur(id) {
+    const barber = state.barber.find(b => b.id === id);
+    barber.libur = !barber.libur;
+    saveState();
+    renderBarberTable();
+    showToast(`Barber ${barber.nama} ${barber.libur ? 'libur' : 'aktif'}`);
+}
+
+function showBarberModal(id = null) {
+    if (id) {
+        const b = state.barber.find(x => x.id === id);
+        document.getElementById('barberModalTitle').textContent = 'Edit Barber';
+        document.getElementById('barberId').value = b.id;
+        document.getElementById('barberNama').value = b.nama;
+        document.getElementById('barberRating').value = b.rating;
+        document.getElementById('barberJamKerja').value = b.jamKerja;
+        document.getElementById('barberFoto').value = b.foto;
+    } else {
+        document.getElementById('barberModalTitle').textContent = 'Tambah Barber';
+        document.getElementById('barberId').value = '';
+        document.getElementById('barberNama').value = '';
+        document.getElementById('barberRating').value = '4.5';
+        document.getElementById('barberJamKerja').value = '09:00-20:00';
+        document.getElementById('barberFoto').value = '';
+    }
+    document.getElementById('barberModal').classList.remove('hidden');
+}
+
+function closeBarberModal() {
+    document.getElementById('barberModal').classList.add('hidden');
+}
+
+function editBarber(id) {
+    showBarberModal(id);
+}
+
+function saveBarber() {
+    const id = document.getElementById('barberId').value;
+    const data = {
+        nama: document.getElementById('barberNama').value,
+        rating: parseFloat(document.getElementById('barberRating').value),
+        jamKerja: document.getElementById('barberJamKerja').value,
+        foto: document.getElementById('barberFoto').value || 'https://ui-avatars.com/api/?name=' + document.getElementById('barberNama').value,
+        libur: false
+    };
+    
+    if (id) {
+        const idx = state.barber.findIndex(b => b.id === parseInt(id));
+        state.barber[idx] = { ...state.barber[idx], ...data };
+    } else {
+        data.id = Date.now();
+        state.barber.push(data);
+    }
+    
+    saveState();
+    renderBarberTable();
+    closeBarberModal();
+    showToast('Barber berhasil disimpan');
+}
+
+function deleteBarber(id) {
+    if (confirm('Hapus barber ini?')) {
+        state.barber = state.barber.filter(b => b.id !== id);
+        saveState();
+        renderBarberTable();
+        showToast('Barber dihapus');
+    }
+}
+
+// Laporan
+let chartOmzet, chartLayanan;
+function renderLaporan() {
+    // Omzet 7 hari
+    const last7Days = [];
+    const omzetData = [];
+    for (let i = 6; i >= 0; i--) {
+        const d = new Date();
+        d.setDate(d.getDate() - i);
+        const dateStr = d.toISOString().split('T')[0];
+        last7Days.push(d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }));
+        const dayOmzet = state.booking
+            .filter(b => b.tanggal === dateStr && b.status === 'Selesai')
+            .reduce((sum, b) => sum + b.dp, 0);
+        omzetData.push(dayOmzet);
+    }
+    
+    if (chartOmzet) chartOmzet.destroy();
+    chartOmzet = new Chart(document.getElementById('chartOmzet'), {
+        type: 'line',
+        data: {
+            labels: last7Days,
+            datasets: [{
+                label: 'Omzet',
+                data: omzetData,
+                borderColor: '#ca8a04',
+                backgroundColor: 'rgba(202, 138, 4, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true } }
+        }
+    });
+    
+    // Layanan terlaris
+    const layananCount = {};
+    state.booking.filter(b => b.status === 'Selesai').forEach(b => {
+        layananCount[b.layananNama] = (layananCount[b.layananNama] || 0) + 1;
+    });
+    
+    if (chartLayanan) chartLayanan.destroy();
+    chartLayanan = new Chart(document.getElementById('chartLayanan'), {
+        type: 'doughnut',
+        data: {
+            labels: Object.keys(layananCount),
+            datasets: [{
+                data: Object.values(layananCount),
+                backgroundColor: ['#ca8a04', '#eab308', '#fbbf24', '#fcd34d']
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { position: 'bottom' } }
+        }
+    });
+}
+
+function exportExcel() {
+    showToast('Export Excel dummy - Dalam production akan generate file .xlsx');
+    console.log('Data Export:', state.booking);
+}
+
+/* ==================== INIT ==================== */
+window.onload = function() {
+    loadState();
+    lucide.createIcons();
+    
+    // Seed dummy data if empty
+    if (state.booking.length === 0) {
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        
+        state.booking = [
+            {
+                id: 1,
+                kode: '#NS001',
+                layananId: 1,
+                barberId: 1,
+                tanggal: today.toISOString().split('T')[0],
+                jam: '10:00',
+                nama: 'Andi Wijaya',
+                wa: '081234567890',
+                catatan: 'Fade tipis',
+                layananNama: 'Haircut',
+                harga: 75000,
+                dp: 37500,
+                status: 'Selesai',
+                createdAt: new Date().toISOString()
+            },
+            {
+                id: 2,
+                kode: '#NS002',
+                layananId: 2,
+                barberId: 2,
+                tanggal: tomorrow.toISOString().split('T')[0],
+                jam: '14:00',
+                nama: 'Budi Santoso',
+                wa: '082345678901',
+                catatan: '',
+                layananNama: 'Haircut + Wash',
+                harga: 100000,
+                dp: 50000,
+                status: 'Pending',
+                createdAt: new Date().toISOString()
+            }
+        ];
+        saveState();
+    }
+};
+</script>
+
+<script>(function(){document.addEventListener("click",function(e){var a=e.target.closest("[data-product-id]");if(!a)return;e.preventDefault();var pid=a.getAttribute("data-product-id");if(pid)parent.postMessage({type:"ecto-artifact-link-click",productId:pid},"*")})})();</script>
+</body>
+</html>

@@ -1,0 +1,1431 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ArisanKu Online - Kocok Otomatis & Transparan</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+  
+  :root {
+    --primary: #2563eb;
+    --primary-dark: #1d4ed8;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+  }
+  
+  * {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+  
+  .dark {
+    color-scheme: dark;
+  }
+  
+  .glass {
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+  
+  .slot-container {
+    perspective: 1000px;
+  }
+  
+  .slot-reel {
+    transform-style: preserve-3d;
+    transition: transform 0.1s linear;
+  }
+  
+  @keyframes spin {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-100%); }
+  }
+  
+  .spinning {
+    animation: spin 0.15s linear infinite;
+  }
+  
+  @keyframes bounce-in {
+    0% { transform: scale(0.3); opacity: 0; }
+    50% { transform: scale(1.05); }
+    70% { transform: scale(0.9); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  
+  .winner-reveal {
+    animation: bounce-in 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+  
+  @keyframes slide-down {
+    from { transform: translateY(-100%); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  
+  .toast-enter {
+    animation: slide-down 0.3s ease-out;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+  
+  @keyframes pulse-ring {
+    0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.7); }
+    70% { box-shadow: 0 0 0 10px rgba(37, 99, 235, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+  }
+  
+  .pulse-ring {
+    animation: pulse-ring 2s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+  }
+
+  .float-animation {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .gradient-text {
+    background: linear-gradient(135deg, #2563eb 0%, #10b981 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-bg {
+    background: radial-gradient(circle at 20% 50%, rgba(37, 99, 235, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+  }
+
+  .dark .hero-bg {
+    background: radial-gradient(circle at 20% 50%, rgba(37, 99, 235, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(16, 185, 129, 0.15) 0%, transparent 50%);
+  }
+</style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 transition-colors duration-300">
+  
+  <!-- Toast Container -->
+  <div id="toastContainer" class="fixed top-4 right-4 z-[100] space-y-2 max-w-sm w-full px-4 sm:px-0"></div>
+  
+  <!-- Sticky Landing Nav -->
+  <nav id="landingNav" class="sticky top-0 z-50 glass bg-white/80 dark:bg-slate-950/80 border-b border-slate-200 dark:border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <a href="#hero" class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-emerald-500 flex items-center justify-center text-white font-bold text-xl shadow-lg">
+            A
+          </div>
+          <div>
+            <h1 class="text-lg sm:text-xl font-bold gradient-text">ArisanKu Online</h1>
+            <p class="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400">Transparan & Otomatis</p>
+          </div>
+        </a>
+        
+        <div class="hidden md:flex items-center gap-6">
+          <a href="#fitur" class="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition">Fitur</a>
+          <a href="#carakerja" class="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition">Cara Kerja</a>
+          <a href="#testimoni" class="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition">Testimoni</a>
+        </div>
+
+        <div class="flex items-center gap-2 sm:gap-3">
+          <button id="userViewBtn" class="hidden px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition">
+            <i class="fa-solid fa-user mr-1 sm:mr-2"></i><span class="hidden sm:inline">User View</span>
+          </button>
+          <button id="loginBtn" class="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium rounded-lg text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+            Login
+          </button>
+          <button id="daftarBtn" class="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-semibold rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl transition">
+            Daftar Gratis
+          </button>
+          <button id="themeToggle" class="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition flex items-center justify-center">
+            <i class="fa-solid fa-moon dark:hidden"></i>
+            <i class="fa-solid fa-sun hidden dark:block"></i>
+          </button>
+          <button id="mobileMenuBtn" class="md:hidden w-9 h-9 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition flex items-center justify-center">
+            <i class="fa-solid fa-bars"></i>
+          </button>
+        </div>
+      </div>
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="hidden md:hidden border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950">
+      <div class="px-4 py-3 space-y-2">
+        <a href="#fitur" class="block px-3 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">Fitur</a>
+        <a href="#carakerja" class="block px-3 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">Cara Kerja</a>
+        <a href="#testimoni" class="block px-3 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">Testimoni</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Landing Page Sections -->
+  <div id="landingPage">
+    <!-- Hero Section -->
+    <section id="hero" class="relative overflow-hidden hero-bg">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 lg:py-32">
+        <div class="grid lg:grid-cols-2 gap-12 items-center">
+          <div class="text-center lg:text-left">
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-sm font-semibold mb-6">
+              <i class="fa-solid fa-sparkles"></i>
+              <span>Terpercaya 1000+ Grup Arisan</span>
+            </div>
+            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold mb-6 leading-tight">
+              Arisan Online <span class="gradient-text">Transparan & Adil</span>
+            </h1>
+            <p class="text-lg sm:text-xl text-slate-600 dark:text-slate-400 mb-8 max-w-2xl mx-auto lg:mx-0">
+              Kocok otomatis, history lengkap, notifikasi real-time. Gak ada drama, gak ada curang.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+              <button id="mulaiArisanBtn" class="px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold rounded-xl shadow-xl hover:shadow-2xl transition transform hover:scale-105">
+                <i class="fa-solid fa-rocket mr-2"></i>Mulai Arisan
+              </button>
+              <button id="lihatDemoBtn" class="px-8 py-4 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-900 dark:text-white font-bold rounded-xl shadow-lg hover:shadow-xl border-2 border-slate-200 dark:border-slate-700 transition">
+                <i class="fa-solid fa-play mr-2"></i>Lihat Demo
+              </button>
+            </div>
+          </div>
+          <div class="relative">
+            <div class="relative z-10 float-animation">
+              <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl p-6 border border-slate-200 dark:border-slate-800">
+                <div class="flex items-center justify-between mb-4">
+                  <div class="flex items-center gap-2">
+                    <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                    <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                    <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                  </div>
+                  <span class="text-xs font-semibold text-slate-500">Live Kocok</span>
+                </div>
+                <div class="bg-gradient-to-br from-blue-50 to-emerald-50 dark:from-blue-900/20 dark:to-emerald-900/20 rounded-xl p-8 text-center">
+                  <div class="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-emerald-500 mx-auto mb-4 flex items-center justify-center text-white text-3xl">
+                    <i class="fa-solid fa-trophy"></i>
+                  </div>
+                  <p class="text-sm text-slate-500 dark:text-slate-400 mb-2">Pemenang Putaran 4</p>
+                  <p class="text-2xl font-bold mb-4">Budi Santoso</p>
+                  <div class="inline-flex items-center gap-2 px-4 py-2 bg-emerald-500 text-white rounded-lg text-sm font-semibold">
+                    <i class="fa-solid fa-check-circle"></i>
+                    <span>Rp 3.600.000 Ditransfer</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-blue-500/20 dark:bg-blue-500/10 rounded-full blur-3xl"></div>
+            <div class="absolute top-1/4 right-0 w-64 h-64 bg-emerald-500/20 dark:bg-emerald-500/10 rounded-full blur-3xl"></div>
+          </div>
+        </div>
+
+        <!-- Trust Badges -->
+        <div class="mt-16 sm:mt-20 grid grid-cols-1 sm:grid-cols-3 gap-6">
+          <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 text-center shadow-sm hover:shadow-md transition">
+            <div class="text-3xl sm:text-4xl font-extrabold text-blue-600 dark:text-blue-400 mb-2">1000+</div>
+            <p class="text-sm text-slate-600 dark:text-slate-400 font-medium">Grup Aktif</p>
+          </div>
+          <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 text-center shadow-sm hover:shadow-md transition">
+            <div class="text-3xl sm:text-4xl font-extrabold text-emerald-600 dark:text-emerald-400 mb-2">Rp 5M+</div>
+            <p class="text-sm text-slate-600 dark:text-slate-400 font-medium">Dana Terkumpul</p>
+          </div>
+          <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 text-center shadow-sm hover:shadow-md transition">
+            <div class="text-3xl sm:text-4xl font-extrabold text-purple-600 dark:text-purple-400 mb-2">100%</div>
+            <p class="text-sm text-slate-600 dark:text-slate-400 font-medium">Transparan</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="fitur" class="py-16 sm:py-24 bg-white dark:bg-slate-900">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
+          <h2 class="text-3xl sm:text-4xl font-extrabold mb-4">Fitur Lengkap, Arisan Tenang</h2>
+          <p class="text-lg text-slate-600 dark:text-slate-400">Semua yang kamu butuhin untuk arisan modern tanpa drama</p>
+        </div>
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div class="bg-slate-50 dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 hover:shadow-lg transition group">
+            <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-2xl mb-4 group-hover:scale-110 transition">
+              <i class="fa-solid fa-dice"></i>
+            </div>
+            <h3 class="text-lg font-bold mb-2">Kocok Otomatis</h3>
+            <p class="text-sm text-slate-600 dark:text-slate-400">Animasi slot machine seru. Kocok manual atau set jadwal otomatis</p>
+          </div>
+          <div class="bg-slate-50 dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 hover:shadow-lg transition group">
+            <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center text-white text-2xl mb-4 group-hover:scale-110 transition">
+              <i class="fa-solid fa-clock-rotate-left"></i>
+            </div>
+            <h3 class="text-lg font-bold mb-2">History Lengkap</h3>
+            <p class="text-sm text-slate-600 dark:text-slate-400">Semua riwayat kocok, pembayaran, dan pemenang tercatat rapi</p>
+          </div>
+          <div class="bg-slate-50 dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 hover:shadow-lg transition group">
+            <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center text-white text-2xl mb-4 group-hover:scale-110 transition">
+              <i class="fa-brands fa-whatsapp"></i>
+            </div>
+            <h3 class="text-lg font-bold mb-2">Notifikasi WhatsApp</h3>
+            <p class="text-sm text-slate-600 dark:text-slate-400">Reminder iuran & hasil kocok langsung ke WA semua anggota</p>
+          </div>
+          <div class="bg-slate-50 dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 hover:shadow-lg transition group">
+            <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center text-white text-2xl mb-4 group-hover:scale-110 transition">
+              <i class="fa-solid fa-file-pdf"></i>
+            </div>
+            <h3 class="text-lg font-bold mb-2">Laporan PDF</h3>
+            <p class="text-sm text-slate-600 dark:text-slate-400">Export laporan lengkap untuk audit & bukti transparansi</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- How It Works -->
+    <section id="carakerja" class="py-16 sm:py-24">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
+          <h2 class="text-3xl sm:text-4xl font-extrabold mb-4">Cuma 4 Langkah, Arisan Jalan</h2>
+          <p class="text-lg text-slate-600 dark:text-slate-400">Gak ribet setupnya, 5 menit langsung bisa kocok</p>
+        </div>
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div class="text-center">
+            <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-2xl font-bold mx-auto mb-4 shadow-lg">
+              1
+            </div>
+            <h3 class="text-lg font-bold mb-2">Buat Grup</h3>
+            <p class="text-sm text-slate-600 dark:text-slate-400">Tentukan nama grup, nominal iuran, dan jadwal kocok</p>
+          </div>
+          <div class="text-center">
+            <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center text-white text-2xl font-bold mx-auto mb-4 shadow-lg">
+              2
+            </div>
+            <h3 class="text-lg font-bold mb-2">Undang Anggota</h3>
+            <p class="text-sm text-slate-600 dark:text-slate-400">Share link undangan, anggota langsung join & verifikasi</p>
+          </div>
+          <div class="text-center">
+            <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center text-white text-2xl font-bold mx-auto mb-4 shadow-lg">
+              3
+            </div>
+            <h3 class="text-lg font-bold mb-2">Bayar Iuran</h3>
+            <p class="text-sm text-slate-600 dark:text-slate-400">Transfer otomatis tracking. Yang belum bayar gak ikut kocok</p>
+          </div>
+          <div class="text-center">
+            <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center text-white text-2xl font-bold mx-auto mb-4 shadow-lg">
+              4
+            </div>
+            <h3 class="text-lg font-bold mb-2">Kocok Live</h3>
+            <p class="text-sm text-slate-600 dark:text-slate-400">Animasi seru, 100% transparan. Semua anggota bisa nonton</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Testimoni -->
+    <section id="testimoni" class="py-16 sm:py-24 bg-white dark:bg-slate-900">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
+          <h2 class="text-3xl sm:text-4xl font-extrabold mb-4">Kata Ketua Arisan</h2>
+          <p class="text-lg text-slate-600 dark:text-slate-400">Dengerin testimoni dari yang udah pake ArisanKu</p>
+        </div>
+        <div class="grid md:grid-cols-3 gap-6">
+          <div class="bg-slate-50 dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700">
+            <div class="flex items-center gap-1 mb-4 text-amber-500">
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+            </div>
+            <p class="text-slate-700 dark:text-slate-300 mb-6">"Dulu ribet banget ngitung manual sama nyatetin siapa udah bayar. Pake ArisanKu tinggal klik, semua otomatis. Anggota juga percaya karena transparan."</p>
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-full bg-gradient-to-br from-pink-500 to-rose-500 flex items-center justify-center text-white font-bold">
+                SN
+              </div>
+              <div>
+                <p class="font-bold">Siti Nurhaliza</p>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Ketua Arisan RT 05</p>
+              </div>
+            </div>
+          </div>
+          <div class="bg-slate-50 dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700">
+            <div class="flex items-center gap-1 mb-4 text-amber-500">
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+            </div>
+            <p class="text-slate-700 dark:text-slate-300 mb-6">"Animasi kocoknya bikin tegang tapi seru! Udah 6 bulan pake, gak ada yang komplain. Notif WA juga membantu banget reminder iuran."</p>
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white font-bold">
+                BS
+              </div>
+              <div>
+                <p class="font-bold">Budi Santoso</p>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Ketua Arisan Kantor</p>
+              </div>
+            </div>
+          <div class="bg-slate-50 dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700">
+            <div class="flex items-center gap-1 mb-4 text-amber-500">
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+            </div>
+            <p class="text-slate-700 dark:text-slate-300 mb-6">"Sebagai bendahara arisan, ini tools terbaik. History lengkap, bisa export PDF buat laporan. Gak ada drama salah hitung lagi."</p>
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center text-white font-bold">
+                DL
+              </div>
+              <div>
+                <p class="font-bold">Dewi Lestari</p>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Bendahara Arisan Keluarga</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Banner -->
+    <section class="py-16 sm:py-20">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bg-gradient-to-r from-blue-600 to-emerald-600 rounded-3xl p-8 sm:p-12 text-white text-center shadow-2xl">
+          <h2 class="text-3xl sm:text-4xl font-extrabold mb-4">Bikin arisan kamu anti ribet sekarang</h2>
+          <p class="text-lg sm:text-xl mb-8 opacity-90 max-w-2xl mx-auto">Gabung 1000+ grup arisan yang udah pake ArisanKu. Gratis 1 bulan pertama!</p>
+          <button id="ctaMulaiBtn" class="px-8 py-4 bg-white text-blue-600 font-bold rounded-xl shadow-xl hover:shadow-2xl transition transform hover:scale-105">
+            <i class="fa-solid fa-rocket mr-2"></i>Mulai Gratis Sekarang
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 py-12">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid md:grid-cols-4 gap-8 mb-8">
+          <div>
+            <div class="flex items-center gap-2 mb-4">
+              <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-emerald-500 flex items-center justify-center text-white font-bold">
+                A
+              </div>
+              <span class="font-bold text-white">ArisanKu Online</span>
+            </div>
+            <p class="text-sm">Platform arisan digital transparan & otomatis untuk Indonesia.</p>
+          </div>
+          <div>
+            <h4 class="font-bold text-white mb-4">Produk</h4>
+            <ul class="space-y-2 text-sm">
+              <li><a href="#fitur" class="hover:text-white transition">Fitur</a></li>
+              <li><a href="#carakerja" class="hover:text-white transition">Cara Kerja</a></li>
+              <li><a href="#" class="hover:text-white transition">Harga</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="font-bold text-white mb-4">Perusahaan</h4>
+            <ul class="space-y-2 text-sm">
+              <li><a href="#" class="hover:text-white transition">Tentang Kami</a></li>
+              <li><a href="#" class="hover:text-white transition">Blog</a></li>
+              <li><a href="#" class="hover:text-white transition">Kontak</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="font-bold text-white mb-4">Support</h4>
+            <ul class="space-y-2 text-sm">
+              <li><a href="#" class="hover:text-white transition">Help Center</a></li>
+              <li><a href="#" class="hover:text-white transition">Syarat & Ketentuan</a></li>
+              <li><a href="#" class="hover:text-white transition">Kebijakan Privasi</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="border-t border-slate-800 pt-8 text-center text-sm">
+          <p>&copy; 2025 ArisanKu Online. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Dashboard App Section -->
+  <div id="appSection" class="hidden">
+    <header class="sticky top-0 z-40 glass bg-white/70 dark:bg-slate-900/70 border-b border-slate-200 dark:border-slate-800">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+          <button id="backToLanding" class="flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition">
+            <i class="fa-solid fa-arrow-left"></i>
+            <span>Kembali ke Beranda</span>
+          </button>
+          <button id="userViewBtnApp" class="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition">
+            <i class="fa-solid fa-user mr-1 sm:mr-2"></i><span class="hidden sm:inline">User View</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      <!-- Tabs -->
+      <div class="flex flex-wrap gap-2 mb-6 border-b border-slate-200 dark:border-slate-800 overflow-x-auto custom-scrollbar">
+        <button data-tab="dashboard" class="tab-btn px-4 py-2 sm:px-6 sm:py-3 text-sm sm:text-base font-semibold border-b-2 border-blue-500 text-blue-600 dark:text-blue-400 whitespace-nowrap">
+          <i class="fa-solid fa-chart-line mr-2"></i>Dashboard
+        </button>
+        <button data-tab="kocok" class="tab-btn px-4 py-2 sm:px-6 sm:py-3 text-sm sm:text-base font-semibold border-b-2 border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 whitespace-nowrap">
+          <i class="fa-solid fa-dice mr-2"></i>Kocok Arisan
+        </button>
+        <button data-tab="anggota" class="tab-btn px-4 py-2 sm:px-6 sm:py-3 text-sm sm:text-base font-semibold border-b-2 border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 whitespace-nowrap">
+          <i class="fa-solid fa-users mr-2"></i>Anggota
+        </button>
+        <button data-tab="history" class="tab-btn px-4 py-2 sm:px-6 sm:py-3 text-sm sm:text-base font-semibold border-b-2 border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 whitespace-nowrap">
+          <i class="fa-solid fa-clock-rotate-left mr-2"></i>History
+        </button>
+        <button data-tab="admin" class="tab-btn px-4 py-2 sm:px-6 sm:py-3 text-sm sm:text-base font-semibold border-b-2 border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 whitespace-nowrap">
+          <i class="fa-solid fa-gear mr-2"></i>Admin Panel
+        </button>
+      </div>
+
+      <!-- Dashboard Tab -->
+      <div id="dashboard" class="tab-content">
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6">
+          <div class="bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-6 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition">
+            <div class="flex items-start justify-between">
+              <div>
+                <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mb-1">Total Anggota</p>
+                <p id="totalAnggota" class="text-2xl sm:text-3xl font-bold">12</p>
+              </div>
+              <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
+                <i class="fa-solid fa-users"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-6 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition">
+            <div class="flex items-start justify-between">
+              <div>
+                <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mb-1">Dana Terkumpul</p>
+                <p id="totalDana" class="text-2xl sm:text-3xl font-bold">Rp 0</p>
+              </div>
+              <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+                <i class="fa-solid fa-wallet"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-6 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition">
+            <div class="flex items-start justify-between">
+              <div>
+                <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mb-1">Putaran Ke</p>
+                <p id="putaranKe" class="text-2xl sm:text-3xl font-bold">4</p>
+              </div>
+              <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-400">
+                <i class="fa-solid fa-rotate"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-6 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition">
+            <div class="flex items-start justify-between">
+              <div>
+                <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mb-1">Kocok Berikutnya</p>
+                <p id="countdownKocok" class="text-lg sm:text-xl font-bold">2h 15m</p>
+              </div>
+              <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center text-amber-600 dark:text-amber-400">
+                <i class="fa-solid fa-clock"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Progress & Info -->
+        <div class="grid lg:grid-cols-3 gap-6">
+          <div class="lg:col-span-2 bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-6 border border-slate-200 dark:border-slate-800 shadow-sm">
+            <h3 class="text-lg font-bold mb-4">Progress Dana Putaran Ini</h3>
+            <div class="mb-4">
+              <div class="flex justify-between text-sm mb-2">
+                <span class="text-slate-600 dark:text-slate-400">Terkumpul</span>
+                <span class="font-semibold"><span id="danaProgress">0</span>% dari target</span>
+              </div>
+              <div class="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-3 overflow-hidden">
+                <div id="progressBar" class="bg-gradient-to-r from-blue-500 to-emerald-500 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <p class="text-slate-500 dark:text-slate-400">Target Dana</p>
+                <p id="targetDana" class="font-bold text-lg">Rp 3.600.000</p>
+              </div>
+              <div>
+                <p class="text-slate-500 dark:text-slate-400">Sudah Lunas</p>
+                <p id="sudahLunas" class="font-bold text-lg text-emerald-600">0/12 Anggota</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-gradient-to-br from-blue-600 to-emerald-600 rounded-2xl p-4 sm:p-6 text-white shadow-lg">
+            <h3 class="text-lg font-bold mb-4">Jadwal Kocok</h3>
+            <div class="space-y-3">
+              <div class="bg-white/10 backdrop-blur rounded-xl p-3">
+                <p class="text-xs opacity-80 mb-1">Putaran Berikutnya</p>
+                <p id="jadwalKocok" class="font-bold">15 Okt 2025, 19:00 WIB</p>
+              </div>
+              <div class="bg-white/10 backdrop-blur rounded-xl p-3">
+                <p class="text-xs opacity-80 mb-1">Nominal per Putaran</p>
+                <p id="nominalIuran" class="font-bold text-xl">Rp 300.000</p>
+              </div>
+              <div class="bg-white/10 backdrop-blur rounded-xl p-3">
+                <p class="text-xs opacity-80 mb-1">Total Diterima Pemenang</p>
+                <p id="totalDiterima" class="font-bold text-xl">Rp 3.600.000</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Kocok Tab -->
+      <div id="kocok" class="tab-content hidden">
+        <div class="max-w-4xl mx-auto">
+          <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-lg">
+            <div class="text-center mb-8">
+              <h2 class="text-2xl sm:text-3xl font-bold mb-2">Kocok Arisan Putaran <span id="kocokPutaranKe">4</span></h2>
+              <p class="text-slate-500 dark:text-slate-400">Hanya anggota yang belum menang & sudah lunas yang ikut diundi</p>
+            </div>
+
+            <!-- Slot Machine -->
+            <div class="slot-container mb-8">
+              <div class="bg-gradient-to-b from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 rounded-2xl p-6 sm:p-8 border-4 border-slate-300 dark:border-slate-700 shadow-inner">
+                <div class="bg-white dark:bg-slate-950 rounded-xl p-6 sm:p-8 min-h-[200px] flex items-center justify-center relative overflow-hidden">
+                  <div id="slotDisplay" class="text-center w-full">
+                    <div class="text-slate-400 dark:text-slate-600 mb-4">
+                      <i class="fa-solid fa-user-circle text-6xl sm:text-8xl"></i>
+                    </div>
+                    <p class="text-xl sm:text-2xl font-bold text-slate-400 dark:text-slate-600">Tekan "Kocok Sekarang" untuk memulai</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Peserta List -->
+            <div class="mb-6">
+              <h3 class="font-semibold mb-3">Peserta yang Ikut Kocok: <span id="totalPeserta" class="text-blue-600 dark:text-blue-400">0</span></h3>
+              <div id="pesertaKocok" class="flex flex-wrap gap-2 max-h-32 overflow-y-auto custom-scrollbar p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl">
+                <p class="text-sm text-slate-500 dark:text-slate-400">Belum ada peserta yang lunas</p>
+              </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-3 justify-center">
+              <button id="kocokBtn" class="flex-1 sm:flex-none px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100">
+                <i class="fa-solid fa-dice mr-2"></i>Kocok Sekarang
+              </button>
+              <button id="otomatisBtn" class="px-8 py-4 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 font-semibold rounded-xl transition">
+                <i class="fa-solid fa-clock mr-2"></i>Kocok Otomatis
+              </button>
+            </div>
+
+            <div id="winnerSection" class="hidden mt-8 p-6 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-xl border-2 border-emerald-500">
+              <div class="text-center">
+                <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-emerald-500 text-white mb-4">
+                  <i class="fa-solid fa-trophy text-3xl"></i>
+                </div>
+                <h3 class="text-2xl sm:text-3xl font-bold text-emerald-600 dark:text-emerald-400 mb-2">Selamat!</h3>
+                <p class="text-lg sm:text-xl mb-4">Pemenang Putaran <span id="winnerPutaran"></span>:</p>
+                <p id="winnerName" class="text-3xl sm:text-4xl font-extrabold mb-4"></p>
+                <p class="text-slate-600 dark:text-slate-400 mb-6">Akan menerima <span id="winnerAmount" class="font-bold text-emerald-600 dark:text-emerald-400">Rp 0</span></p>
+                <button id="transferBtn" class="px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-lg transition">
+                  <i class="fa-solid fa-paper-plane mr-2"></i>Kirim Bukti Transfer
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Anggota Tab -->
+      <div id="anggota" class="tab-content hidden">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-6 border border-slate-200 dark:border-slate-800 shadow-sm">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+            <h2 class="text-xl sm:text-2xl font-bold">Daftar Anggota Arisan</h2>
+            <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+              <input id="searchAnggota" type="text" placeholder="Cari anggota..." class="px-4 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-64">
+              <select id="sortAnggota" class="px-4 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="nama">Urut Nama</option>
+                <option value="status">Urut Status</option>
+                <option value="tanggal">Urut Bergabung</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto custom-scrollbar">
+            <table class="w-full text-sm">
+              <thead class="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700">
+                <tr>
+                  <th class="text-left p-3 sm:p-4 font-semibold">No</th>
+                  <th class="text-left p-3 sm:p-4 font-semibold">Nama Anggota</th>
+                  <th class="text-left p-3 sm:p-4 font-semibold hidden sm:table-cell">Tanggal Gabung</th>
+                  <th class="text-left p-3 sm:p-4 font-semibold">Status Putaran Ini</th>
+                  <th class="text-left p-3 sm:p-4 font-semibold">Status Menang</th>
+                  <th class="text-left p-3 sm:p-4 font-semibold hidden md:table-cell">Total Bayar</th>
+                  <th class="text-left p-3 sm:p-4 font-semibold">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="anggotaTableBody" class="divide-y divide-slate-200 dark:divide-slate-800">
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- History Tab -->
+      <div id="history" class="tab-content hidden">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-6 border border-slate-200 dark:border-slate-800 shadow-sm">
+          <h2 class="text-xl sm:text-2xl font-bold mb-6">Riwayat Kocok Arisan</h2>
+          
+          <div id="historyTimeline" class="space-y-4">
+          </div>
+        </div>
+      </div>
+
+      <!-- Admin Panel Tab -->
+      <div id="admin" class="tab-content hidden">
+        <div class="grid lg:grid-cols-2 gap-6">
+          <!-- Tambah Anggota -->
+          <div class="bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-6 border border-slate-200 dark:border-slate-800 shadow-sm">
+            <h3 class="text-lg font-bold mb-4"><i class="fa-solid fa-user-plus mr-2 text-blue-600"></i>Tambah Anggota Baru</h3>
+            <form id="addAnggotaForm" class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium mb-2">Nama Lengkap</label>
+                <input id="namaAnggota" type="text" required class="w-full px-4 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-2">No. HP (Opsional)</label>
+                <input id="hpAnggota" type="tel" class="w-full px-4 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+              </div>
+              <button type="submit" class="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition">
+                <i class="fa-solid fa-plus mr-2"></i>Tambah Anggota
+              </button>
+            </form>
+          </div>
+
+          <!-- Pengaturan Arisan -->
+          <div class="bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-6 border border-slate-200 dark:border-slate-800 shadow-sm">
+            <h3 class="text-lg font-bold mb-4"><i class="fa-solid fa-sliders mr-2 text-purple-600"></i>Pengaturan Arisan</h3>
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium mb-2">Nominal Iuran per Putaran</label>
+                <input id="settingNominal" type="number" class="w-full px-4 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-2">Jadwal Kocok Berikutnya</label>
+                <input id="settingJadwal" type="datetime-local" class="w-full px-4 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+              </div>
+              <button id="saveSettings" class="w-full px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg transition">
+                <i class="fa-solid fa-save mr-2"></i>Simpan Pengaturan
+              </button>
+            </div>
+          </div>
+
+          <!-- Reset -->
+          <div class="bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-6 border border-red-200 dark:border-red-900/30 shadow-sm lg:col-span-2">
+            <h3 class="text-lg font-bold mb-4 text-red-600 dark:text-red-400"><i class="fa-solid fa-triangle-exclamation mr-2"></i>Zona Berbahaya</h3>
+            <p class="text-sm text-slate-600 dark:text-slate-400 mb-4">Aksi ini akan menghapus semua data history dan mereset arisan ke putaran 1. Data anggota tetap tersimpan.</p>
+            <button id="resetArisan" class="px-6 py-2 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg transition">
+              <i class="fa-solid fa-rotate-left mr-2"></i>Reset Arisan
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- User View Modal -->
+  <div id="userModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-[90] flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto custom-scrollbar shadow-2xl">
+      <div class="sticky top-0 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 p-6 flex justify-between items-center">
+        <h2 class="text-xl sm:text-2xl font-bold">Profil Anggota</h2>
+        <button id="closeUserModal" class="w-8 h-8 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center transition">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="p-6">
+        <div class="mb-6">
+          <label class="block text-sm font-medium mb-2">Pilih Anggota</label>
+          <select id="selectUserView" class="w-full px-4 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+          </select>
+        </div>
+        <div id="userDetail" class="space-y-4">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bukti Transfer Modal -->
+  <div id="buktiModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-[90] flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full shadow-2xl">
+      <div class="p-6">
+        <div class="text-center mb-6">
+          <div class="w-16 h-16 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 mx-auto mb-4">
+            <i class="fa-solid fa-receipt text-2xl"></i>
+          </div>
+          <h3 class="text-xl font-bold mb-2">Bukti Transfer</h3>
+          <p class="text-sm text-slate-500 dark:text-slate-400">Putaran <span id="buktiPutaran"></span> - <span id="buktiNama"></span></p>
+        </div>
+        <div class="bg-slate-50 dark:bg-slate-800 rounded-xl p-4 mb-4">
+          <div class="space-y-2 text-sm">
+            <div class="flex justify-between">
+              <span class="text-slate-500 dark:text-slate-400">Tanggal</span>
+              <span id="buktiTanggal" class="font-semibold"></span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-500 dark:text-slate-400">Jumlah</span>
+              <span id="buktiJumlah" class="font-semibold text-emerald-600 dark:text-emerald-400"></span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-500 dark:text-slate-400">Status</span>
+              <span class="px-2 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 text-xs font-semibold">SUKSES</span>
+            </div>
+          </div>
+        </div>
+        <button id="closeBuktiModal" class="w-full px-4 py-2 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 font-semibold rounded-lg transition">
+          Tutup
+        </button>
+      </div>
+    </div>
+  </div>
+
+<script>
+  // State Management
+  let state = {
+    anggota: [
+      { id: 1, nama: "Siti Nurhaliza", hp: "08123456789", bergabung: "2024-01-01", menang: [1], iuran: {1: true, 2: true, 3: true, 4: false} },
+      { id: 2, nama: "Budi Santoso", hp: "08123456790", bergabung: "2024-01-01", menang: [2], iuran: {1: true, 2: true, 3: true, 4: true} },
+      { id: 3, nama: "Dewi Lestari", hp: "08123456791", bergabung: "2024-01-01", menang: [3], iuran: {1: true, 2: true, 3: true, 4: true} },
+      { id: 4, nama: "Ahmad Fauzi", hp: "08123456792", bergabung: "2024-01-01", menang: [], iuran: {1: true, 2: true, 3: true, 4: true} },
+      { id: 5, nama: "Rina Marlina", hp: "08123456793", bergabung: "2024-01-01", menang: [], iuran: {1: true, 2: true, 3: true, 4: false} },
+      { id: 6, nama: "Agus Wijaya", hp: "08123456794", bergabung: "2024-01-01", menang: [], iuran: {1: true, 2: true, 3: true, 4: true} },
+      { id: 7, nama: "Maya Sari", hp: "08123456795", bergabung: "2024-01-01", menang: [], iuran: {1: true, 2: true, 3: true, 4: true} },
+      { id: 8, nama: "Hendra Gunawan", hp: "08123456796", bergabung: "2024-01-01", menang: [], iuran: {1: true, 2: true, 3: true, 4: true} },
+      { id: 9, nama: "Linda Permata", hp: "08123456797", bergabung: "2024-01-01", menang: [], iuran: {1: true, 2: true, 3: true, 4: false} },
+      { id: 10, nama: "Doni Kurniawan", hp: "08123456798", bergabung: "2024-01-01", menang: [], iuran: {1: true, 2: true, 3: true, 4: true} },
+      { id: 11, nama: "Fitri Rahayu", hp: "08123456799", bergabung: "2024-01-01", menang: [], iuran: {1: true, 2: true, 3: true, 4: true} },
+      { id: 12, nama: "Rizki Pratama", hp: "08123456800", bergabung: "2024-01-01", menang: [], iuran: {1: true, 2: true, 3: true, 4: true} }
+    ],
+    putaranSaatIni: 4,
+    nominalIuran: 300000,
+    jadwalKocok: new Date(Date.now() + 2 * 60 * 60 * 1000 + 15 * 60 * 1000),
+    history: [
+      { putaran: 1, pemenangId: 1, tanggal: "2024-01-15T19:00:00", jumlah: 3600000 },
+      { putaran: 2, pemenangId: 2, tanggal: "2024-02-15T19:00:00", jumlah: 3600000 },
+      { putaran: 3, pemenangId: 3, tanggal: "2024-03-15T19:00:00", jumlah: 3600000 }
+    ]
+  };
+
+  // Load from localStorage
+  const loadState = () => {
+    const saved = localStorage.getItem('arisanState');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      state = { ...state, ...parsed };
+      state.jadwalKocok = new Date(state.jadwalKocok);
+    }
+  };
+
+  // Save to localStorage
+  const saveState = () => {
+    localStorage.setItem('arisanState', JSON.stringify({
+      ...state,
+      jadwalKocok: state.jadwalKocok.toISOString()
+    }));
+  };
+
+  // Theme Toggle
+  const initTheme = () => {
+    const saved = localStorage.getItem('theme');
+    if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+    }
+  };
+
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    document.documentElement.classList.toggle('dark');
+    localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+  });
+
+  // Smooth scroll to app
+  const scrollToApp = () => {
+    document.getElementById('landingPage').classList.add('hidden');
+    document.getElementById('appSection').classList.remove('hidden');
+    document.getElementById('userViewBtnApp').classList.remove('hidden');
+    document.getElementById('userViewBtn').classList.remove('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  document.getElementById('mulaiArisanBtn').addEventListener('click', scrollToApp);
+  document.getElementById('lihatDemoBtn').addEventListener('click', scrollToApp);
+  document.getElementById('ctaMulaiBtn').addEventListener('click', scrollToApp);
+  document.getElementById('daftarBtn').addEventListener('click', scrollToApp);
+  document.getElementById('loginBtn').addEventListener('click', scrollToApp);
+
+  document.getElementById('backToLanding').addEventListener('click', () => {
+    document.getElementById('appSection').classList.add('hidden');
+    document.getElementById('landingPage').classList.remove('hidden');
+    document.getElementById('userViewBtn').classList.add('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  // Mobile Menu
+  document.getElementById('mobileMenuBtn').addEventListener('click', () => {
+    document.getElementById('mobileMenu').classList.toggle('hidden');
+  });
+
+  document.querySelectorAll('#mobileMenu a').forEach(link => {
+    link.addEventListener('click', () => {
+      document.getElementById('mobileMenu').classList.add('hidden');
+    });
+  });
+
+  // Tab Navigation
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const tab = btn.dataset.tab;
+      document.querySelectorAll('.tab-btn').forEach(b => {
+        b.classList.remove('border-blue-500', 'text-blue-600', 'dark:text-blue-400');
+        b.classList.add('border-transparent', 'text-slate-600', 'dark:text-slate-400');
+      });
+      btn.classList.add('border-blue-500', 'text-blue-600', 'dark:text-blue-400');
+      btn.classList.remove('border-transparent', 'text-slate-600', 'dark:text-slate-400');
+      
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+      document.getElementById(tab).classList.remove('hidden');
+    });
+  });
+
+  // Toast Notification
+  const showToast = (message, type = 'success') => {
+    const colors = {
+      success: 'bg-emerald-500',
+      error: 'bg-red-500',
+      warning: 'bg-amber-500',
+      info: 'bg-blue-500'
+    };
+    const icons = {
+      success: 'fa-check-circle',
+      error: 'fa-xmark-circle',
+      warning: 'fa-triangle-exclamation',
+      info: 'fa-circle-info'
+    };
+    
+    const toast = document.createElement('div');
+    toast.className = `${colors[type]} text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-3 toast-enter`;
+    toast.innerHTML = `
+      <i class="fa-solid ${icons[type]}"></i>
+      <p class="text-sm font-medium flex-1">${message}</p>
+      <button onclick="this.parentElement.remove()" class="hover:opacity-70">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    `;
+    document.getElementById('toastContainer').appendChild(toast);
+    setTimeout(() => toast.remove(), 5000);
+  };
+
+  // Format Rupiah
+  const formatRupiah = (num) => {
+    return new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      minimumFractionDigits: 0
+    }).format(num);
+  };
+
+  // Format Tanggal
+  const formatTanggal = (date) => {
+    return new Intl.DateTimeFormat('id-ID', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    }).format(new Date(date));
+  };
+
+  // Update Dashboard
+  const updateDashboard = () => {
+    const totalAnggota = state.anggota.length;
+    const lunasCount = state.anggota.filter(a => a.iuran[state.putaranSaatIni]).length;
+    const totalDana = lunasCount * state.nominalIuran;
+    const targetDana = totalAnggota * state.nominalIuran;
+    const progress = totalAnggota > 0 ? Math.round((lunasCount / totalAnggota) * 100) : 0;
+
+    document.getElementById('totalAnggota').textContent = totalAnggota;
+    document.getElementById('totalDana').textContent = formatRupiah(totalDana);
+    document.getElementById('putaranKe').textContent = state.putaranSaatIni;
+    document.getElementById('kocokPutaranKe').textContent = state.putaranSaatIni;
+    document.getElementById('danaProgress').textContent = progress;
+    document.getElementById('progressBar').style.width = progress + '%';
+    document.getElementById('targetDana').textContent = formatRupiah(targetDana);
+    document.getElementById('sudahLunas').textContent = `${lunasCount}/${totalAnggota} Anggota`;
+    document.getElementById('jadwalKocok').textContent = formatTanggal(state.jadwalKocok) + ' WIB';
+    document.getElementById('nominalIuran').textContent = formatRupiah(state.nominalIuran);
+    document.getElementById('totalDiterima').textContent = formatRupiah(targetDana);
+    document.getElementById('winnerAmount').textContent = formatRupiah(targetDana);
+  };
+
+  // Countdown
+  const updateCountdown = () => {
+    const now = new Date();
+    const diff = state.jadwalKocok - now;
+    
+    if (diff <= 0) {
+      document.getElementById('countdownKocok').textContent = 'Waktunya Kocok!';
+      return;
+    }
+    
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    document.getElementById('countdownKocok').textContent = `${hours}h ${minutes}m`;
+  };
+
+  // Update Anggota Table
+  const updateAnggotaTable = () => {
+    const search = document.getElementById('searchAnggota').value.toLowerCase();
+    const sort = document.getElementById('sortAnggota').value;
+    
+    let filtered = state.anggota.filter(a => a.nama.toLowerCase().includes(search));
+    
+    filtered.sort((a, b) => {
+      if (sort === 'nama') return a.nama.localeCompare(b.nama);
+      if (sort === 'status') {
+        const aLunas = a.iuran[state.putaranSaatIni] ? 1 : 0;
+        const bLunas = b.iuran[state.putaranSaatIni] ? 1 : 0;
+        return bLunas - aLunas;
+      }
+      if (sort === 'tanggal') return new Date(b.bergabung) - new Date(a.bergabung);
+      return 0;
+    });
+    
+    const tbody = document.getElementById('anggotaTableBody');
+    tbody.innerHTML = filtered.map((a, i) => {
+      const sudahMenang = a.menang.length > 0;
+      const lunas = a.iuran[state.putaranSaatIni];
+      const totalBayar = Object.values(a.iuran).filter(Boolean).length * state.nominalIuran;
+      
+      return `
+        <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
+          <td class="p-3 sm:p-4">${i + 1}</td>
+          <td class="p-3 sm:p-4 font-medium">${a.nama}</td>
+          <td class="p-3 sm:p-4 text-slate-500 dark:text-slate-400 hidden sm:table-cell">${formatTanggal(a.bergabung).split(',')[0]}</td>
+          <td class="p-3 sm:p-4">
+            ${lunas 
+              ? '<span class="px-2 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 text-xs font-semibold"><i class="fa-solid fa-check mr-1"></i>Lunas</span>'
+              : '<span class="px-2 py-1 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 text-xs font-semibold"><i class="fa-solid fa-clock mr-1"></i>Belum</span>'
+            }
+          </td>
+          <td class="p-3 sm:p-4">
+            ${sudahMenang 
+              ? `<span class="px-2 py-1 rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 text-xs font-semibold"><i class="fa-solid fa-trophy mr-1"></i>Putaran ${a.menang.join(', ')}</span>`
+              : '<span class="px-2 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-xs font-semibold">Belum</span>'
+            }
+          </td>
+          <td class="p-3 sm:p-4 font-semibold hidden md:table-cell">${formatRupiah(totalBayar)}</td>
+          <td class="p-3 sm:p-4">
+            ${!lunas && !sudahMenang 
+              ? `<button onclick="bayarIuran(${a.id})" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg transition">
+                   <i class="fa-solid fa-credit-card mr-1"></i>Bayar
+                 </button>`
+              : '-'
+            }
+          </td>
+        </tr>
+      `;
+    }).join('');
+  };
+
+  // Bayar Iuran
+  window.bayarIuran = (id) => {
+    const anggota = state.anggota.find(a => a.id === id);
+    if (anggota) {
+      anggota.iuran[state.putaranSaatIni] = true;
+      saveState();
+      updateDashboard();
+      updateAnggotaTable();
+      updateKocokPeserta();
+      showToast(`${anggota.nama} berhasil membayar iuran!`, 'success');
+    }
+  };
+
+  // Update Kocok Peserta
+  const updateKocokPeserta = () => {
+    const peserta = state.anggota.filter(a => !a.menang.includes(state.putaranSaatIni) && a.iuran[state.putaranSaatIni] && a.menang.length === 0);
+    document.getElementById('totalPeserta').textContent = peserta.length;
+    
+    const container = document.getElementById('pesertaKocok');
+    if (peserta.length === 0) {
+      container.innerHTML = '<p class="text-sm text-slate-500 dark:text-slate-400">Belum ada peserta yang lunas</p>';
+    } else {
+      container.innerHTML = peserta.map(a => 
+        `<span class="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full text-xs font-semibold">
+          <i class="fa-solid fa-user mr-1"></i>${a.nama}
+        </span>`
+      ).join('');
+    }
+    
+    document.getElementById('kocokBtn').disabled = peserta.length === 0;
+  };
+
+  // Kocok Arisan
+  let isSpinning = false;
+  document.getElementById('kocokBtn').addEventListener('click', () => {
+    if (isSpinning) return;
+    
+    const peserta = state.anggota.filter(a => !a.menang.includes(state.putaranSaatIni) && a.iuran[state.putaranSaatIni] && a.menang.length === 0);
+    if (peserta.length === 0) {
+      showToast('Tidak ada peserta yang memenuhi syarat!', 'error');
+      return;
+    }
+    
+    isSpinning = true;
+    document.getElementById('kocokBtn').disabled = true;
+    document.getElementById('winnerSection').classList.add('hidden');
+    
+    const slotDisplay = document.getElementById('slotDisplay');
+    slotDisplay.classList.add('spinning');
+    
+    // Spin animation
+    let counter = 0;
+    const spinInterval = setInterval(() => {
+      const randomPeserta = peserta[Math.floor(Math.random() * peserta.length)];
+      slotDisplay.innerHTML = `
+        <div class="winner-reveal">
+          <div class="text-blue-500 dark:text-blue-400 mb-4 pulse-ring inline-flex items-center justify-center w-20 h-20 rounded-full border-4 border-blue-500">
+            <i class="fa-solid fa-user-circle text-5xl"></i>
+          </div>
+          <p class="text-2xl sm:text-3xl font-bold">${randomPeserta.nama}</p>
+        </div>
+      `;
+      counter++;
+      if (counter >= 30) {
+        clearInterval(spinInterval);
+        const winner = peserta[Math.floor(Math.random() * peserta.length)];
+        
+        setTimeout(() => {
+          slotDisplay.classList.remove('spinning');
+          slotDisplay.innerHTML = `
+            <div class="winner-reveal">
+              <div class="text-emerald-500 mb-4">
+                <i class="fa-solid fa-trophy text-6xl sm:text-8xl"></i>
+              </div>
+              <p class="text-3xl sm:text-4xl font-extrabold text-emerald-600 dark:text-emerald-400">${winner.nama}</p>
+            </div>
+          `;
+          
+          winner.menang.push(state.putaranSaatIni);
+          state.history.push({
+            putaran: state.putaranSaatIni,
+            pemenangId: winner.id,
+            tanggal: new Date().toISOString(),
+            jumlah: state.anggota.length * state.nominalIuran
+          });
+          
+          document.getElementById('winnerPutaran').textContent = state.putaranSaatIni;
+          document.getElementById('winnerName').textContent = winner.nama;
+          document.getElementById('winnerSection').classList.remove('hidden');
+          
+          // Confetti
+          confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 }
+          });
+          
+          showToast(`Selamat! ${winner.nama} memenangkan arisan putaran ${state.putaranSaatIni}!`, 'success');
+          
+          // Next putaran
+          setTimeout(() => {
+            state.putaranSaatIni++;
+            state.anggota.forEach(a => {
+              a.iuran[state.putaranSaatIni] = false;
+            });
+            const nextDate = new Date();
+            nextDate.setMonth(nextDate.getMonth() + 1);
+            state.jadwalKocok = nextDate;
+            
+            saveState();
+            updateDashboard();
+            updateAnggotaTable();
+            updateKocokPeserta();
+            updateHistory();
+            
+            isSpinning = false;
+            document.getElementById('kocokBtn').disabled = false;
+          }, 3000);
+        }, 500);
+      }
+    }, 100);
+  });
+
+  // Update History
+  const updateHistory = () => {
+    const container = document.getElementById('historyTimeline');
+    if (state.history.length === 0) {
+      container.innerHTML = '<p class="text-center text-slate-500 dark:text-slate-400 py-8">Belum ada riwayat kocok</p>';
+      return;
+    }
+    
+    container.innerHTML = state.history.slice().reverse().map(h => {
+      const pemenang = state.anggota.find(a => a.id === h.pemenangId);
+      return `
+        <div class="flex gap-4 p-4 sm:p-6 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700">
+          <div class="flex-shrink-0">
+            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-600 to-emerald-600 flex items-center justify-center text-white font-bold">
+              ${h.putaran}
+            </div>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
+              <h4 class="font-bold text-lg">Putaran ${h.putaran}</h4>
+              <span class="text-xs text-slate-500 dark:text-slate-400">${formatTanggal(h.tanggal)}</span>
+            </div>
+            <p class="text-slate-600 dark:text-slate-300 mb-3">
+              <i class="fa-solid fa-user mr-2"></i>Pemenang: <span class="font-semibold">${pemenang?.nama || 'Unknown'}</span>
+            </p>
+            <p class="text-slate-600 dark:text-slate-300 mb-4">
+              <i class="fa-solid fa-money-bill-wave mr-2"></i>Jumlah Diterima: <span class="font-bold text-emerald-600 dark:text-emerald-400">${formatRupiah(h.jumlah)}</span>
+            </p>
+            <button onclick="showBukti(${h.putaran}, '${pemenang?.nama}', '${h.tanggal}', ${h.jumlah})" class="px-4 py-2 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-sm font-semibold rounded-lg transition">
+              <i class="fa-solid fa-receipt mr-2"></i>Lihat Bukti Transfer
+            </button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  };
+
+  // Show Bukti Transfer
+  window.showBukti = (putaran, nama, tanggal, jumlah) => {
+    document.getElementById('buktiPutaran').textContent = putaran;
+    document.getElementById('buktiNama').textContent = nama;
+    document.getElementById('buktiTanggal').textContent = formatTanggal(tanggal);
+    document.getElementById('buktiJumlah').textContent = formatRupiah(jumlah);
+    document.getElementById('buktiModal').classList.remove('hidden');
+  };
+
+  document.getElementById('closeBuktiModal').addEventListener('click', () => {
+    document.getElementById('buktiModal').classList.add('hidden');
+  });
+
+  // Transfer Button
+  document.getElementById('transferBtn').addEventListener('click', () => {
+    const lastHistory = state.history[state.history.length - 1];
+    const pemenang = state.anggota.find(a => a.id === lastHistory.pemenangId);
+    showBukti(lastHistory.putaran, pemenang.nama, lastHistory.tanggal, lastHistory.jumlah);
+  });
+
+  // User View
+  const openUserModal = () => {
+    const select = document.getElementById('selectUserView');
+    select.innerHTML = state.anggota.map(a => `<option value="${a.id}">${a.nama}</option>`).join('');
+    updateUserDetail(state.anggota[0].id);
+    document.getElementById('userModal').classList.remove('hidden');
+  };
+
+  document.getElementById('userViewBtn').addEventListener('click', openUserModal);
+  document.getElementById('userViewBtnApp').addEventListener('click', openUserModal);
+
+  document.getElementById('closeUserModal').addEventListener('click', () => {
+    document.getElementById('userModal').classList.add('hidden');
+  });
+
+  document.getElementById('selectUserView').addEventListener('change', (e) => {
+    updateUserDetail(parseInt(e.target.value));
+  });
+
+  const updateUserDetail = (id) => {
+    const anggota = state.anggota.find(a => a.id === id);
+    if (!anggota) return;
+    
+    const totalBayar = Object.values(anggota.iuran).filter(Boolean).length * state.nominalIuran;
+    const putaranMenang = anggota.menang.length > 0 ? anggota.menang[0] : null;
+    const sudahLunas = anggota.iuran[state.putaranSaatIni];
+    const belumMenang = anggota.menang.length === 0;
+    
+    document.getElementById('userDetail').innerHTML = `
+      <div class="text-center mb-6">
+        <div class="w-20 h-20 rounded-full bg-gradient-to-br from-blue-600 to-emerald-600 flex items-center justify-center text-white text-2xl font-bold mx-auto mb-3">
+          ${anggota.nama.split(' ').map(n => n[0]).join('').slice(0, 2)}
+        </div>
+        <h3 class="text-xl font-bold">${anggota.nama}</h3>
+        <p class="text-sm text-slate-500 dark:text-slate-400">Bergabung: ${formatTanggal(anggota.bergabung).split(',')[0]}</p>
+      </div>
+      
+      <div class="grid grid-cols-2 gap-4 mb-6">
+        <div class="bg-slate-50 dark:bg-slate-800 rounded-xl p-4">
+          <p class="text-xs text-slate-500 dark:text-slate-400 mb-1">Status Putaran Ini</p>
+          ${sudahLunas 
+            ? '<p class="font-bold text-emerald-600 dark:text-emerald-400"><i class="fa-solid fa-check-circle mr-1"></i>Lunas</p>'
+            : '<p class="font-bold text-amber-600 dark:text-amber-400"><i class="fa-solid fa-clock mr-1"></i>Belum Bayar</p>'
+          }
+        </div>
+        <div class="bg-slate-50 dark:bg-slate-800 rounded-xl p-4">
+          <p class="text-xs text-slate-500 dark:text-slate-400 mb-1">Status Menang</p>
+          ${putaranMenang 
+            ? `<p class="font-bold text-purple-600 dark:text-purple-400"><i class="fa-solid fa-trophy mr-1"></i>Putaran ${putaranMenang}</p>`
+            : '<p class="font-bold text-slate-600 dark:text-slate-400">Belum Menang</p>'
+          }
+        </div>
+      </div>
+      
+      <div class="bg-slate-50 dark:bg-slate-800 rounded-xl p-4 mb-4">
+        <p class="text-xs text-slate-500 dark:text-slate-400 mb-1">Total Sudah Dibayar</p>
+        <p class="text-2xl font-bold text-blue-600 dark:text-blue-400">${formatRupiah(totalBayar)}</p>
+      </div>
+      
+      <div class="bg-slate-50 dark:bg-slate-800 rounded-xl p-4">
+        <p class="text-xs text-slate-500 dark:text-slate-400 mb-2">Riwayat Pembayaran</p>
+        <div class="space-y-2 max-h-48 overflow-y-auto custom-scrollbar">
+          ${Object.entries(anggota.iuran).map(([putaran, lunas]) => `
+            <div class="flex justify-between items-center text-sm">
+              <span>Putaran ${putaran}</span>
+              ${lunas 
+                ? '<span class="px-2 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 text-xs font-semibold">Lunas</span>'
+                : '<span class="px-2 py-1 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400 text-xs font-semibold">Belum</span>'
+              }
+            </div>
+          `).join('')}
+        </div>
+      </div>
+      
+      ${!sudahLunas && belumMenang ? `
+        <button onclick="bayarIuran(${anggota.id}); document.getElementById('userModal').classList.add('hidden');" class="w-full mt-4 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition">
+          <i class="fa-solid fa-credit-card mr-2"></i>Bayar Iuran Putaran Ini
+        </button>
+      ` : ''}
+    `;
+  };
+
+  // Admin Panel - Add Anggota
+  document.getElementById('addAnggotaForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const nama = document.getElementById('namaAnggota').value.trim();
+    const hp = document.getElementById('hpAnggota').value.trim();
+    
+    if (!nama) {
+      showToast('Nama anggota wajib diisi!', 'error');
+      return;
+    }
+    
+    const newId = Math.max(...state.anggota.map(a => a.id), 0) + 1;
+    const iuran = {};
+    for (let i = 1; i <= state.putaranSaatIni; i++) {
+      iuran[i] = false;
+    }
+    
+    state.anggota.push({
+      id: newId,
+      nama,
+      hp,
+      bergabung: new Date().toISOString().split('T')[0],
+      menang: [],
+      iuran
+    });
+    
+    saveState();
+    updateDashboard();
+    updateAnggotaTable();
+    updateKocokPeserta();
+    document.getElementById('addAnggotaForm').reset();
+    showToast(`${nama} berhasil ditambahkan!`, 'success');
+  });
+
+  // Admin Panel - Save Settings
+  document.getElementById('saveSettings').addEventListener('click', () => {
+    const nominal = parseInt(document.getElementById('settingNominal').value);
+    const jadwal = document.getElementById('settingJadwal').value;
+    
+    if (nominal) {
+      state.nominalIuran = nominal;
+    }
+    if (jadwal) {
+      state.jadwalKocok = new Date(jadwal);
+    }
+    
+    saveState();
+    updateDashboard();
+    updateAnggotaTable();
+    showToast('Pengaturan berhasil disimpan!', 'success');
+  });
+
+  // Admin Panel - Reset Arisan
+  document.getElementById('resetArisan').addEventListener('click', () => {
+    if (confirm('Yakin ingin reset arisan? Semua history akan dihapus dan kembali ke putaran 1.')) {
+      state.putaranSaatIni = 1;
+      state.history = [];
+      state.anggota.forEach(a => {
+        a.menang = [];
+        a.iuran = {1: false};
+      });
+      
+      saveState();
+      updateDashboard();
+      updateAnggotaTable();
+      updateKocokPeserta();
+      updateHistory();
+      showToast('Arisan berhasil direset!', 'success');
+    }
+  });
+
+  // Search & Sort
+  document.getElementById('searchAnggota').addEventListener('input', updateAnggotaTable);
+  document.getElementById('sortAnggota').addEventListener('change', updateAnggotaTable);
+
+  // Auto Kocok
+  document.getElementById('otomatisBtn').addEventListener('click', () => {
+    showToast(`Kocok otomatis akan berjalan pada: ${formatTanggal(state.jadwalKocok)}`, 'info');
+  });
+
+  // Smooth scroll for anchor links
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      const href = this.getAttribute('href');
+      if (href !== '#' && href.length > 1) {
+        e.preventDefault();
+        const target = document.querySelector(href);
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
+    });
+  });
+
+  // Initialize
+  const init = () => {
+    initTheme();
+    loadState();
+    updateDashboard();
+    updateAnggotaTable();
+    updateKocokPeserta();
+    updateHistory();
+    updateCountdown();
+    
+    // Set default admin values
+    document.getElementById('settingNominal').value = state.nominalIuran;
+    const localDate = new Date(state.jadwalKocok.getTime() - state.jadwalKocok.getTimezoneOffset() * 60000);
+    document.getElementById('settingJadwal').value = localDate.toISOString().slice(0, 16);
+    
+    // Update countdown every minute
+    setInterval(updateCountdown, 60000);
+  };
+
+  init();
+</script>
+
+<script>(function(){document.addEventListener("click",function(e){var a=e.target.closest("[data-product-id]");if(!a)return;e.preventDefault();var pid=a.getAttribute("data-product-id");if(pid)parent.postMessage({type:"ecto-artifact-link-click",productId:pid},"*")})})();</script>
+</body>
+</html>
